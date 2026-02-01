@@ -1,17 +1,10 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, unique, index } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
- * Extend this file with additional tables as your product grows.
- * Columns use camelCase to match both database fields and generated types.
  */
 export const users = mysqlTable("users", {
-  /**
-   * Surrogate primary key. Auto-incremented numeric value managed by the database.
-   * Use this for relations between tables.
-   */
   id: int("id").autoincrement().primaryKey(),
-  /** Manus OAuth identifier (openId) returned from the OAuth callback. Unique per user. */
   openId: varchar("openId", { length: 64 }).notNull().unique(),
   name: text("name"),
   email: varchar("email", { length: 320 }),
@@ -25,4 +18,107 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+/**
+ * User subscriptions - tracks which streaming services the user has access to
+ */
+export const userSubscriptions = mysqlTable("user_subscriptions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  providerId: int("providerId").notNull(), // TMDB provider ID
+  providerName: varchar("providerName", { length: 255 }).notNull(),
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  userProviderUnique: unique().on(table.userId, table.providerId),
+  userIdIdx: index("userIdIdx").on(table.userId),
+}));
+
+export type UserSubscription = typeof userSubscriptions.$inferSelect;
+export type InsertUserSubscription = typeof userSubscriptions.$inferInsert;
+
+/**
+ * Watchlist - user's saved movies and TV shows
+ */
+export const watchlist = mysqlTable("watchlist", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  tmdbId: int("tmdbId").notNull(), // TMDB content ID
+  mediaType: mysqlEnum("mediaType", ["movie", "tv"]).notNull(),
+  title: varchar("title", { length: 500 }).notNull(),
+  posterPath: varchar("posterPath", { length: 255 }),
+  releaseDate: varchar("releaseDate", { length: 50 }),
+  addedAt: timestamp("addedAt").defaultNow().notNull(),
+}, (table) => ({
+  userContentUnique: unique().on(table.userId, table.tmdbId, table.mediaType),
+  userIdIdx: index("userIdIdx").on(table.userId),
+  tmdbIdIdx: index("tmdbIdIdx").on(table.tmdbId),
+}));
+
+export type Watchlist = typeof watchlist.$inferSelect;
+export type InsertWatchlist = typeof watchlist.$inferInsert;
+
+/**
+ * Alerts - user notifications for content availability
+ */
+export const alerts = mysqlTable("alerts", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  tmdbId: int("tmdbId").notNull(),
+  mediaType: mysqlEnum("mediaType", ["movie", "tv"]).notNull(),
+  title: varchar("title", { length: 500 }).notNull(),
+  providerId: int("providerId"), // Specific provider to watch for, null = any provider
+  providerName: varchar("providerName", { length: 255 }),
+  isActive: boolean("isActive").default(true).notNull(),
+  notified: boolean("notified").default(false).notNull(),
+  notifiedAt: timestamp("notifiedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("userIdIdx").on(table.userId),
+  activeIdx: index("activeIdx").on(table.isActive, table.notified),
+}));
+
+export type Alert = typeof alerts.$inferSelect;
+export type InsertAlert = typeof alerts.$inferInsert;
+
+/**
+ * Affiliate clicks - tracks affiliate link clicks for monetization
+ */
+export const affiliateClicks = mysqlTable("affiliate_clicks", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId"), // Optional, may be null for non-logged-in users
+  tmdbId: int("tmdbId").notNull(),
+  mediaType: mysqlEnum("mediaType", ["movie", "tv"]).notNull(),
+  providerId: int("providerId").notNull(),
+  providerName: varchar("providerName", { length: 255 }).notNull(),
+  clickType: mysqlEnum("clickType", ["rent", "buy", "stream"]).notNull(),
+  clickedAt: timestamp("clickedAt").defaultNow().notNull(),
+  ipAddress: varchar("ipAddress", { length: 45 }), // IPv4 or IPv6
+  userAgent: text("userAgent"),
+}, (table) => ({
+  tmdbIdIdx: index("tmdbIdIdx").on(table.tmdbId),
+  clickedAtIdx: index("clickedAtIdx").on(table.clickedAt),
+}));
+
+export type AffiliateClick = typeof affiliateClicks.$inferSelect;
+export type InsertAffiliateClick = typeof affiliateClicks.$inferInsert;
+
+/**
+ * Cached provider data - reduces TMDB API calls
+ */
+export const cachedProviders = mysqlTable("cached_providers", {
+  id: int("id").autoincrement().primaryKey(),
+  tmdbId: int("tmdbId").notNull(),
+  mediaType: mysqlEnum("mediaType", ["movie", "tv"]).notNull(),
+  countryCode: varchar("countryCode", { length: 2 }).notNull().default("BR"),
+  providersData: text("providersData").notNull(), // JSON string of provider data
+  cachedAt: timestamp("cachedAt").defaultNow().notNull(),
+  expiresAt: timestamp("expiresAt").notNull(), // Cache expiry (e.g., 24 hours)
+}, (table) => ({
+  contentUnique: unique().on(table.tmdbId, table.mediaType, table.countryCode),
+  expiresAtIdx: index("expiresAtIdx").on(table.expiresAt),
+}));
+
+export type CachedProvider = typeof cachedProviders.$inferSelect;
+export type InsertCachedProvider = typeof cachedProviders.$inferInsert;
