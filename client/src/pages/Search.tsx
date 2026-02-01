@@ -7,6 +7,8 @@ import { Search as SearchIcon, Film, Tv, ArrowLeft } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useLocation, useSearch } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 export default function Search() {
   const searchParams = useSearch();
@@ -14,6 +16,14 @@ export default function Search() {
   const initialQuery = new URLSearchParams(searchParams).get("q") || "";
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
+  const [filterBySubscriptions, setFilterBySubscriptions] = useState(false);
+  const { isAuthenticated } = useAuth();
+
+  // Get user subscriptions
+  const { data: subscriptions } = trpc.subscriptions.get.useQuery(
+    undefined,
+    { enabled: isAuthenticated && filterBySubscriptions }
+  );
 
   // Debounce search query
   useEffect(() => {
@@ -78,6 +88,20 @@ export default function Search() {
               Voltar
             </Button>
           </div>
+
+          {/* Subscription Filter */}
+          {isAuthenticated && (
+            <div className="flex items-center gap-2 mt-4">
+              <Switch
+                id="subscription-filter"
+                checked={filterBySubscriptions}
+                onCheckedChange={setFilterBySubscriptions}
+              />
+              <Label htmlFor="subscription-filter" className="text-sm text-muted-foreground cursor-pointer">
+                Mostrar apenas conteúdo disponível nas minhas assinaturas
+              </Label>
+            </div>
+          )}
         </div>
       </header>
 

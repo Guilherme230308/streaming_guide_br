@@ -34,6 +34,11 @@ export default function TVShowDetails() {
     { enabled: isAuthenticated && tvId > 0 }
   );
 
+  const { data: similarShows } = trpc.content.getSimilar.useQuery(
+    { mediaType: "tv", id: tvId, page: 1 },
+    { enabled: tvId > 0 }
+  );
+
   const utils = trpc.useUtils();
   
   const addToWatchlist = trpc.watchlist.add.useMutation({
@@ -376,6 +381,44 @@ export default function TVShowDetails() {
           </a>
         </p>
       </div>
+
+      {/* Similar TV Shows */}
+      {similarShows && similarShows.results && similarShows.results.length > 0 && (
+        <div className="container py-12">
+          <h2 className="text-2xl font-bold text-foreground mb-6">Séries Similares</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            {similarShows.results.slice(0, 12).map((similarShow: any) => (
+              <Link key={similarShow.id} href={`/tv/${similarShow.id}`}>
+                <div className="group cursor-pointer">
+                  <div className="relative overflow-hidden rounded-lg mb-2 aspect-[2/3]">
+                    <img
+                      src={getImageUrl(similarShow.poster_path, "w342")}
+                      alt={similarShow.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                    {similarShow.vote_average > 0 && (
+                      <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1">
+                        <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
+                        <span className="text-xs font-semibold text-white">
+                          {similarShow.vote_average.toFixed(1)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <h3 className="text-sm font-medium text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+                    {similarShow.name}
+                  </h3>
+                  {similarShow.first_air_date && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {new Date(similarShow.first_air_date).getFullYear()}
+                    </p>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="border-t border-border/40 py-8 mt-12">

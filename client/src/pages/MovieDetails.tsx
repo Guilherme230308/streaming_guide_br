@@ -36,6 +36,11 @@ export default function MovieDetails() {
     { enabled: isAuthenticated && movieId > 0 }
   );
 
+  const { data: similarMovies } = trpc.content.getSimilar.useQuery(
+    { mediaType: "movie", id: movieId, page: 1 },
+    { enabled: movieId > 0 }
+  );
+
   const utils = trpc.useUtils();
   
   const addToWatchlist = trpc.watchlist.add.useMutation({
@@ -380,6 +385,44 @@ export default function MovieDetails() {
           </a>
         </p>
       </div>
+
+      {/* Similar Movies */}
+      {similarMovies && similarMovies.results && similarMovies.results.length > 0 && (
+        <div className="container py-12">
+          <h2 className="text-2xl font-bold text-foreground mb-6">Filmes Similares</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            {similarMovies.results.slice(0, 12).map((similarMovie: any) => (
+              <Link key={similarMovie.id} href={`/movie/${similarMovie.id}`}>
+                <div className="group cursor-pointer">
+                  <div className="relative overflow-hidden rounded-lg mb-2 aspect-[2/3]">
+                    <img
+                      src={getImageUrl(similarMovie.poster_path, "w342")}
+                      alt={similarMovie.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                    {similarMovie.vote_average > 0 && (
+                      <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1">
+                        <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
+                        <span className="text-xs font-semibold text-white">
+                          {similarMovie.vote_average.toFixed(1)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <h3 className="text-sm font-medium text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+                    {similarMovie.title}
+                  </h3>
+                  {similarMovie.release_date && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {new Date(similarMovie.release_date).getFullYear()}
+                    </p>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="border-t border-border/40 py-8 mt-12">

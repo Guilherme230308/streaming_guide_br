@@ -17,10 +17,10 @@
 - [x] Show rent/buy options with pricing
 
 ## Phase 3: User Authentication & Watchlist
-- [ ] Implement user watchlist functionality (add/remove content)
-- [ ] Create watchlist page showing saved content
-- [ ] Add watchlist indicators on search results and detail pages
-- [ ] Implement user subscription management (track which services user has)
+- [x] Implement user watchlist functionality (add/remove content)
+- [x] Create watchlist page showing saved content
+- [x] Add watchlist indicators on search results and detail pages
+- [x] Implement user subscription management (track which services user has)
 
 ## Phase 4: Alerts & Notifications
 - [ ] Design alerts system for content availability changes
@@ -63,6 +63,7 @@
 ## New Features (User Requested)
 - [x] Build complete Watchlist page showing all saved movies and TV shows
 - [x] Implement subscription management page where users can select their streaming services
-- [ ] Add content filtering to show only content available on user's subscriptions
-- [ ] Add "Similar Movies/Shows" recommendations on detail pages (backend ready, UI pending)
+- [ ] Add content filtering to show only content available on user's subscriptions (IN PROGRESS)
+- [x] Add "Similar Movies/Shows" recommendations on detail pages
 - [x] Fix deep linking to redirect directly to streaming apps instead of JustWatch
+- [x] Build alerts system UI for managing content notifications

@@ -260,6 +260,16 @@ export const appRouter = router({
         await db.deleteAlert(input.alertId, ctx.user.id);
         return { success: true };
       }),
+
+    toggle: protectedProcedure
+      .input(z.object({
+        alertId: z.number(),
+        isActive: z.boolean(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        await db.toggleAlert(input.alertId, ctx.user.id, input.isActive);
+        return { success: true };
+      }),
   }),
 
   affiliate: router({

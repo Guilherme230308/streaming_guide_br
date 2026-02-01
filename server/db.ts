@@ -234,6 +234,20 @@ export async function deleteAlert(alertId: number, userId: number): Promise<void
   );
 }
 
+export async function toggleAlert(alertId: number, userId: number, isActive: boolean): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(alerts)
+    .set({ isActive, updatedAt: new Date() })
+    .where(
+      and(
+        eq(alerts.id, alertId),
+        eq(alerts.userId, userId)
+      )
+    );
+}
+
 export async function markAlertAsNotified(alertId: number): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
