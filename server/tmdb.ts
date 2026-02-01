@@ -259,3 +259,55 @@ export function getBackdropUrl(path: string | null, size: 'w300' | 'w780' | 'w12
 export function getProviderLogoUrl(path: string | null, size: 'w45' | 'w92' | 'w154' | 'w185' | 'original' = 'w92'): string | null {
   return getImageUrl(path, size as any);
 }
+
+/**
+ * Get similar movies
+ */
+export async function getSimilarMovies(movieId: number, page: number = 1) {
+  const response = await tmdbApi.get(`/movie/${movieId}/similar`, {
+    params: {
+      page,
+      language: 'pt-BR',
+    },
+  });
+  return response.data;
+}
+
+/**
+ * Get similar TV shows
+ */
+export async function getSimilarTVShows(tvId: number, page: number = 1) {
+  const response = await tmdbApi.get(`/tv/${tvId}/similar`, {
+    params: {
+      page,
+      language: 'pt-BR',
+    },
+  });
+  return response.data;
+}
+
+/**
+ * Get movie recommendations
+ */
+export async function getMovieRecommendations(movieId: number, page: number = 1) {
+  const response = await tmdbApi.get(`/movie/${movieId}/recommendations`, {
+    params: {
+      page,
+      language: 'pt-BR',
+    },
+  });
+  return response.data;
+}
+
+/**
+ * Get TV show recommendations
+ */
+export async function getTVShowRecommendations(tvId: number, page: number = 1) {
+  const response = await tmdbApi.get(`/tv/${tvId}/recommendations`, {
+    params: {
+      page,
+      language: 'pt-BR',
+    },
+  });
+  return response.data;
+}

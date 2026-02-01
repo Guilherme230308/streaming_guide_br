@@ -18,6 +18,7 @@ import { Link, useParams, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
+import { handleProviderClick as handleDeepLink } from "@/lib/deepLinks";
 
 export default function MovieDetails() {
   const { id } = useParams();
@@ -77,7 +78,10 @@ export default function MovieDetails() {
     }
   };
 
-  const handleProviderClick = (provider: any, clickType: 'stream' | 'rent' | 'buy') => {
+  const handleProviderClick = async (provider: any, clickType: 'stream' | 'rent' | 'buy', event: React.MouseEvent) => {
+    event.preventDefault();
+    
+    // Track affiliate click
     trackClick.mutate({
       tmdbId: movieId,
       mediaType: "movie",
@@ -85,6 +89,9 @@ export default function MovieDetails() {
       providerName: provider.provider_name,
       clickType,
     });
+    
+    // Handle deep linking
+    await handleDeepLink(provider.provider_id, provider.provider_name, "movie", movieId);
   };
 
   const getImageUrl = (path: string | null, size: string = "w500") => {
@@ -93,8 +100,8 @@ export default function MovieDetails() {
   };
 
   const getProviderUrl = (provider: any) => {
-    // Deep link for mobile or web URL
-    return `https://www.justwatch.com/br/filme/${movie?.title?.toLowerCase().replace(/\s+/g, '-')}`;
+    // Return # to prevent default navigation, actual navigation handled by onClick
+    return "#";
   };
 
   const formatRuntime = (minutes: number) => {
@@ -258,7 +265,7 @@ export default function MovieDetails() {
                         href={getProviderUrl(provider)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        onClick={() => handleProviderClick(provider, 'stream')}
+                        onClick={(e) => handleProviderClick(provider, 'stream', e)}
                         className="group"
                       >
                         <div className="relative overflow-hidden rounded-lg hover:ring-2 hover:ring-primary transition-all">
@@ -293,7 +300,7 @@ export default function MovieDetails() {
                         href={getProviderUrl(provider)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        onClick={() => handleProviderClick(provider, 'rent')}
+                        onClick={(e) => handleProviderClick(provider, 'rent', e)}
                         className="group"
                       >
                         <div className="relative overflow-hidden rounded-lg hover:ring-2 hover:ring-primary transition-all">
@@ -328,7 +335,7 @@ export default function MovieDetails() {
                         href={getProviderUrl(provider)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        onClick={() => handleProviderClick(provider, 'buy')}
+                        onClick={(e) => handleProviderClick(provider, 'buy', e)}
                         className="group"
                       >
                         <div className="relative overflow-hidden rounded-lg hover:ring-2 hover:ring-primary transition-all">

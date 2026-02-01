@@ -16,6 +16,7 @@ import { Link, useParams, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
+import { handleProviderClick as handleDeepLink } from "@/lib/deepLinks";
 
 export default function TVShowDetails() {
   const { id } = useParams();
@@ -75,7 +76,10 @@ export default function TVShowDetails() {
     }
   };
 
-  const handleProviderClick = (provider: any, clickType: 'stream' | 'rent' | 'buy') => {
+  const handleProviderClick = async (provider: any, clickType: 'stream' | 'rent' | 'buy', event: React.MouseEvent) => {
+    event.preventDefault();
+    
+    // Track affiliate click
     trackClick.mutate({
       tmdbId: tvId,
       mediaType: "tv",
@@ -83,6 +87,9 @@ export default function TVShowDetails() {
       providerName: provider.provider_name,
       clickType,
     });
+    
+    // Handle deep linking
+    await handleDeepLink(provider.provider_id, provider.provider_name, "tv", tvId);
   };
 
   const getImageUrl = (path: string | null, size: string = "w500") => {
@@ -91,7 +98,8 @@ export default function TVShowDetails() {
   };
 
   const getProviderUrl = (provider: any) => {
-    return `https://www.justwatch.com/br/serie/${show?.name?.toLowerCase().replace(/\s+/g, '-')}`;
+    // Return # to prevent default navigation, actual navigation handled by onClick
+    return "#";
   };
 
   if (isLoading) {
@@ -254,7 +262,7 @@ export default function TVShowDetails() {
                         href={getProviderUrl(provider)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        onClick={() => handleProviderClick(provider, 'stream')}
+                        onClick={(e) => handleProviderClick(provider, 'stream', e)}
                         className="group"
                       >
                         <div className="relative overflow-hidden rounded-lg hover:ring-2 hover:ring-primary transition-all">
@@ -289,7 +297,7 @@ export default function TVShowDetails() {
                         href={getProviderUrl(provider)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        onClick={() => handleProviderClick(provider, 'rent')}
+                        onClick={(e) => handleProviderClick(provider, 'rent', e)}
                         className="group"
                       >
                         <div className="relative overflow-hidden rounded-lg hover:ring-2 hover:ring-primary transition-all">
@@ -323,7 +331,7 @@ export default function TVShowDetails() {
                         href={getProviderUrl(provider)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        onClick={() => handleProviderClick(provider, 'buy')}
+                        onClick={(e) => handleProviderClick(provider, 'buy', e)}
                         className="group"
                       >
                         <div className="relative overflow-hidden rounded-lg hover:ring-2 hover:ring-primary transition-all">

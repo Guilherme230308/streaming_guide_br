@@ -59,3 +59,10 @@
 - [x] Fix streaming availability data - TMDB API not returning provider data for some movies (e.g., Interstellar) even though they're available in Brazil
 - [x] Investigate TMDB API watch providers endpoint reliability
 - [ ] Consider implementing fallback to alternative data sources or manual provider database (not needed - TMDB data is reliable)
+
+## New Features (User Requested)
+- [x] Build complete Watchlist page showing all saved movies and TV shows
+- [x] Implement subscription management page where users can select their streaming services
+- [ ] Add content filtering to show only content available on user's subscriptions
+- [ ] Add "Similar Movies/Shows" recommendations on detail pages (backend ready, UI pending)
+- [x] Fix deep linking to redirect directly to streaming apps instead of JustWatch

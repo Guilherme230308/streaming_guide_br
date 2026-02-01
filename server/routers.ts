@@ -114,6 +114,34 @@ export const appRouter = router({
           return await tmdb.getPopularTVShows(input.page);
         }
       }),
+
+    getSimilar: publicProcedure
+      .input(z.object({
+        mediaType: z.enum(['movie', 'tv']),
+        id: z.number(),
+        page: z.number().default(1),
+      }))
+      .query(async ({ input }) => {
+        if (input.mediaType === 'movie') {
+          return await tmdb.getSimilarMovies(input.id, input.page);
+        } else {
+          return await tmdb.getSimilarTVShows(input.id, input.page);
+        }
+      }),
+
+    getRecommendations: publicProcedure
+      .input(z.object({
+        mediaType: z.enum(['movie', 'tv']),
+        id: z.number(),
+        page: z.number().default(1),
+      }))
+      .query(async ({ input }) => {
+        if (input.mediaType === 'movie') {
+          return await tmdb.getMovieRecommendations(input.id, input.page);
+        } else {
+          return await tmdb.getTVShowRecommendations(input.id, input.page);
+        }
+      }),
   }),
 
   watchlist: router({
