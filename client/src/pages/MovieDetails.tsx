@@ -125,7 +125,7 @@ export default function MovieDetails() {
     );
   }
 
-  const providers = movie.watchProviders?.BR;
+  const providers = movie.watchProviders;
 
   return (
     <div className="min-h-screen bg-background">

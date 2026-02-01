@@ -116,7 +116,7 @@ export default function TVShowDetails() {
     );
   }
 
-  const providers = show.watchProviders?.BR;
+  const providers = show.watchProviders;
 
   return (
     <div className="min-h-screen bg-background">

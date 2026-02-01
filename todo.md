@@ -54,3 +54,8 @@
 - [ ] Test affiliate link tracking
 - [ ] Verify all streaming providers display correctly for Brazil
 - [ ] Create initial checkpoint
+
+## Bugs & Issues
+- [x] Fix streaming availability data - TMDB API not returning provider data for some movies (e.g., Interstellar) even though they're available in Brazil
+- [x] Investigate TMDB API watch providers endpoint reliability
+- [ ] Consider implementing fallback to alternative data sources or manual provider database (not needed - TMDB data is reliable)
