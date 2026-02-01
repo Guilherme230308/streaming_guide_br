@@ -2,7 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Film, Tv, Bookmark, Bell } from "lucide-react";
+import { Search, Film, Tv, Bookmark, Bell, Calendar } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -61,6 +61,12 @@ export default function Home() {
                     <Button variant="ghost" size="sm" className="gap-2">
                       <Bell className="h-4 w-4" />
                       Assinaturas
+                    </Button>
+                  </Link>
+                  <Link href="/upcoming">
+                    <Button variant="ghost" size="sm" className="gap-2">
+                      <Calendar className="h-4 w-4" />
+                      Em Breve
                     </Button>
                   </Link>
                   <span className="text-sm text-muted-foreground">Olá, {user?.name}</span>

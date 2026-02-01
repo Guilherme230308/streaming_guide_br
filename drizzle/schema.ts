@@ -122,3 +122,43 @@ export const cachedProviders = mysqlTable("cached_providers", {
 
 export type CachedProvider = typeof cachedProviders.$inferSelect;
 export type InsertCachedProvider = typeof cachedProviders.$inferInsert;
+/**
+ * User ratings - tracks user ratings for movies and TV shows
+ */
+export const ratings = mysqlTable("ratings", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  tmdbId: int("tmdbId").notNull(),
+  mediaType: mysqlEnum("mediaType", ["movie", "tv"]).notNull(),
+  rating: int("rating").notNull(), // 1-5 stars
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  userContentUnique: unique().on(table.userId, table.tmdbId, table.mediaType),
+  userIdIdx: index("userIdIdx").on(table.userId),
+  tmdbIdIdx: index("tmdbIdIdx").on(table.tmdbId),
+}));
+
+export type Rating = typeof ratings.$inferSelect;
+export type InsertRating = typeof ratings.$inferInsert;
+
+/**
+ * User reviews - user-written reviews for movies and TV shows
+ */
+export const reviews = mysqlTable("reviews", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  tmdbId: int("tmdbId").notNull(),
+  mediaType: mysqlEnum("mediaType", ["movie", "tv"]).notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  content: text("content").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  userContentUnique: unique().on(table.userId, table.tmdbId, table.mediaType),
+  userIdIdx: index("userIdIdx").on(table.userId),
+  tmdbIdIdx: index("tmdbIdIdx").on(table.tmdbId),
+}));
+
+export type Review = typeof reviews.$inferSelect;
+export type InsertReview = typeof reviews.$inferInsert;

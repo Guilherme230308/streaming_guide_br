@@ -36,8 +36,16 @@ export default function Search() {
 
   const { data: searchResults, isLoading } = trpc.content.search.useQuery(
     { query: debouncedQuery, page: 1 },
-    { enabled: debouncedQuery.length > 0 }
+    { enabled: debouncedQuery.length > 0 && (!filterBySubscriptions || !isAuthenticated) }
   );
+
+  const { data: filteredSearchResults, isLoading: isLoadingFiltered } = trpc.content.searchFiltered.useQuery(
+    { query: debouncedQuery, page: 1 },
+    { enabled: debouncedQuery.length > 0 && filterBySubscriptions && isAuthenticated }
+  );
+
+  const displayResults = filterBySubscriptions && isAuthenticated ? filteredSearchResults : searchResults;
+  const displayLoading = filterBySubscriptions && isAuthenticated ? isLoadingFiltered : isLoading;
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,19 +122,19 @@ export default function Search() {
               Digite algo para buscar filmes e séries
             </p>
           </div>
-        ) : isLoading ? (
+        ) : displayLoading ? (
           <div className="text-center py-20">
             <Film className="h-12 w-12 text-primary animate-pulse mx-auto mb-4" />
             <p className="text-muted-foreground">Buscando...</p>
           </div>
-        ) : searchResults && searchResults.results.length > 0 ? (
+        ) : displayResults && displayResults.results.length > 0 ? (
           <>
             <h2 className="text-2xl font-bold text-foreground mb-6">
               Resultados para "{debouncedQuery}"
             </h2>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-              {searchResults.results
+              {displayResults.results
                 .filter((item: any) => item.media_type === "movie" || item.media_type === "tv")
                 .map((item: any) => {
                   const isMovie = item.media_type === "movie";

@@ -311,3 +311,36 @@ export async function getTVShowRecommendations(tvId: number, page: number = 1) {
   });
   return response.data;
 }
+
+// Get upcoming movies
+export async function getUpcomingMovies(page: number = 1): Promise<{ results: TMDBMovie[]; total_pages: number; total_results: number }> {
+  try {
+    const response = await tmdbApi.get('/movie/upcoming', {
+      params: {
+        language: 'pt-BR',
+        region: 'BR',
+        page,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching upcoming movies:', error);
+    return { results: [], total_pages: 0, total_results: 0 };
+  }
+}
+
+// Get upcoming TV shows (airing soon)
+export async function getUpcomingTVShows(page: number = 1): Promise<{ results: TMDBTVShow[]; total_pages: number; total_results: number }> {
+  try {
+    const response = await tmdbApi.get('/tv/on_the_air', {
+      params: {
+        language: 'pt-BR',
+        page,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching upcoming TV shows:', error);
+    return { results: [], total_pages: 0, total_results: 0 };
+  }
+}

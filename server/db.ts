@@ -16,7 +16,13 @@ import {
   InsertAffiliateClick,
   cachedProviders,
   InsertCachedProvider,
-  CachedProvider
+  CachedProvider,
+  ratings,
+  InsertRating,
+  Rating,
+  reviews,
+  InsertReview,
+  Review
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -304,4 +310,127 @@ export async function setCachedProviders(data: InsertCachedProvider): Promise<vo
       expiresAt: data.expiresAt
     }
   });
+}
+
+// Rating functions
+export async function upsertRating(data: InsertRating): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.insert(ratings).values(data).onDuplicateKeyUpdate({
+    set: {
+      rating: data.rating,
+      updatedAt: new Date()
+    }
+  });
+}
+
+export async function getUserRating(userId: number, tmdbId: number, mediaType: 'movie' | 'tv'): Promise<Rating | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(ratings)
+    .where(and(
+      eq(ratings.userId, userId),
+      eq(ratings.tmdbId, tmdbId),
+      eq(ratings.mediaType, mediaType)
+    ))
+    .limit(1);
+  
+  return result[0] || null;
+}
+
+export async function getAverageRating(tmdbId: number, mediaType: 'movie' | 'tv'): Promise<{ average: number; count: number }> {
+  const db = await getDb();
+  if (!db) return { average: 0, count: 0 };
+  
+  const result = await db.select().from(ratings)
+    .where(and(
+      eq(ratings.tmdbId, tmdbId),
+      eq(ratings.mediaType, mediaType)
+    ));
+  
+  if (result.length === 0) return { average: 0, count: 0 };
+  
+  const sum = result.reduce((acc, r) => acc + r.rating, 0);
+  return {
+    average: sum / result.length,
+    count: result.length
+  };
+}
+
+// Review functions
+export async function createReview(data: InsertReview): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.insert(reviews).values(data);
+}
+
+export async function updateReview(reviewId: number, userId: number, title: string, content: string): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(reviews)
+    .set({ title, content, updatedAt: new Date() })
+    .where(and(
+      eq(reviews.id, reviewId),
+      eq(reviews.userId, userId)
+    ));
+}
+
+export async function deleteReview(reviewId: number, userId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(reviews).where(
+    and(
+      eq(reviews.id, reviewId),
+      eq(reviews.userId, userId)
+    )
+  );
+}
+
+export async function getUserReview(userId: number, tmdbId: number, mediaType: 'movie' | 'tv'): Promise<Review | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(reviews)
+    .where(and(
+      eq(reviews.userId, userId),
+      eq(reviews.tmdbId, tmdbId),
+      eq(reviews.mediaType, mediaType)
+    ))
+    .limit(1);
+  
+  return result[0] || null;
+}
+
+export async function getContentReviews(tmdbId: number, mediaType: 'movie' | 'tv'): Promise<Array<Review & { userName: string }>> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const result = await db.select({
+    id: reviews.id,
+    userId: reviews.userId,
+    tmdbId: reviews.tmdbId,
+    mediaType: reviews.mediaType,
+    title: reviews.title,
+    content: reviews.content,
+    createdAt: reviews.createdAt,
+    updatedAt: reviews.updatedAt,
+    userName: users.name
+  })
+    .from(reviews)
+    .leftJoin(users, eq(reviews.userId, users.id))
+    .where(and(
+      eq(reviews.tmdbId, tmdbId),
+      eq(reviews.mediaType, mediaType)
+    ))
+    .orderBy(desc(reviews.createdAt));
+  
+  return result.map(r => ({
+    ...r,
+    userName: r.userName || 'Usuário Anônimo'
+  }));
 }

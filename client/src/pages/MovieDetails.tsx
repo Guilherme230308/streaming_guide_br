@@ -19,6 +19,8 @@ import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
 import { handleProviderClick as handleDeepLink } from "@/lib/deepLinks";
+import { RatingStars } from "@/components/RatingStars";
+import { ReviewDialog } from "@/components/ReviewDialog";
 
 export default function MovieDetails() {
   const { id } = useParams();
@@ -41,6 +43,26 @@ export default function MovieDetails() {
     { enabled: movieId > 0 }
   );
 
+  const { data: userRating } = trpc.ratings.getUserRating.useQuery(
+    { tmdbId: movieId, mediaType: "movie" },
+    { enabled: isAuthenticated && movieId > 0 }
+  );
+
+  const { data: averageRating } = trpc.ratings.getAverage.useQuery(
+    { tmdbId: movieId, mediaType: "movie" },
+    { enabled: movieId > 0 }
+  );
+
+  const { data: userReview } = trpc.reviews.getUserReview.useQuery(
+    { tmdbId: movieId, mediaType: "movie" },
+    { enabled: isAuthenticated && movieId > 0 }
+  );
+
+  const { data: reviews } = trpc.reviews.getContentReviews.useQuery(
+    { tmdbId: movieId, mediaType: "movie" },
+    { enabled: movieId > 0 }
+  );
+
   const utils = trpc.useUtils();
   
   const addToWatchlist = trpc.watchlist.add.useMutation({
@@ -58,6 +80,22 @@ export default function MovieDetails() {
   });
 
   const trackClick = trpc.affiliate.track.useMutation();
+
+  const ratingMutation = trpc.ratings.upsert.useMutation({
+    onSuccess: () => {
+      utils.ratings.getUserRating.invalidate({ tmdbId: movieId, mediaType: "movie" });
+      utils.ratings.getAverage.invalidate({ tmdbId: movieId, mediaType: "movie" });
+      toast.success("Avaliação salva!");
+    },
+  });
+
+  const deleteReviewMutation = trpc.reviews.delete.useMutation({
+    onSuccess: () => {
+      utils.reviews.getContentReviews.invalidate({ tmdbId: movieId, mediaType: "movie" });
+      utils.reviews.getUserReview.invalidate({ tmdbId: movieId, mediaType: "movie" });
+      toast.success("Review excluído!");
+    },
+  });
 
   const handleWatchlistToggle = () => {
     if (!isAuthenticated) {
@@ -384,6 +422,118 @@ export default function MovieDetails() {
             JustWatch
           </a>
         </p>
+      </div>
+
+      {/* Ratings and Reviews */}
+      <div className="container py-12 border-t border-border">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold text-foreground mb-6">Avaliações e Reviews</h2>
+          
+          {/* User Rating */}
+          {isAuthenticated ? (
+            <Card className="mb-8">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2">Sua Avaliação</h3>
+                    <RatingStars
+                      rating={userRating?.rating || 0}
+                      onRatingChange={(rating) => {
+                        ratingMutation.mutate({ tmdbId: movieId, mediaType: "movie", rating });
+                      }}
+                      size="lg"
+                    />
+                  </div>
+                  <ReviewDialog
+                    tmdbId={movieId}
+                    mediaType="movie"
+                    existingReview={userReview}
+                    onSuccess={() => {
+                      utils.reviews.getUserReview.invalidate({ tmdbId: movieId, mediaType: "movie" });
+                      utils.reviews.getContentReviews.invalidate({ tmdbId: movieId, mediaType: "movie" });
+                    }}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="mb-8">
+              <CardContent className="pt-6 text-center">
+                <p className="text-muted-foreground mb-4">Faça login para avaliar e escrever um review</p>
+                <Button onClick={() => window.location.href = getLoginUrl()}>
+                  Fazer Login
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Average Rating */}
+          {averageRating && averageRating.count > 0 && (
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center gap-2">
+                <RatingStars rating={Math.round(averageRating.average)} readonly size="md" />
+                <span className="text-lg font-semibold">
+                  {averageRating.average.toFixed(1)}
+                </span>
+              </div>
+              <span className="text-muted-foreground">
+                {averageRating.count} {averageRating.count === 1 ? "avaliação" : "avaliações"}
+              </span>
+            </div>
+          )}
+
+          {/* Reviews List */}
+          <div className="space-y-6">
+            {reviews && reviews.length > 0 ? (
+              reviews.map((review) => (
+                <Card key={review.id}>
+                  <CardContent className="pt-6">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <h4 className="font-semibold text-lg">{review.title}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Por {review.userName} • {new Date(review.createdAt).toLocaleDateString("pt-BR")}
+                        </p>
+                      </div>
+                      {isAuthenticated && user?.id === review.userId && (
+                        <div className="flex gap-2">
+                          <ReviewDialog
+                            tmdbId={movieId}
+                            mediaType="movie"
+                            existingReview={{
+                              id: review.id,
+                              title: review.title,
+                              content: review.content,
+                            }}
+                            onSuccess={() => {
+                              utils.reviews.getContentReviews.invalidate({ tmdbId: movieId, mediaType: "movie" });
+                            }}
+                          />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              if (confirm("Tem certeza que deseja excluir este review?")) {
+                                deleteReviewMutation.mutate({ reviewId: review.id });
+                              }
+                            }}
+                          >
+                            Excluir
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-foreground whitespace-pre-wrap">{review.content}</p>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <p className="text-center text-muted-foreground py-8">
+                Nenhum review ainda. Seja o primeiro a escrever!
+              </p>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Similar Movies */}

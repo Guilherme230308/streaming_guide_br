@@ -11,6 +11,7 @@ import TVShowDetails from "./pages/TVShowDetails";
 import Watchlist from "./pages/Watchlist";
 import MySubscriptions from "./pages/MySubscriptions";
 import Alerts from "./pages/Alerts";
+import Upcoming from "./pages/Upcoming";
 
 function Router() {
   return (
@@ -22,6 +23,7 @@ function Router() {
       <Route path={"/watchlist"} component={Watchlist} />
       <Route path={"/subscriptions"} component={MySubscriptions} />
       <Route path={"/alerts"} component={Alerts} />
+      <Route path={"/upcoming"} component={Upcoming} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

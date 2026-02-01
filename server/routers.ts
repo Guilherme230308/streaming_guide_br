@@ -31,6 +31,75 @@ export const appRouter = router({
         return results;
       }),
 
+    searchFiltered: protectedProcedure
+      .input(z.object({
+        query: z.string().min(1),
+        page: z.number().default(1),
+      }))
+      .query(async ({ input, ctx }) => {
+        const results = await tmdb.searchMulti(input.query, input.page);
+        const userSubscriptions = await db.getUserSubscriptions(ctx.user.id);
+        const activeProviderIds = userSubscriptions
+          .filter(sub => sub.isActive)
+          .map(sub => sub.providerId);
+
+        if (activeProviderIds.length === 0) {
+          return results;
+        }
+
+        // Filter results to only show content available on user's subscriptions
+        const filteredResults = [];
+        for (const item of results.results) {
+          const mediaType = (item as any).media_type;
+          if (mediaType !== 'movie' && mediaType !== 'tv') continue;
+          
+          const cached = await db.getCachedProviders(item.id, mediaType);
+          let providers = null;
+          
+          if (cached) {
+            providers = JSON.parse(cached.providersData);
+          } else {
+            const watchProviders = mediaType === 'movie'
+              ? await tmdb.getMovieWatchProviders(item.id)
+              : await tmdb.getTVShowWatchProviders(item.id);
+            providers = watchProviders;
+            
+            if (providers) {
+              const expiresAt = new Date();
+              expiresAt.setHours(expiresAt.getHours() + 24);
+              await db.setCachedProviders({
+                tmdbId: item.id,
+                mediaType: mediaType,
+                countryCode: 'BR',
+                providersData: JSON.stringify(providers),
+                cachedAt: new Date(),
+                expiresAt
+              });
+            }
+          }
+
+          // Check if content is available on any of user's subscriptions
+          if (providers) {
+            const allProviders = [
+              ...(providers.flatrate || []),
+              ...(providers.rent || []),
+              ...(providers.buy || [])
+            ];
+            const hasMatch = allProviders.some((p: any) => 
+              activeProviderIds.includes(p.provider_id)
+            );
+            if (hasMatch) {
+              filteredResults.push(item);
+            }
+          }
+        }
+
+        return {
+          ...results,
+          results: filteredResults
+        };
+      }),
+
     getMovieDetails: publicProcedure
       .input(z.object({ movieId: z.number() }))
       .query(async ({ input }) => {
@@ -126,6 +195,19 @@ export const appRouter = router({
           return await tmdb.getSimilarMovies(input.id, input.page);
         } else {
           return await tmdb.getSimilarTVShows(input.id, input.page);
+        }
+      }),
+
+    getUpcoming: publicProcedure
+      .input(z.object({
+        mediaType: z.enum(['movie', 'tv']),
+        page: z.number().default(1),
+      }))
+      .query(async ({ input }) => {
+        if (input.mediaType === 'movie') {
+          return await tmdb.getUpcomingMovies(input.page);
+        } else {
+          return await tmdb.getUpcomingTVShows(input.page);
         }
       }),
 
@@ -269,6 +351,98 @@ export const appRouter = router({
       .mutation(async ({ input, ctx }) => {
         await db.toggleAlert(input.alertId, ctx.user.id, input.isActive);
         return { success: true };
+      }),
+  }),
+
+  ratings: router({
+    upsert: protectedProcedure
+      .input(z.object({
+        tmdbId: z.number(),
+        mediaType: z.enum(['movie', 'tv']),
+        rating: z.number().min(1).max(5),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        await db.upsertRating({
+          userId: ctx.user.id,
+          tmdbId: input.tmdbId,
+          mediaType: input.mediaType,
+          rating: input.rating,
+        });
+        return { success: true };
+      }),
+
+    getUserRating: protectedProcedure
+      .input(z.object({
+        tmdbId: z.number(),
+        mediaType: z.enum(['movie', 'tv']),
+      }))
+      .query(async ({ input, ctx }) => {
+        return await db.getUserRating(ctx.user.id, input.tmdbId, input.mediaType);
+      }),
+
+    getAverage: publicProcedure
+      .input(z.object({
+        tmdbId: z.number(),
+        mediaType: z.enum(['movie', 'tv']),
+      }))
+      .query(async ({ input }) => {
+        return await db.getAverageRating(input.tmdbId, input.mediaType);
+      }),
+  }),
+
+  reviews: router({
+    create: protectedProcedure
+      .input(z.object({
+        tmdbId: z.number(),
+        mediaType: z.enum(['movie', 'tv']),
+        title: z.string().min(1).max(255),
+        content: z.string().min(10),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        await db.createReview({
+          userId: ctx.user.id,
+          tmdbId: input.tmdbId,
+          mediaType: input.mediaType,
+          title: input.title,
+          content: input.content,
+        });
+        return { success: true };
+      }),
+
+    update: protectedProcedure
+      .input(z.object({
+        reviewId: z.number(),
+        title: z.string().min(1).max(255),
+        content: z.string().min(10),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        await db.updateReview(input.reviewId, ctx.user.id, input.title, input.content);
+        return { success: true };
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ reviewId: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        await db.deleteReview(input.reviewId, ctx.user.id);
+        return { success: true };
+      }),
+
+    getUserReview: protectedProcedure
+      .input(z.object({
+        tmdbId: z.number(),
+        mediaType: z.enum(['movie', 'tv']),
+      }))
+      .query(async ({ input, ctx }) => {
+        return await db.getUserReview(ctx.user.id, input.tmdbId, input.mediaType);
+      }),
+
+    getContentReviews: publicProcedure
+      .input(z.object({
+        tmdbId: z.number(),
+        mediaType: z.enum(['movie', 'tv']),
+      }))
+      .query(async ({ input }) => {
+        return await db.getContentReviews(input.tmdbId, input.mediaType);
       }),
   }),
 

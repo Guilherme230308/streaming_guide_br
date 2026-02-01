@@ -67,3 +67,10 @@
 - [x] Add "Similar Movies/Shows" recommendations on detail pages
 - [x] Fix deep linking to redirect directly to streaming apps instead of JustWatch
 - [x] Build alerts system UI for managing content notifications
+
+## Phase 9: Advanced Features (User Requested - Round 2)
+- [x] Implement subscription filtering logic - Filter search results to show only content available on user's subscriptions
+- [x] Add user ratings system - Allow users to rate movies and TV shows
+- [x] Create reviews system - Let users write and read reviews from Brazilian community
+- [x] Build "Em Breve" (Coming Soon) section - Show upcoming releases on Brazilian streaming services
+- [x] Add automatic alert creation for upcoming releases
