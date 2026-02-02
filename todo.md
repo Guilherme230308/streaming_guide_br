@@ -216,3 +216,15 @@
 - [x] Post-install welcome screen - show on first launch after installation
 - [x] Install analytics - track impressions, dismissals, and successful installs
 - [ ] A/B test different messaging and timing (future enhancement)
+
+
+## Advanced Search Filters (Round 18)
+- [x] Create filter UI component with genre, year, rating, and streaming platform options
+- [x] Implement backend filter logic in search procedures
+- [x] Add genre multi-select dropdown
+- [x] Add year range selector (min/max)
+- [x] Add rating filter (minimum rating slider)
+- [x] Add streaming platform multi-select
+- [x] Integrate filters into Home page search
+- [x] Save filter state in URL params for sharing
+- [x] Add "Clear Filters" button

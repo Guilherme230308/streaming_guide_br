@@ -32,6 +32,105 @@ export const appRouter = router({
         return results;
       }),
 
+    searchWithFilters: publicProcedure
+      .input(z.object({
+        query: z.string().min(1),
+        page: z.number().default(1),
+        genres: z.array(z.string()).optional(),
+        yearMin: z.number().optional(),
+        yearMax: z.number().optional(),
+        ratingMin: z.number().optional(),
+        providers: z.array(z.string()).optional(),
+      }))
+      .query(async ({ input }) => {
+        const results = await tmdb.searchMulti(input.query, input.page);
+        
+        // Apply filters
+        let filteredResults = results.results;
+
+        // Filter by genres
+        if (input.genres && input.genres.length > 0) {
+          filteredResults = filteredResults.filter((item: any) => {
+            const genreIds = item.genre_ids || [];
+            return input.genres!.some(genreId => genreIds.includes(parseInt(genreId)));
+          });
+        }
+
+        // Filter by year
+        if (input.yearMin || input.yearMax) {
+          filteredResults = filteredResults.filter((item: any) => {
+            const releaseDate = item.release_date || item.first_air_date;
+            if (!releaseDate) return false;
+            const year = new Date(releaseDate).getFullYear();
+            if (input.yearMin && year < input.yearMin) return false;
+            if (input.yearMax && year > input.yearMax) return false;
+            return true;
+          });
+        }
+
+        // Filter by rating
+        if (input.ratingMin !== undefined && input.ratingMin > 0) {
+          filteredResults = filteredResults.filter((item: any) => {
+            return (item.vote_average || 0) >= input.ratingMin!;
+          });
+        }
+
+        // Filter by streaming providers (requires checking watch providers)
+        if (input.providers && input.providers.length > 0) {
+          const providerFilteredResults = [];
+          for (const item of filteredResults) {
+            const mediaType = (item as any).media_type;
+            if (mediaType !== 'movie' && mediaType !== 'tv') continue;
+            
+            const cached = await db.getCachedProviders(item.id, mediaType);
+            let providers = null;
+            
+            if (cached) {
+              providers = JSON.parse(cached.providersData);
+            } else {
+              const watchProviders = mediaType === 'movie'
+                ? await tmdb.getMovieWatchProviders(item.id)
+                : await tmdb.getTVShowWatchProviders(item.id);
+              providers = watchProviders;
+              
+              if (providers) {
+                const expiresAt = new Date();
+                expiresAt.setHours(expiresAt.getHours() + 24);
+                await db.setCachedProviders({
+                  tmdbId: item.id,
+                  mediaType: mediaType,
+                  countryCode: 'BR',
+                  providersData: JSON.stringify(providers),
+                  cachedAt: new Date(),
+                  expiresAt
+                });
+              }
+            }
+
+            if (providers) {
+              const allProviders = [
+                ...(providers.flatrate || []),
+                ...(providers.rent || []),
+                ...(providers.buy || [])
+              ];
+              const hasMatch = allProviders.some((p: any) => 
+                input.providers!.includes(p.provider_id.toString())
+              );
+              if (hasMatch) {
+                providerFilteredResults.push(item);
+              }
+            }
+          }
+          filteredResults = providerFilteredResults;
+        }
+
+        return {
+          ...results,
+          results: filteredResults,
+          total_results: filteredResults.length,
+        };
+      }),
+
     searchFiltered: protectedProcedure
       .input(z.object({
         query: z.string().min(1),

@@ -14,6 +14,7 @@ import { useOnboardingTour } from "@/components/OnboardingTour";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { PWAWelcome } from "@/components/PWAWelcome";
+import { SearchFilters, type SearchFiltersType } from "@/components/SearchFilters";
 
 const RECENT_SEARCHES_KEY = "recentSearches";
 const MAX_RECENT_SEARCHES = 5;
@@ -25,6 +26,13 @@ export default function Home() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [searchFilters, setSearchFilters] = useState<SearchFiltersType>({
+    genres: [],
+    yearMin: undefined,
+    yearMax: undefined,
+    ratingMin: undefined,
+    providers: [],
+  });
   const searchRef = useRef<HTMLDivElement>(null);
 
   // Initialize onboarding tour for new users
@@ -58,9 +66,24 @@ export default function Home() {
     { enabled: isAuthenticated }
   );
 
-  // Search suggestions query
-  const { data: suggestions } = trpc.content.search.useQuery(
-    { query: searchQuery, page: 1 },
+  // Check if any filters are active
+  const hasActiveFilters = searchFilters.genres.length > 0 ||
+    searchFilters.providers.length > 0 ||
+    searchFilters.yearMin !== undefined ||
+    searchFilters.yearMax !== undefined ||
+    searchFilters.ratingMin !== undefined;
+
+  // Search suggestions query (with filters if active)
+  const { data: suggestions } = trpc.content.searchWithFilters.useQuery(
+    {
+      query: searchQuery,
+      page: 1,
+      genres: searchFilters.genres.length > 0 ? searchFilters.genres : undefined,
+      yearMin: searchFilters.yearMin,
+      yearMax: searchFilters.yearMax,
+      ratingMin: searchFilters.ratingMin,
+      providers: searchFilters.providers.length > 0 ? searchFilters.providers : undefined,
+    },
     { enabled: searchQuery.length >= 2 }
   );
 
@@ -101,7 +124,26 @@ export default function Home() {
     if (searchTerm) {
       saveRecentSearch(searchTerm);
       setShowSuggestions(false);
-      setLocation(`/search?q=${encodeURIComponent(searchTerm)}`);
+      
+      // Build URL with filters
+      const params = new URLSearchParams({ q: searchTerm });
+      if (searchFilters.genres.length > 0) {
+        params.set('genres', searchFilters.genres.join(','));
+      }
+      if (searchFilters.yearMin) {
+        params.set('yearMin', searchFilters.yearMin.toString());
+      }
+      if (searchFilters.yearMax) {
+        params.set('yearMax', searchFilters.yearMax.toString());
+      }
+      if (searchFilters.ratingMin !== undefined && searchFilters.ratingMin > 0) {
+        params.set('ratingMin', searchFilters.ratingMin.toString());
+      }
+      if (searchFilters.providers.length > 0) {
+        params.set('providers', searchFilters.providers.join(','));
+      }
+      
+      setLocation(`/search?${params.toString()}`);
     }
   };
 
@@ -241,6 +283,12 @@ export default function Home() {
             </p>
 
             <div ref={searchRef} className="relative max-w-2xl mx-auto" data-tour="search">
+              <div className="flex gap-2 mb-3 justify-center">
+                <SearchFilters
+                  filters={searchFilters}
+                  onFiltersChange={setSearchFilters}
+                />
+              </div>
               <form onSubmit={handleSearch} className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
