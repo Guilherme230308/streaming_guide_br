@@ -272,6 +272,29 @@ export async function markAlertAsNotified(alertId: number): Promise<void> {
     .where(eq(alerts.id, alertId));
 }
 
+export async function getAllActiveAlerts(): Promise<Alert[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(alerts)
+    .where(and(
+      eq(alerts.isActive, true),
+      eq(alerts.notified, false)
+    ))
+    .orderBy(desc(alerts.createdAt));
+}
+
+export async function getAlertById(alertId: number): Promise<Alert | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const [alert] = await db.select().from(alerts)
+    .where(eq(alerts.id, alertId))
+    .limit(1);
+  
+  return alert || null;
+}
+
 // Affiliate clicks tracking
 export async function trackAffiliateClick(data: InsertAffiliateClick): Promise<void> {
   const db = await getDb();

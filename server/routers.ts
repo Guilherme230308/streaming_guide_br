@@ -5,6 +5,7 @@ import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as tmdb from "./tmdb";
 import * as db from "./db";
+import { runAvailabilityCheckJob, runAllJobs } from "./backgroundJobs";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -629,6 +630,30 @@ export const appRouter = router({
       .mutation(async ({ input, ctx }) => {
         await db.deleteCustomList(input.listId, ctx.user.id);
         return { success: true };
+      }),
+  }),
+
+  backgroundJobs: router({
+    runAvailabilityCheck: protectedProcedure
+      .mutation(async ({ ctx }) => {
+        // Only allow admin users to trigger background jobs manually
+        if (ctx.user.role !== 'admin') {
+          throw new Error('Unauthorized: Admin access required');
+        }
+        
+        const result = await runAvailabilityCheckJob();
+        return result;
+      }),
+
+    runAllJobs: protectedProcedure
+      .mutation(async ({ ctx }) => {
+        // Only allow admin users to trigger background jobs manually
+        if (ctx.user.role !== 'admin') {
+          throw new Error('Unauthorized: Admin access required');
+        }
+        
+        const results = await runAllJobs();
+        return results;
       }),
   }),
 

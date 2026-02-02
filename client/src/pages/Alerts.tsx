@@ -2,7 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Film, Bell, BellOff, Trash2, ExternalLink } from "lucide-react";
+import { Film, Bell, BellOff, Trash2, ExternalLink, CheckCircle, Clock } from "lucide-react";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
@@ -185,10 +185,44 @@ export default function Alerts() {
                         </div>
                       </div>
 
-                      <div className="mt-4">
-                        <p className="text-sm text-muted-foreground mb-2">
-                          Notificar quando disponível em:
-                        </p>
+                      <div className="mt-4 space-y-3">
+                        {alert.notified ? (
+                          <div className="flex items-center gap-2 text-sm">
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                            <span className="text-green-600 dark:text-green-400 font-medium">
+                              Notificado em {new Date(alert.notifiedAt).toLocaleDateString('pt-BR')}
+                            </span>
+                          </div>
+                        ) : alert.isActive ? (
+                          <div className="flex items-center gap-2 text-sm">
+                            <Clock className="h-4 w-4 text-primary" />
+                            <span className="text-primary font-medium">
+                              Monitorando disponibilidade
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 text-sm">
+                            <BellOff className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-muted-foreground">
+                              Alerta pausado
+                            </span>
+                          </div>
+                        )}
+                        
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            {alert.providerName ? `Monitorando: ${alert.providerName}` : 'Monitorando todos os streamings'}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Criado em {new Date(alert.createdAt).toLocaleDateString('pt-BR')}
+                          </p>
+                        </div>
+                        
+                        {!alert.notified && alert.isActive && (
+                          <p className="text-xs text-muted-foreground italic">
+                            Você receberá uma notificação quando este conteúdo ficar disponível
+                          </p>
+                        )}
                         <div className="flex flex-wrap gap-2">
                           {alert.targetProviders && alert.targetProviders.length > 0 ? (
                             alert.targetProviders.map((provider: string) => (
@@ -197,7 +231,7 @@ export default function Alerts() {
                               </Badge>
                             ))
                           ) : (
-                            <span className="text-sm text-muted-foreground">
+                            <span className="text-sm text-muted-foreground hidden">
                               Qualquer serviço
                             </span>
                           )}
