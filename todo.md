@@ -300,3 +300,6 @@
 - [x] Remove dependency on beforeinstallprompt event for button visibility
 - [x] Make button always visible with browser-specific behavior (shows unless already installed)
 - [x] Test on Chrome Desktop and Safari iOS (button now visible in dev environment)
+
+## Bug Fixes (Round 25)
+- [x] Fix Select.Item empty value error in SearchFilters component (changed empty string to "none")

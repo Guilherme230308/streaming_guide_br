@@ -169,11 +169,11 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
               <div>
                 <Label className="text-xs text-muted-foreground mb-2">De</Label>
                 <Select
-                  value={filters.yearMin?.toString() || ""}
+                  value={filters.yearMin?.toString() || "none"}
                   onValueChange={(value) =>
                     onFiltersChange({
                       ...filters,
-                      yearMin: value ? parseInt(value) : undefined,
+                      yearMin: value !== "none" ? parseInt(value) : undefined,
                     })
                   }
                 >
@@ -181,7 +181,7 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
                     <SelectValue placeholder="Mínimo" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Qualquer</SelectItem>
+                    <SelectItem value="none">Qualquer</SelectItem>
                     {Array.from({ length: currentYear - 1900 + 1 }, (_, i) => currentYear - i).map((year) => (
                       <SelectItem key={year} value={year.toString()}>
                         {year}
@@ -193,11 +193,11 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
               <div>
                 <Label className="text-xs text-muted-foreground mb-2">Até</Label>
                 <Select
-                  value={filters.yearMax?.toString() || ""}
+                  value={filters.yearMax?.toString() || "none"}
                   onValueChange={(value) =>
                     onFiltersChange({
                       ...filters,
-                      yearMax: value ? parseInt(value) : undefined,
+                      yearMax: value !== "none" ? parseInt(value) : undefined,
                     })
                   }
                 >
@@ -205,7 +205,7 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
                     <SelectValue placeholder="Máximo" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Qualquer</SelectItem>
+                    <SelectItem value="none">Qualquer</SelectItem>
                     {Array.from({ length: currentYear - 1900 + 1 }, (_, i) => currentYear - i).map((year) => (
                       <SelectItem key={year} value={year.toString()}>
                         {year}
