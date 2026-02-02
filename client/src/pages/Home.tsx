@@ -11,6 +11,7 @@ import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
 import LandingPage from "./LandingPage";
 import { useOnboardingTour } from "@/components/OnboardingTour";
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 
 const RECENT_SEARCHES_KEY = "recentSearches";
 const MAX_RECENT_SEARCHES = 5;
@@ -208,14 +209,18 @@ export default function Home() {
                       <span className="hidden lg:inline text-sm">Preços</span>
                     </Button>
                   </Link>
+                  <PWAInstallPrompt />
                   <span className="text-xs sm:text-sm text-muted-foreground hidden xl:inline truncate max-w-[150px]">
                     Olá, {user?.name}
                   </span>
                 </>
               ) : (
-                <Button asChild variant="default" size="sm">
-                  <a href={getLoginUrl()}>Entrar</a>
-                </Button>
+                <>
+                  <PWAInstallPrompt />
+                  <Button asChild variant="default" size="sm">
+                    <a href={getLoginUrl()}>Entrar</a>
+                  </Button>
+                </>
               )}
             </nav>
           </div>

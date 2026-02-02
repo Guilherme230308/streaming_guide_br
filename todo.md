@@ -194,3 +194,11 @@
 
 - [x] Substituir window.confirm por modal customizado bonito
 - [x] Usar tons mais escuros nos headers dos streamings na página de preços
+
+
+## PWA Install Button (Round 15)
+- [x] Create PWA install button component with browser detection
+- [x] Add iOS Safari installation instructions with visual guide
+- [x] Show install button for Chrome/Edge Android and Desktop
+- [x] Hide button after app is installed
+- [x] Integrate into app header
