@@ -19,6 +19,7 @@ import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
 import { AddToListDialog } from "@/components/AddToListDialog";
 import { handleProviderClick as handleDeepLink } from "@/lib/deepLinks";
+import { deduplicateProviders } from "@/lib/providerUtils";
 
 export default function TVShowDetails() {
   const { id } = useParams();
@@ -322,7 +323,7 @@ export default function TVShowDetails() {
                 <CardContent className="p-6">
                   <h3 className="text-lg font-semibold text-foreground mb-4">Streaming</h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                    {providers.flatrate.map((provider: any) => (
+                    {deduplicateProviders(providers.flatrate).map((provider: any) => (
                       <a
                         key={provider.provider_id}
                         href={getProviderUrl(provider)}
@@ -357,7 +358,7 @@ export default function TVShowDetails() {
                 <CardContent className="p-6">
                   <h3 className="text-lg font-semibold text-foreground mb-4">Alugar</h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                    {providers.rent.map((provider: any) => (
+                    {deduplicateProviders(providers.rent).map((provider: any) => (
                       <a
                         key={provider.provider_id}
                         href={getProviderUrl(provider)}
@@ -391,7 +392,7 @@ export default function TVShowDetails() {
                 <CardContent className="p-6">
                   <h3 className="text-lg font-semibold text-foreground mb-4">Comprar</h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                    {providers.buy.map((provider: any) => (
+                    {deduplicateProviders(providers.buy).map((provider: any) => (
                       <a
                         key={provider.provider_id}
                         href={getProviderUrl(provider)}

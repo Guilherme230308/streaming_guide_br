@@ -388,3 +388,9 @@
 - [x] Identify all content sections on home page (hero, recommendations, etc.)
 - [x] Apply filter logic to PersonalizedRecommendations component
 - [x] Test filters work across all sections (Em Alta, Filmes em Alta, Séries em Alta)
+
+
+## Remove Duplicate Streaming Providers (Round 39)
+- [x] Identify duplicate streaming providers (e.g., Prime Video vs Prime Video with Ads)
+- [x] Implement deduplication logic to show only main provider option
+- [x] Test on movie/TV detail pages
