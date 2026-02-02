@@ -81,3 +81,6 @@
 - [x] Implement viewing history - Track what user has watched
 - [x] Build personalized recommendations based on viewing history
 - [x] Create custom lists system - Allow users to create multiple lists beyond watchlist (backend ready, UI in progress)
+
+## New Feature Request
+- [x] Add autocomplete to homepage search bar with real-time suggestions

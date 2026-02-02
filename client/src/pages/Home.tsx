@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search, Film, Tv, Bookmark, Bell, Calendar, Grid3x3, Clock } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
@@ -12,6 +12,25 @@ export default function Home() {
   const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  // Search suggestions query with debouncing
+  const { data: suggestions } = trpc.content.search.useQuery(
+    { query: searchQuery, page: 1 },
+    { enabled: searchQuery.length >= 2 }
+  );
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const { data: trendingMovies } = trpc.content.getTrending.useQuery({
     mediaType: "movie",
@@ -104,23 +123,60 @@ export default function Home() {
               Encontre em qual streaming está disponível no Brasil
             </p>
 
-            <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto">
+            <div ref={searchRef} className="relative max-w-2xl mx-auto">
+              <form onSubmit={handleSearch} className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Buscar filmes ou séries..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 h-14 text-lg bg-card border-border"
-              />
-              <Button
-                type="submit"
-                className="absolute right-2 top-1/2 -translate-y-1/2"
-                size="sm"
-              >
-                Buscar
-              </Button>
-            </form>
+                <Input
+                  type="text"
+                  placeholder="Buscar filmes ou séries..."
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setShowSuggestions(true);
+                  }}
+                  onFocus={() => setShowSuggestions(true)}
+                  className="pl-12 h-14 text-lg bg-card border-border"
+                />
+                <Button
+                  type="submit"
+                  className="absolute right-2 top-1/2 -translate-y-1/2"
+                  size="sm"
+                >
+                  Buscar
+                </Button>
+              </form>
+
+              {/* Autocomplete Suggestions */}
+              {showSuggestions && searchQuery.length >= 2 && suggestions?.results && suggestions.results.length > 0 && (
+                <div className="absolute top-full mt-2 w-full bg-card border border-border rounded-lg shadow-lg max-h-96 overflow-y-auto z-50">
+                  {suggestions.results.slice(0, 8).map((item: any) => (
+                    <button
+                      key={`${item.media_type}-${item.id}`}
+                      onClick={() => {
+                        setShowSuggestions(false);
+                        setLocation(`/${item.media_type === 'movie' ? 'movie' : 'tv'}/${item.id}`);
+                      }}
+                      className="w-full flex items-center gap-3 p-3 hover:bg-accent transition-colors text-left"
+                    >
+                      <img
+                        src={getImageUrl(item.poster_path)}
+                        alt={item.title || item.name}
+                        className="w-12 h-16 object-cover rounded"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-foreground truncate">
+                          {item.title || item.name}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {item.media_type === 'movie' ? 'Filme' : 'Série'}
+                          {item.release_date || item.first_air_date ? ` • ${(item.release_date || item.first_air_date).split('-')[0]}` : ''}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
