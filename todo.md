@@ -142,3 +142,9 @@
 - [x] Create streaming prices comparison page
 - [x] Add comparative chart showing monthly subscription prices for main Brazilian streaming services
 - [x] Update navigation to include About and Prices pages
+
+## UX Improvements (Round 11)
+- [x] Create reusable ContentCard component with three-dot menu
+- [x] Add "Add to List" and "Mark as Watched" options in dropdown menu
+- [x] Replace all movie/TV card implementations across pages (Home, Search, Genres, Lists, etc)
+- [x] Ensure menu appears on hover/click on card corner

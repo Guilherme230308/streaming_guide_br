@@ -1,6 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { ContentCard } from "@/components/ContentCard";
 import { Badge } from "@/components/ui/badge";
 import { Film, Tv, Bookmark, Trash2, ExternalLink } from "lucide-react";
 import { Link, useLocation } from "wouter";
@@ -112,55 +113,17 @@ export default function Watchlist() {
           </div>
         ) : watchlist && watchlist.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-            {watchlist.map((item: any) => {
-              const isMovie = item.mediaType === "movie";
-              const linkPath = isMovie ? `/movie/${item.tmdbId}` : `/tv/${item.tmdbId}`;
-
-              return (
-                <Card key={`${item.mediaType}-${item.tmdbId}`} className="overflow-hidden group h-full">
-                  <CardContent className="p-0">
-                    <div className="relative">
-                      <Link href={linkPath}>
-                        <div className="aspect-[2/3] relative overflow-hidden cursor-pointer">
-                          <img
-                            src={getImageUrl(item.posterPath)}
-                            alt={item.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                          <Badge
-                            variant="secondary"
-                            className="absolute top-2 right-2 gap-1"
-                          >
-                            {isMovie ? <Film className="h-3 w-3" /> : <Tv className="h-3 w-3" />}
-                            {isMovie ? "Filme" : "Série"}
-                          </Badge>
-                        </div>
-                      </Link>
-                      
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => handleRemove(item.tmdbId, item.mediaType)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    
-                    <div className="p-3">
-                      <h3 className="font-semibold text-sm line-clamp-2 text-foreground">
-                        {item.title}
-                      </h3>
-                      {item.releaseDate && (
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {item.releaseDate.split("-")[0]}
-                        </p>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+            {watchlist.map((item: any) => (
+              <ContentCard
+                key={`${item.mediaType}-${item.tmdbId}`}
+                id={item.tmdbId}
+                title={item.title}
+                posterPath={item.posterPath}
+                mediaType={item.mediaType}
+                releaseDate={item.releaseDate}
+                voteAverage={item.voteAverage}
+              />
+            ))}
           </div>
         ) : (
           <div className="text-center py-20">

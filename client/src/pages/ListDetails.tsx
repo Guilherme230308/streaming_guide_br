@@ -3,6 +3,7 @@ import { Link, useParams, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { ContentCard } from "@/components/ContentCard";
 import { Film, Tv, Star, ArrowLeft, Trash2, Lock, Globe } from "lucide-react";
 import { toast } from "sonner";
 
@@ -140,39 +141,13 @@ export default function ListDetails() {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
             {items.map((item) => (
-              <div key={`${item.mediaType}-${item.tmdbId}`} className="group relative">
-                <Link href={`/${item.mediaType}/${item.tmdbId}`}>
-                  <div className="cursor-pointer">
-                    <div className="relative overflow-hidden rounded-lg mb-2 aspect-[2/3]">
-                      <img
-                        src={getImageUrl(item.posterPath)}
-                        alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
-                      <div className="absolute top-2 left-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-md">
-                        {item.mediaType === "movie" ? (
-                          <Film className="h-3 w-3 text-white" />
-                        ) : (
-                          <Tv className="h-3 w-3 text-white" />
-                        )}
-                      </div>
-                    </div>
-                    <h3 className="text-sm font-medium text-foreground line-clamp-2 group-hover:text-primary transition-colors">
-                      {item.title}
-                    </h3>
-                  </div>
-                </Link>
-                {isOwner && (
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={() => handleRemoveItem(item.tmdbId, item.mediaType)}
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                )}
-              </div>
+              <ContentCard
+                key={`${item.mediaType}-${item.tmdbId}`}
+                id={item.tmdbId}
+                title={item.title}
+                posterPath={item.posterPath}
+                mediaType={item.mediaType}
+              />
             ))}
           </div>
         )}

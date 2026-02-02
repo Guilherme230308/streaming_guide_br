@@ -2,6 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { ContentCard } from "@/components/ContentCard";
 import { Badge } from "@/components/ui/badge";
 import { Search, Film, Tv, Bookmark, Bell, Calendar, Grid3x3, Clock, Check, List } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
@@ -318,27 +319,15 @@ export default function Home() {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {trendingMovies?.results.slice(0, 12).map((movie: any) => (
-              <Link key={movie.id} href={`/movie/${movie.id}`}>
-                <Card className="overflow-hidden hover:ring-2 hover:ring-primary transition-all cursor-pointer group">
-                  <CardContent className="p-0">
-                    <div className="aspect-[2/3] relative overflow-hidden">
-                      <img
-                        src={getImageUrl(movie.poster_path)}
-                        alt={movie.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                    <div className="p-3">
-                      <h3 className="font-semibold text-sm line-clamp-2 text-foreground">
-                        {movie.title}
-                      </h3>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {movie.release_date?.split('-')[0]}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
+              <ContentCard
+                key={movie.id}
+                id={movie.id}
+                title={movie.title}
+                posterPath={movie.poster_path}
+                mediaType="movie"
+                releaseDate={movie.release_date}
+                voteAverage={movie.vote_average}
+              />
             ))}
           </div>
         </div>
@@ -354,27 +343,15 @@ export default function Home() {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {trendingTV?.results.slice(0, 12).map((show: any) => (
-              <Link key={show.id} href={`/tv/${show.id}`}>
-                <Card className="overflow-hidden hover:ring-2 hover:ring-primary transition-all cursor-pointer group">
-                  <CardContent className="p-0">
-                    <div className="aspect-[2/3] relative overflow-hidden">
-                      <img
-                        src={getImageUrl(show.poster_path)}
-                        alt={show.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                    <div className="p-3">
-                      <h3 className="font-semibold text-sm line-clamp-2 text-foreground">
-                        {show.name}
-                      </h3>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {show.first_air_date?.split('-')[0]}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
+              <ContentCard
+                key={show.id}
+                id={show.id}
+                title={show.name}
+                posterPath={show.poster_path}
+                mediaType="tv"
+                releaseDate={show.first_air_date}
+                voteAverage={show.vote_average}
+              />
             ))}
           </div>
         </div>

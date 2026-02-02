@@ -2,6 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { ContentCard } from "@/components/ContentCard";
 import { Badge } from "@/components/ui/badge";
 import { Search as SearchIcon, Film, Tv, ArrowLeft } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -140,44 +141,17 @@ export default function Search() {
                   const isMovie = item.media_type === "movie";
                   const title = isMovie ? item.title : item.name;
                   const releaseDate = isMovie ? item.release_date : item.first_air_date;
-                  const linkPath = isMovie ? `/movie/${item.id}` : `/tv/${item.id}`;
 
                   return (
-                    <Link key={`${item.media_type}-${item.id}`} href={linkPath}>
-                      <Card className="overflow-hidden hover:ring-2 hover:ring-primary transition-all cursor-pointer group h-full">
-                        <CardContent className="p-0">
-                          <div className="aspect-[2/3] relative overflow-hidden">
-                            <img
-                              src={getImageUrl(item.poster_path)}
-                              alt={title}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            />
-                            <Badge
-                              variant="secondary"
-                              className="absolute top-2 right-2 gap-1"
-                            >
-                              {getMediaTypeIcon(item.media_type)}
-                              {getMediaTypeLabel(item.media_type)}
-                            </Badge>
-                          </div>
-                          <div className="p-3">
-                            <h3 className="font-semibold text-sm line-clamp-2 text-foreground">
-                              {title}
-                            </h3>
-                            {releaseDate && (
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {releaseDate.split("-")[0]}
-                              </p>
-                            )}
-                            {item.vote_average > 0 && (
-                              <p className="text-xs text-yellow-500 mt-1">
-                                ★ {item.vote_average.toFixed(1)}
-                              </p>
-                            )}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </Link>
+                    <ContentCard
+                      key={`${item.media_type}-${item.id}`}
+                      id={item.id}
+                      title={title}
+                      posterPath={item.poster_path}
+                      mediaType={item.media_type}
+                      releaseDate={releaseDate}
+                      voteAverage={item.vote_average}
+                    />
                   );
                 })}
             </div>
