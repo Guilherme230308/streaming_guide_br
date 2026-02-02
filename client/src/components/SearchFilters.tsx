@@ -113,10 +113,10 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className="relative px-3"
-          size="sm"
+          className="relative h-14 w-14 flex-shrink-0"
+          size="icon"
         >
-          <SlidersHorizontal className="h-4 w-4" />
+          <SlidersHorizontal className="h-5 w-5" />
           {activeFiltersCount > 0 && (
             <Badge
               variant="default"

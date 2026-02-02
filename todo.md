@@ -411,3 +411,5 @@
 - [x] Fix AI chat dialog scrolling - messages are being cut off and cannot scroll to see full conversation
 
 - [x] Add 'Ver filme' button to AI response - link directly to identified movie/series page
+
+- [x] Adjust filter button size to match other buttons in search bar
