@@ -396,3 +396,6 @@
 - [x] Test on movie/TV detail pages
 
 - [x] Apply provider deduplication to home page (ContentCard component)
+
+## Checkpoint para publicação
+- [x] Deduplicação de providers na página principal
