@@ -221,12 +221,6 @@ export default function Home() {
                 <>
                   {/* Desktop Navigation - Hidden on mobile */}
                   <div className="hidden lg:flex items-center gap-2">
-                    <Link href="/watchlist">
-                      <Button variant="ghost" size="sm" className="gap-2 px-3">
-                        <Bookmark className="h-4 w-4" />
-                        <span className="text-sm">Minha Lista</span>
-                      </Button>
-                    </Link>
                     <Link href="/lists">
                       <Button variant="ghost" size="sm" className="gap-2 px-3" data-tour="lists">
                         <List className="h-4 w-4" />
@@ -249,11 +243,6 @@ export default function Home() {
 
                   {/* Mobile: Essential icons only */}
                   <div className="flex items-center gap-2">
-                    <Link href="/watchlist" className="lg:hidden">
-                      <Button variant="ghost" size="sm" className="px-3">
-                        <Bookmark className="h-5 w-5" />
-                      </Button>
-                    </Link>
                     <PWAInstallPrompt />
                     <MobileMenu />
                   </div>

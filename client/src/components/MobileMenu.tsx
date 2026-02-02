@@ -100,7 +100,6 @@ export function MobileMenu() {
   };
 
   const menuItems = [
-    { href: "/watchlist", icon: Bookmark, label: "Minha Lista", tour: "" },
     { href: "/lists", icon: List, label: "Listas", tour: "lists" },
     { href: "/subscriptions", icon: Bell, label: "Assinaturas", tour: "subscriptions" },
     { href: "/upcoming", icon: Calendar, label: "Em Breve", tour: "" },

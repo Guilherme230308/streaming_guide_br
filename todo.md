@@ -361,3 +361,8 @@
 - [x] Add "Streaming Now" filter option (toggle in filters popover)
 - [x] Apply filters to "Em Alta" trending section (filters content with providers)
 - [x] Test all filter combinations (implemented, ready for real device testing)
+
+## Remove Duplicate Menu Item (Round 35)
+- [x] Remove "Minha Lista" from desktop navigation
+- [x] Remove "Minha Lista" from mobile menu
+- [x] Test navigation after removal (clean header, only Listas, Alertas, Preços, Instalar App visible)
