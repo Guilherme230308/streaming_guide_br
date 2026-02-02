@@ -81,15 +81,15 @@ export function PWAInstallPrompt() {
   return (
     <>
       {/* Install Button - Always visible unless already installed */}
-      <div className="relative">
+      <div className="relative flex-shrink-0">
         <Button
           onClick={handleInstallClick}
           variant="outline"
           size="sm"
-          className="gap-2 bg-primary/10 border-primary/20 hover:bg-primary/20"
+          className="gap-1 sm:gap-2 bg-primary/10 border-primary/20 hover:bg-primary/20 px-2 sm:px-3"
         >
-          <Download className="h-4 w-4" />
-          <span className="hidden sm:inline">Instalar App</span>
+          <Download className="h-4 w-4 flex-shrink-0" />
+          <span className="hidden sm:inline text-sm">Instalar App</span>
         </Button>
       </div>
 

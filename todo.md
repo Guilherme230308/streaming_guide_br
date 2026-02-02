@@ -303,3 +303,13 @@
 
 ## Bug Fixes (Round 25)
 - [x] Fix Select.Item empty value error in SearchFilters component (changed empty string to "none")
+
+## PWA Button Mobile Visibility Fix (Round 26)
+- [ ] Fix PWA install button not appearing on mobile devices (Chrome and Safari)
+- [ ] Remove all conditional logic that hides button on mobile
+- [ ] Test on mobile Chrome and Safari
+
+## PWA Button for Authenticated Users (Round 27)
+- [x] Add PWA install button to Home.tsx header for logged-in users (already present)
+- [x] Improve button mobile visibility with flex-shrink-0 and consistent sizing
+- [x] Test button appears for authenticated users on mobile (visible in screenshot)
