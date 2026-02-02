@@ -123,3 +123,6 @@
 - [x] Enhance alerts management UI with better filtering and status indicators
 - [ ] Add automatic alert creation for watchlist items (optional enhancement)
 - [x] Test notification delivery and background job execution
+
+## Design Updates (Round 8)
+- [x] Apply new color palette (dark blue, medium blue, teal, light gray) to website theme
