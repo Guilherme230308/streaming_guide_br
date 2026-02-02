@@ -36,15 +36,15 @@ const GENRE_IMAGES: Record<string, string> = {
   "53": "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg", // Thriller - Inception
   "10752": "https://image.tmdb.org/t/p/w500/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg", // War
   "37": "https://image.tmdb.org/t/p/w500/vfrQk5IPloGg1v9Rzbh2Eg3VGyM.jpg", // Western
-  // TV
-  "10759": "https://image.tmdb.org/t/p/w500/pIkRyD18kl4FhoCNQuWxWu5cBLM.jpg", // Action & Adventure - Mad Max
-  "10762": "https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg", // Kids
-  "10763": "https://image.tmdb.org/t/p/w500/yDHYTfA3R0jFYba16jBB1ef8oIt.jpg", // News
-  "10764": "https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg", // Reality
-  "10765": "https://image.tmdb.org/t/p/w500/wuMc08IPKEatf9rnMNXvIDxqP4W.jpg", // Sci-Fi & Fantasy
-  "10766": "https://image.tmdb.org/t/p/w500/kEl2t3OhXc3Zb9FBh1AuYzRTgZp.jpg", // Soap
-  "10767": "https://image.tmdb.org/t/p/w500/iiXliCeykkzmJ0Eg9RYJ7F2CWSz.jpg", // Talk
-  "10768": "https://image.tmdb.org/t/p/w500/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg", // War & Politics
+  // TV Series (different genre IDs from movies)
+  "10759": "https://image.tmdb.org/t/p/w500/4EYPN5mVIhKLfxGruy7Dy41dTVn.jpg", // Action & Adventure - Breaking Bad
+  "10762": "https://image.tmdb.org/t/p/w500/sWgBv7LV2PRoQgkxwlibdGXKz1S.jpg", // Kids - Bluey
+  "10763": "https://image.tmdb.org/t/p/w500/xf9wuDcqlUPWABZNeDKPbZUjWx0.jpg", // News - Last Week Tonight
+  "10764": "https://image.tmdb.org/t/p/w500/gKG5QGz5Ngf8fgWpBsWtlg5L2SF.jpg", // Reality - The Great British Bake Off
+  "10765": "https://image.tmdb.org/t/p/w500/7WUHnWGx5OO145IRxPDUkQSh4C7.jpg", // Sci-Fi & Fantasy - The Witcher
+  "10766": "https://image.tmdb.org/t/p/w500/zLudbPueg8CxGhMS2tyDh3p0TdK.jpg", // Soap - Grey's Anatomy
+  "10767": "https://image.tmdb.org/t/p/w500/zzSJsKP8V6Yl6qPxWLSqTu3pv9F.jpg", // Talk - The Tonight Show
+  "10768": "https://image.tmdb.org/t/p/w500/6UH52Fmau8RPsMAbQbjwN3wJSCj.jpg", // War & Politics - House of Cards
 };
 
 export default function Genres() {

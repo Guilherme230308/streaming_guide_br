@@ -497,6 +497,18 @@ export const appRouter = router({
       return await db.getUserViewingHistory(ctx.user.id);
     }),
 
+    isWatched: protectedProcedure
+      .input(z.object({
+        tmdbId: z.number(),
+        mediaType: z.enum(['movie', 'tv']),
+      }))
+      .query(async ({ input, ctx }) => {
+        const history = await db.getUserViewingHistory(ctx.user.id);
+        return history.some(
+          item => item.tmdbId === input.tmdbId && item.mediaType === input.mediaType
+        );
+      }),
+
     getRecommendations: protectedProcedure
       .input(z.object({
         mediaType: z.enum(['movie', 'tv']),

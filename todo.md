@@ -99,3 +99,10 @@
 
 ## Bug Fixes (Round 5)
 - [x] Fix broken genre images for Action (28), Horror (27), and Action & Adventure (10759)
+
+## New Feature Requests (Round 6)
+- [x] Change "Marcar como assistido" button label to "Assistido" after clicking
+- [x] Ask user if they want to mark as watched when submitting a rating
+- [x] Use movie posters for movie genre cards (not series)
+- [x] Use TV series posters for TV genre cards (not movies)
+- [x] Ensure no repeated images across genre cards

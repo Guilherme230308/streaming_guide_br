@@ -39,6 +39,11 @@ export default function TVShowDetails() {
     { enabled: tvId > 0 }
   );
 
+  const { data: isWatched } = trpc.viewingHistory.isWatched.useQuery(
+    { tmdbId: tvId, mediaType: "tv" },
+    { enabled: isAuthenticated && tvId > 0 }
+  );
+
   const utils = trpc.useUtils();
   
   const addToWatchlist = trpc.watchlist.add.useMutation({
@@ -60,6 +65,7 @@ export default function TVShowDetails() {
   const markAsWatchedMutation = trpc.viewingHistory.add.useMutation({
     onSuccess: () => {
       utils.viewingHistory.get.invalidate();
+      utils.viewingHistory.isWatched.invalidate({ tmdbId: tvId, mediaType: "tv" });
       toast.success("Marcado como assistido!");
     },
   });
@@ -267,12 +273,13 @@ export default function TVShowDetails() {
                 {isAuthenticated ? (
                   <Button
                     size="lg"
-                    variant="secondary"
+                    variant={isWatched ? "outline" : "secondary"}
                     onClick={handleMarkAsWatched}
                     className="gap-2"
+                    disabled={isWatched}
                   >
                     <Tv className="h-5 w-5" />
-                    Marcar como assistido
+                    {isWatched ? "Assistido" : "Marcar como assistido"}
                   </Button>
                 ) : (
                   <Button

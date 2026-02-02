@@ -63,6 +63,11 @@ export default function MovieDetails() {
     { enabled: movieId > 0 }
   );
 
+  const { data: isWatched } = trpc.viewingHistory.isWatched.useQuery(
+    { tmdbId: movieId, mediaType: "movie" },
+    { enabled: isAuthenticated && movieId > 0 }
+  );
+
   const utils = trpc.useUtils();
   
   const addToWatchlist = trpc.watchlist.add.useMutation({
@@ -100,6 +105,7 @@ export default function MovieDetails() {
   const markAsWatchedMutation = trpc.viewingHistory.add.useMutation({
     onSuccess: () => {
       utils.viewingHistory.get.invalidate();
+      utils.viewingHistory.isWatched.invalidate({ tmdbId: movieId, mediaType: "movie" });
       toast.success("Marcado como assistido!");
     },
   });
@@ -308,12 +314,13 @@ export default function MovieDetails() {
                 {isAuthenticated ? (
                   <Button
                     size="lg"
-                    variant="secondary"
+                    variant={isWatched ? "outline" : "secondary"}
                     onClick={handleMarkAsWatched}
                     className="gap-2"
+                    disabled={isWatched}
                   >
                     <Clock className="h-5 w-5" />
-                    Marcar como assistido
+                    {isWatched ? "Assistido" : "Marcar como assistido"}
                   </Button>
                 ) : (
                   <Button
@@ -487,6 +494,20 @@ export default function MovieDetails() {
                       rating={userRating?.rating || 0}
                       onRatingChange={(rating) => {
                         ratingMutation.mutate({ tmdbId: movieId, mediaType: "movie", rating });
+                        
+                        // Ask if user wants to mark as watched
+                        if (!isWatched && movie) {
+                          setTimeout(() => {
+                            if (window.confirm("Deseja marcar este filme como assistido?")) {
+                              markAsWatchedMutation.mutate({
+                                tmdbId: movieId,
+                                mediaType: "movie",
+                                title: movie.title,
+                                posterPath: movie.poster_path,
+                              });
+                            }
+                          }, 500);
+                        }
                       }}
                       size="lg"
                     />
