@@ -88,7 +88,7 @@ export default function MovieDetails() {
     },
   });
 
-  const trackClick = trpc.affiliate.track.useMutation();
+  const trackClick = trpc.affiliate.trackClick.useMutation();
 
   const ratingMutation = trpc.ratings.upsert.useMutation({
     onSuccess: () => {

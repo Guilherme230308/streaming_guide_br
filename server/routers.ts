@@ -641,6 +641,47 @@ export const appRouter = router({
       }),
   }),
 
+  affiliate: router({
+    trackClick: publicProcedure
+      .input(z.object({
+        tmdbId: z.number(),
+        mediaType: z.enum(['movie', 'tv']),
+        providerId: z.number(),
+        providerName: z.string(),
+        clickType: z.enum(['rent', 'buy', 'stream']),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        await db.trackAffiliateClick({
+          userId: ctx.user?.id,
+          tmdbId: input.tmdbId,
+          mediaType: input.mediaType,
+          providerId: input.providerId,
+          providerName: input.providerName,
+          clickType: input.clickType,
+          ipAddress: ctx.req.ip,
+          userAgent: ctx.req.headers['user-agent'],
+        });
+        return { success: true };
+      }),
+
+    getStats: protectedProcedure
+      .input(z.object({
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+      }).optional())
+      .query(async ({ input, ctx }) => {
+        // Only allow admin users to view affiliate stats
+        if (ctx.user.role !== 'admin') {
+          throw new Error('Unauthorized: Admin access required');
+        }
+
+        const startDate = input?.startDate ? new Date(input.startDate) : undefined;
+        const endDate = input?.endDate ? new Date(input.endDate) : undefined;
+
+        return await db.getAffiliateStats(startDate, endDate);
+      }),
+  }),
+
   backgroundJobs: router({
     runAvailabilityCheck: protectedProcedure
       .mutation(async ({ ctx }) => {
@@ -662,32 +703,6 @@ export const appRouter = router({
         
         const results = await runAllJobs();
         return results;
-      }),
-  }),
-
-  affiliate: router({
-    track: publicProcedure
-      .input(z.object({
-        tmdbId: z.number(),
-        mediaType: z.enum(['movie', 'tv']),
-        providerId: z.number(),
-        providerName: z.string(),
-        clickType: z.enum(['rent', 'buy', 'stream']),
-        ipAddress: z.string().optional(),
-        userAgent: z.string().optional(),
-      }))
-      .mutation(async ({ input, ctx }) => {
-        await db.trackAffiliateClick({
-          userId: ctx.user?.id,
-          tmdbId: input.tmdbId,
-          mediaType: input.mediaType,
-          providerId: input.providerId,
-          providerName: input.providerName,
-          clickType: input.clickType,
-          ipAddress: input.ipAddress,
-          userAgent: input.userAgent,
-        });
-        return { success: true };
       }),
   }),
 });

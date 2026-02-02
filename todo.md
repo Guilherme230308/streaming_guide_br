@@ -36,7 +36,7 @@
 
 ## Phase 6: Affiliate & Monetization
 - [ ] Implement affiliate link tracking system
-- [ ] Add affiliate parameters to rent/buy links
+- [x] Add affiliate parameters to rent/buy links
 - [ ] Create analytics for affiliate click tracking
 - [ ] Set up ad placement areas (optional)
 
@@ -163,3 +163,11 @@
 
 ## Navigation Improvements (Round 12)
 - [x] Add "Preços" link to authenticated user navigation menu
+
+## Phase 6 Implementation: Affiliate & Monetization System
+- [x] Create affiliate links configuration for each streaming service
+- [x] Implement click tracking database schema and functions
+- [x] Build backend endpoints for tracking affiliate clicks
+- [x] Update all streaming service buttons to use affiliate links
+- [x] Create analytics dashboard showing click statistics and conversions
+- [x] Add affiliate parameters to rent/buy links

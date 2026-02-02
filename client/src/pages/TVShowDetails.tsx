@@ -64,7 +64,7 @@ export default function TVShowDetails() {
     },
   });
 
-  const trackClick = trpc.affiliate.track.useMutation();
+  const trackClick = trpc.affiliate.trackClick.useMutation();
 
   const markAsWatchedMutation = trpc.viewingHistory.add.useMutation({
     onSuccess: () => {

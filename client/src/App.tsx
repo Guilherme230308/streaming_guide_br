@@ -18,6 +18,7 @@ import MyLists from "./pages/MyLists";
 import ListDetails from "./pages/ListDetails";
 import About from "./pages/About";
 import StreamingPrices from "./pages/StreamingPrices";
+import AffiliateAnalytics from "./pages/AffiliateAnalytics";
 
 function Router() {
   return (
@@ -35,7 +36,8 @@ function Router() {
       <Route path={"/lists"} component={MyLists} />
       <Route path={"/list/:id"} component={ListDetails} />
       <Route path={"/about"} component={About} />
-      <Route path={"/prices"} component={StreamingPrices} />
+      <Route path={"/streaming-prices"} component={StreamingPrices} />
+      <Route path={"/affiliate-analytics"} component={AffiliateAnalytics} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

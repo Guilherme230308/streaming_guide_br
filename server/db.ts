@@ -1,4 +1,4 @@
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, gte, lte } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { 
   InsertUser, 
@@ -694,4 +694,82 @@ export async function getListThumbnail(listId: number): Promise<string | null> {
     .limit(1);
 
   return items.length > 0 ? items[0].posterPath : null;
+}
+
+// ============================================================================
+// Affiliate Analytics
+// ============================================================================
+
+export async function getAffiliateStats(startDate?: Date, endDate?: Date) {
+  const db = await getDb();
+  if (!db) return {
+    totalClicks: 0,
+    clicksByProvider: [],
+    clicksByType: [],
+    clicksByDate: [],
+  };
+
+  let query = db.select().from(affiliateClicks);
+
+  if (startDate && endDate) {
+    query = query.where(
+      and(
+        gte(affiliateClicks.clickedAt, startDate),
+        lte(affiliateClicks.clickedAt, endDate)
+      )
+    ) as any;
+  }
+
+  const clicks = await query;
+
+  // Group by provider
+  const clicksByProvider = clicks.reduce((acc, click) => {
+    const existing = acc.find(item => item.providerId === click.providerId);
+    if (existing) {
+      existing.count++;
+    } else {
+      acc.push({
+        providerId: click.providerId,
+        providerName: click.providerName,
+        count: 1,
+      });
+    }
+    return acc;
+  }, [] as Array<{ providerId: number; providerName: string; count: number }>);
+
+  // Group by click type
+  const clicksByType = clicks.reduce((acc, click) => {
+    const existing = acc.find(item => item.clickType === click.clickType);
+    if (existing) {
+      existing.count++;
+    } else {
+      acc.push({
+        clickType: click.clickType,
+        count: 1,
+      });
+    }
+    return acc;
+  }, [] as Array<{ clickType: string; count: number }>);
+
+  // Group by date (last 30 days)
+  const clicksByDate = clicks.reduce((acc, click) => {
+    const date = new Date(click.clickedAt).toISOString().split('T')[0];
+    const existing = acc.find(item => item.date === date);
+    if (existing) {
+      existing.count++;
+    } else {
+      acc.push({
+        date,
+        count: 1,
+      });
+    }
+    return acc;
+  }, [] as Array<{ date: string; count: number }>);
+
+  return {
+    totalClicks: clicks.length,
+    clicksByProvider: clicksByProvider.sort((a, b) => b.count - a.count),
+    clicksByType: clicksByType.sort((a, b) => b.count - a.count),
+    clicksByDate: clicksByDate.sort((a, b) => a.date.localeCompare(b.date)),
+  };
 }
