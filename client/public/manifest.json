@@ -3,6 +3,7 @@
   "short_name": "Onde Assistir",
   "description": "Descubra onde assistir seus filmes e séries favoritos nos streamings brasileiros",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#0a1929",
   "theme_color": "#0891b2",
@@ -21,19 +22,5 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["entertainment", "lifestyle"],
-  "screenshots": [
-    {
-      "src": "/screenshot-wide.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide"
-    },
-    {
-      "src": "/screenshot-narrow.png",
-      "sizes": "750x1334",
-      "type": "image/png",
-      "form_factor": "narrow"
-    }
-  ]
+  "categories": ["entertainment", "lifestyle"]
 }

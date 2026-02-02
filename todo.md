@@ -280,3 +280,12 @@
 - [ ] Add backend procedure to send push notifications when alert content arrives
 - [ ] Create notification settings page for users
 - [ ] Test push notifications on different browsers
+
+
+## PWA Installation Visibility Fix (Round 22)
+- [x] Investigate why install button/banner not showing on Chrome desktop
+- [x] Check PWA manifest configuration and service worker registration
+- [x] Fix PWA installability criteria (added scope field, removed non-existent screenshots)
+- [ ] Verify beforeinstallprompt event is being captured after fix
+- [ ] Test on Chrome desktop after fixes
+- [x] Document Chrome iOS limitation (no PWA support)
