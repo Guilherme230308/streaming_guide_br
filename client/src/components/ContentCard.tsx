@@ -18,6 +18,7 @@ import { AddToListDialog } from "@/components/AddToListDialog";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { SwipeableCard } from "@/components/SwipeableCard";
+import { deduplicateProviders } from "@/lib/providerUtils";
 
 interface ContentCardProps {
   id: number;
@@ -183,7 +184,7 @@ export function ContentCard({
               {/* Streaming Provider Icons */}
               {providers && providers.length > 0 && (
                 <div className="flex items-center gap-1 mt-1 flex-wrap">
-                  {providers.slice(0, 4).map((provider) => (
+                  {deduplicateProviders(providers).slice(0, 4).map((provider) => (
                     <img
                       key={provider.provider_id}
                       src={`https://image.tmdb.org/t/p/w92${provider.logo_path}`}
@@ -193,8 +194,8 @@ export function ContentCard({
                       loading="lazy"
                     />
                   ))}
-                  {providers.length > 4 && (
-                    <span className="text-xs text-muted-foreground font-medium">+{providers.length - 4}</span>
+                  {deduplicateProviders(providers).length > 4 && (
+                    <span className="text-xs text-muted-foreground font-medium">+{deduplicateProviders(providers).length - 4}</span>
                   )}
                 </div>
               )}
