@@ -14,6 +14,8 @@ import Alerts from "./pages/Alerts";
 import Upcoming from "./pages/Upcoming";
 import Genres from "./pages/Genres";
 import History from "./pages/History";
+import MyLists from "./pages/MyLists";
+import ListDetails from "./pages/ListDetails";
 
 function Router() {
   return (
@@ -28,6 +30,8 @@ function Router() {
       <Route path={"/upcoming"} component={Upcoming} />
       <Route path={"/genres"} component={Genres} />
       <Route path={"/history"} component={History} />
+      <Route path={"/lists"} component={MyLists} />
+      <Route path={"/list/:id"} component={ListDetails} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

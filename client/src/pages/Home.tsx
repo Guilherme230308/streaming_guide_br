@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, Film, Tv, Bookmark, Bell, Calendar, Grid3x3, Clock, Check } from "lucide-react";
+import { Search, Film, Tv, Bookmark, Bell, Calendar, Grid3x3, Clock, Check, List } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -153,6 +153,12 @@ export default function Home() {
                     <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3">
                       <Bookmark className="h-4 w-4 flex-shrink-0" />
                       <span className="hidden sm:inline text-sm">Minha Lista</span>
+                    </Button>
+                  </Link>
+                  <Link href="/lists">
+                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3">
+                      <List className="h-4 w-4 flex-shrink-0" />
+                      <span className="hidden lg:inline text-sm">Listas</span>
                     </Button>
                   </Link>
                   <Link href="/subscriptions">

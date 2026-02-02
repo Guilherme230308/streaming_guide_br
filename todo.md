@@ -106,3 +106,11 @@
 - [x] Use movie posters for movie genre cards (not series)
 - [x] Use TV series posters for TV genre cards (not movies)
 - [x] Ensure no repeated images across genre cards
+
+## New Feature Requests (Round 7)
+- [x] Create list selection dialog when clicking "Add to list" button
+- [x] Show existing lists with checkboxes to add/remove content
+- [x] Add "Create New List" button in dialog
+- [x] Create new list form with name, description, and visibility options
+- [x] Create lists management page to view and organize all custom lists
+- [x] Update navigation to access custom lists

@@ -1,4 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +19,7 @@ import { Link, useParams, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
+import { AddToListDialog } from "@/components/AddToListDialog";
 import { handleProviderClick as handleDeepLink } from "@/lib/deepLinks";
 import { RatingStars } from "@/components/RatingStars";
 import { ReviewDialog } from "@/components/ReviewDialog";
@@ -67,6 +69,8 @@ export default function MovieDetails() {
     { tmdbId: movieId, mediaType: "movie" },
     { enabled: isAuthenticated && movieId > 0 }
   );
+
+  const [showListDialog, setShowListDialog] = useState(false);
 
   const utils = trpc.useUtils();
   
@@ -292,24 +296,27 @@ export default function MovieDetails() {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <Button
-                  size="lg"
-                  variant={isInWatchlist ? "outline" : "default"}
-                  onClick={handleWatchlistToggle}
-                  className="gap-2"
-                >
-                  {isInWatchlist ? (
-                    <>
-                      <BookmarkCheck className="h-5 w-5" />
-                      Na minha lista
-                    </>
-                  ) : (
-                    <>
-                      <Bookmark className="h-5 w-5" />
-                      Adicionar à lista
-                    </>
-                  )}
-                </Button>
+                {isAuthenticated ? (
+                  <Button
+                    size="lg"
+                    variant="default"
+                    onClick={() => setShowListDialog(true)}
+                    className="gap-2"
+                  >
+                    <Bookmark className="h-5 w-5" />
+                    Adicionar à lista
+                  </Button>
+                ) : (
+                  <Button
+                    size="lg"
+                    variant="default"
+                    onClick={() => window.location.href = getLoginUrl()}
+                    className="gap-2"
+                  >
+                    <Bookmark className="h-5 w-5" />
+                    Adicionar à lista
+                  </Button>
+                )}
 
                 {isAuthenticated ? (
                   <Button
@@ -652,6 +659,19 @@ export default function MovieDetails() {
           </div>
         </div>
       </footer>
+
+      {/* Add to List Dialog */}
+      {movie && (
+        <AddToListDialog
+          open={showListDialog}
+          onOpenChange={setShowListDialog}
+          tmdbId={movieId}
+          mediaType="movie"
+          title={movie.title}
+          posterPath={movie.poster_path}
+          releaseDate={movie.release_date}
+        />
+      )}
     </div>
   );
 }

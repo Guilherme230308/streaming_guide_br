@@ -25,7 +25,13 @@ import {
   Review,
   viewingHistory,
   InsertViewingHistory,
-  ViewingHistory
+  ViewingHistory,
+  customLists,
+  InsertCustomList,
+  CustomList,
+  customListItems,
+  InsertCustomListItem,
+  CustomListItem
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -513,4 +519,142 @@ export async function getUserGenrePreferences(userId: number): Promise<number[]>
     console.error("[Database] Failed to get genre preferences:", error);
     return [];
   }
+}
+
+// Custom Lists functions
+export async function createCustomList(data: InsertCustomList): Promise<CustomList> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(customLists).values(data);
+  const insertedId = Number(result[0].insertId);
+  
+  const [list] = await db.select().from(customLists).where(eq(customLists.id, insertedId));
+  return list;
+}
+
+export async function getUserCustomLists(userId: number): Promise<Array<CustomList & { itemCount: number }>> {
+  const db = await getDb();
+  if (!db) return [];
+
+  const lists = await db
+    .select()
+    .from(customLists)
+    .where(eq(customLists.userId, userId))
+    .orderBy(desc(customLists.createdAt));
+
+  // Get item counts for each list
+  const listsWithCounts = await Promise.all(
+    lists.map(async (list) => {
+      const items = await db
+        .select()
+        .from(customListItems)
+        .where(eq(customListItems.listId, list.id));
+      
+      return {
+        ...list,
+        itemCount: items.length
+      };
+    })
+  );
+
+  return listsWithCounts;
+}
+
+export async function getCustomListById(listId: number): Promise<CustomList | null> {
+  const db = await getDb();
+  if (!db) return null;
+
+  const [list] = await db
+    .select()
+    .from(customLists)
+    .where(eq(customLists.id, listId))
+    .limit(1);
+
+  return list || null;
+}
+
+export async function updateCustomList(listId: number, userId: number, data: Partial<InsertCustomList>): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db
+    .update(customLists)
+    .set({ ...data, updatedAt: new Date() })
+    .where(and(
+      eq(customLists.id, listId),
+      eq(customLists.userId, userId)
+    ));
+}
+
+export async function deleteCustomList(listId: number, userId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Delete all items in the list first
+  await db.delete(customListItems).where(eq(customListItems.listId, listId));
+  
+  // Delete the list
+  await db.delete(customLists).where(and(
+    eq(customLists.id, listId),
+    eq(customLists.userId, userId)
+  ));
+}
+
+export async function addItemToCustomList(data: InsertCustomListItem): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.insert(customListItems).values(data).onDuplicateKeyUpdate({
+    set: { addedAt: new Date() }
+  });
+}
+
+export async function removeItemFromCustomList(listId: number, tmdbId: number, mediaType: 'movie' | 'tv'): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.delete(customListItems).where(and(
+    eq(customListItems.listId, listId),
+    eq(customListItems.tmdbId, tmdbId),
+    eq(customListItems.mediaType, mediaType)
+  ));
+}
+
+export async function getCustomListItems(listId: number): Promise<CustomListItem[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(customListItems)
+    .where(eq(customListItems.listId, listId))
+    .orderBy(desc(customListItems.addedAt));
+}
+
+export async function getItemCustomLists(userId: number, tmdbId: number, mediaType: 'movie' | 'tv'): Promise<CustomList[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  // Get all user's lists that contain this item
+  const items = await db
+    .select()
+    .from(customListItems)
+    .where(and(
+      eq(customListItems.tmdbId, tmdbId),
+      eq(customListItems.mediaType, mediaType)
+    ));
+
+  if (items.length === 0) return [];
+
+  const listIds = items.map(item => item.listId);
+  
+  const lists = await db
+    .select()
+    .from(customLists)
+    .where(and(
+      eq(customLists.userId, userId)
+    ));
+
+  return lists.filter(list => listIds.includes(list.id));
 }

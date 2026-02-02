@@ -537,6 +537,101 @@ export const appRouter = router({
       }),
   }),
 
+  customLists: router({
+    create: protectedProcedure
+      .input(z.object({
+        name: z.string().min(1).max(255),
+        description: z.string().optional(),
+        isPublic: z.boolean().default(false),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const list = await db.createCustomList({
+          userId: ctx.user.id,
+          name: input.name,
+          description: input.description,
+          isPublic: input.isPublic,
+        });
+        return list;
+      }),
+
+    getUserLists: protectedProcedure
+      .query(async ({ ctx }) => {
+        return await db.getUserCustomLists(ctx.user.id);
+      }),
+
+    getListById: publicProcedure
+      .input(z.object({ listId: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getCustomListById(input.listId);
+      }),
+
+    getListItems: publicProcedure
+      .input(z.object({ listId: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getCustomListItems(input.listId);
+      }),
+
+    getItemLists: protectedProcedure
+      .input(z.object({
+        tmdbId: z.number(),
+        mediaType: z.enum(['movie', 'tv']),
+      }))
+      .query(async ({ input, ctx }) => {
+        return await db.getItemCustomLists(ctx.user.id, input.tmdbId, input.mediaType);
+      }),
+
+    addItem: protectedProcedure
+      .input(z.object({
+        listId: z.number(),
+        tmdbId: z.number(),
+        mediaType: z.enum(['movie', 'tv']),
+        title: z.string(),
+        posterPath: z.string().nullable(),
+        releaseDate: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.addItemToCustomList({
+          listId: input.listId,
+          tmdbId: input.tmdbId,
+          mediaType: input.mediaType,
+          title: input.title,
+          posterPath: input.posterPath,
+        });
+        return { success: true };
+      }),
+
+    removeItem: protectedProcedure
+      .input(z.object({
+        listId: z.number(),
+        tmdbId: z.number(),
+        mediaType: z.enum(['movie', 'tv']),
+      }))
+      .mutation(async ({ input }) => {
+        await db.removeItemFromCustomList(input.listId, input.tmdbId, input.mediaType);
+        return { success: true };
+      }),
+
+    update: protectedProcedure
+      .input(z.object({
+        listId: z.number(),
+        name: z.string().min(1).max(255).optional(),
+        description: z.string().optional(),
+        isPublic: z.boolean().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const { listId, ...data } = input;
+        await db.updateCustomList(listId, ctx.user.id, data);
+        return { success: true };
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ listId: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        await db.deleteCustomList(input.listId, ctx.user.id);
+        return { success: true };
+      }),
+  }),
+
   affiliate: router({
     track: publicProcedure
       .input(z.object({
