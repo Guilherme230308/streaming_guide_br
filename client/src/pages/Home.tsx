@@ -273,32 +273,34 @@ export default function Home() {
             </p>
 
             <div ref={searchRef} className="relative max-w-2xl mx-auto" data-tour="search">
-              <form onSubmit={handleSearch} className="relative flex gap-2">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input
-                  type="text"
-                  placeholder="Buscar filmes ou séries..."
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    setShowSuggestions(true);
-                  }}
-                  onFocus={() => setShowSuggestions(true)}
-                  onKeyDown={handleKeyDown}
-                  className="pl-12 h-14 text-lg bg-card border-border"
-                />
-                <Button
-                  type="submit"
-                  className="absolute right-2 top-1/2 -translate-y-1/2"
-                  size="sm"
-                >
-                  <Search className="h-4 w-4" />
-                </Button>
+              <div className="flex gap-2">
+                <form onSubmit={handleSearch} className="relative flex-1">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder="Buscar filmes ou séries..."
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setShowSuggestions(true);
+                    }}
+                    onFocus={() => setShowSuggestions(true)}
+                    onKeyDown={handleKeyDown}
+                    className="pl-12 pr-12 h-14 text-lg bg-card border-border"
+                  />
+                  <Button
+                    type="submit"
+                    className="absolute right-2 top-1/2 -translate-y-1/2"
+                    size="sm"
+                  >
+                    <Search className="h-4 w-4" />
+                  </Button>
+                </form>
                 <SearchFilters
                   filters={searchFilters}
                   onFiltersChange={setSearchFilters}
                 />
-              </form>
+              </div>
 
               {/* Active Filters Display */}
               {(searchFilters.genres.length > 0 || 
@@ -472,10 +474,39 @@ export default function Home() {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {trendingMovies?.results
               .filter((movie: any) => {
+                // Apply genre filter
+                if (searchFilters.genres.length > 0) {
+                  const hasMatchingGenre = movie.genre_ids?.some((genreId: number) =>
+                    searchFilters.genres.includes(String(genreId))
+                  );
+                  if (!hasMatchingGenre) return false;
+                }
+
+                // Apply year filter
+                if (searchFilters.yearMin || searchFilters.yearMax) {
+                  const year = movie.release_date ? new Date(movie.release_date).getFullYear() : 0;
+                  if (searchFilters.yearMin && year < searchFilters.yearMin) return false;
+                  if (searchFilters.yearMax && year > searchFilters.yearMax) return false;
+                }
+
+                // Apply rating filter
+                if (searchFilters.ratingMin !== undefined && searchFilters.ratingMin > 0) {
+                  if (movie.vote_average < searchFilters.ratingMin) return false;
+                }
+
+                // Apply provider filter
+                if (searchFilters.providers.length > 0) {
+                  const hasMatchingProvider = movie.providers?.some((provider: any) =>
+                    searchFilters.providers.includes(String(provider.provider_id))
+                  );
+                  if (!hasMatchingProvider) return false;
+                }
+
                 // Apply streaming filter if enabled
                 if (searchFilters.streamingOnly) {
                   return movie.providers && movie.providers.length > 0;
                 }
+
                 return true;
               })
               .slice(0, 12)
@@ -506,10 +537,39 @@ export default function Home() {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {trendingTV?.results
               .filter((show: any) => {
+                // Apply genre filter
+                if (searchFilters.genres.length > 0) {
+                  const hasMatchingGenre = show.genre_ids?.some((genreId: number) =>
+                    searchFilters.genres.includes(String(genreId))
+                  );
+                  if (!hasMatchingGenre) return false;
+                }
+
+                // Apply year filter
+                if (searchFilters.yearMin || searchFilters.yearMax) {
+                  const year = show.first_air_date ? new Date(show.first_air_date).getFullYear() : 0;
+                  if (searchFilters.yearMin && year < searchFilters.yearMin) return false;
+                  if (searchFilters.yearMax && year > searchFilters.yearMax) return false;
+                }
+
+                // Apply rating filter
+                if (searchFilters.ratingMin !== undefined && searchFilters.ratingMin > 0) {
+                  if (show.vote_average < searchFilters.ratingMin) return false;
+                }
+
+                // Apply provider filter
+                if (searchFilters.providers.length > 0) {
+                  const hasMatchingProvider = show.providers?.some((provider: any) =>
+                    searchFilters.providers.includes(String(provider.provider_id))
+                  );
+                  if (!hasMatchingProvider) return false;
+                }
+
                 // Apply streaming filter if enabled
                 if (searchFilters.streamingOnly) {
                   return show.providers && show.providers.length > 0;
                 }
+
                 return true;
               })
               .slice(0, 12)

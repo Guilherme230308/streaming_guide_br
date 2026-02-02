@@ -373,3 +373,8 @@
 - [x] Add active filters display below search bar (badges with X to remove)
 - [x] Update trending content immediately when "Aplicar Filtros" is clicked (already implemented)
 - [x] Test filter application and content updates (icon-only button visible with badge)
+
+## Filter Button Layout & Application Fix (Round 37)
+- [x] Fix button layout - search and filter buttons should be side-by-side horizontally
+- [x] Implement filter application - clicking "Aplicar Filtros" should update "Em Alta" content (all filters: genre, year, rating, provider, streaming)
+- [x] Test filter application on trending movies and TV shows (buttons side-by-side, filters working)
