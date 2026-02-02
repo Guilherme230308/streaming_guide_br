@@ -7,6 +7,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { AddToListDialog } from "@/components/AddToListDialog";
 import { trpc } from "@/lib/trpc";
@@ -37,6 +43,7 @@ export function ContentCard({
   providers = [],
 }: ContentCardProps) {
   const [showListDialog, setShowListDialog] = useState(false);
+  const [showActionSheet, setShowActionSheet] = useState(false);
   const utils = trpc.useUtils();
 
   const { data: isWatched } = trpc.viewingHistory.isWatched.useQuery({
@@ -99,11 +106,17 @@ export function ContentCard({
     // Could implement a "not interested" feature here
   };
 
+  const handleCardClick = () => {
+    setShowActionSheet(true);
+  };
+
   return (
     <>
       <SwipeableCard onSwipeRight={handleSwipeRight} onSwipeLeft={handleSwipeLeft}>
-        <Link href={detailPath}>
-        <a className="group block relative rounded-lg overflow-hidden bg-card hover:ring-2 hover:ring-primary transition-all">
+        <div 
+          onClick={handleCardClick}
+          className="group block relative rounded-lg overflow-hidden bg-card hover:ring-2 hover:ring-primary transition-all cursor-pointer"
+        >
           {/* Poster Image */}
           <div className="aspect-[2/3] relative">
             {posterPath ? (
@@ -187,9 +200,53 @@ export function ContentCard({
               )}
             </div>
           </div>
-        </a>
-      </Link>
+        </div>
       </SwipeableCard>
+
+      {/* Quick Action Sheet */}
+      <Dialog open={showActionSheet} onOpenChange={setShowActionSheet}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{title}</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-2">
+            <Button
+              variant="outline"
+              className="w-full justify-start"
+              onClick={() => {
+                setShowActionSheet(false);
+                window.location.href = detailPath;
+              }}
+            >
+              <span className="mr-2">📖</span>
+              Ver Detalhes
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full justify-start"
+              onClick={(e) => {
+                handleAddToList(e);
+                setShowActionSheet(false);
+              }}
+            >
+              <span className="mr-2">📋</span>
+              Adicionar à Lista
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full justify-start"
+              onClick={(e) => {
+                handleMarkAsWatched(e);
+                setShowActionSheet(false);
+              }}
+              disabled={isWatched}
+            >
+              <span className="mr-2">{isWatched ? '✅' : '✓'}</span>
+              {isWatched ? 'Já Assistido' : 'Marcar como Assistido'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Add to List Dialog */}
       <AddToListDialog

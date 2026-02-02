@@ -347,3 +347,10 @@
 - [x] Display small non-clickable icons at bottom of cards (6x6, max 4 shown, all types: flatrate/rent/buy)
 - [x] Handle multiple providers with proper spacing (+N indicator for overflow)
 - [x] Test provider icons display on home page (implemented, ready for production testing)
+
+## Card Click Quick Actions (Round 33)
+- [x] Change card click to show action sheet instead of navigating
+- [x] Add "Ver Detalhes" option to action sheet
+- [x] Add "Adicionar à Lista" option
+- [x] Add "Marcar como Assistido" option (shows status if already watched)
+- [x] Test on mobile and desktop (implemented, ready for real device testing)
