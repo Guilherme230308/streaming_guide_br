@@ -32,6 +32,11 @@ export function ContentCard({
   const [showListDialog, setShowListDialog] = useState(false);
   const utils = trpc.useUtils();
 
+  const { data: isWatched } = trpc.viewingHistory.isWatched.useQuery({
+    tmdbId: id,
+    mediaType,
+  });
+
   const markAsWatchedMutation = trpc.viewingHistory.add.useMutation({
     onSuccess: () => {
       toast.success("Marcado como assistido!");
@@ -99,9 +104,9 @@ export function ContentCard({
                     <Bookmark className="h-4 w-4 mr-2" />
                     Adicionar à lista
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleMarkAsWatched}>
+                  <DropdownMenuItem onClick={handleMarkAsWatched} disabled={isWatched}>
                     <Check className="h-4 w-4 mr-2" />
-                    Marcar como assistido
+                    {isWatched ? "Assistido" : "Marcar como assistido"}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

@@ -24,7 +24,7 @@ const GENRE_IMAGES: Record<string, string> = {
   "80": "https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg", // Crime - The Godfather
   "99": "https://image.tmdb.org/t/p/w500/yDHYTfA3R0jFYba16jBB1ef8oIt.jpg", // Documentary
   "18": "https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg", // Drama - Forrest Gump
-  "10751": "https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg", // Family
+  "10751": "https://image.tmdb.org/t/p/w500/qmcwOIMfE5ljkPnKRVX4mYHHDRm.jpg", // Family - The Lion King
   "14": "https://image.tmdb.org/t/p/w500/wuMc08IPKEatf9rnMNXvIDxqP4W.jpg", // Fantasy - Harry Potter
   "36": "https://image.tmdb.org/t/p/w500/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg", // History
   "27": "https://image.tmdb.org/t/p/w500/db32LaOibwEliAmSL2jjDF6oDdj.jpg", // Horror - It
@@ -32,9 +32,9 @@ const GENRE_IMAGES: Record<string, string> = {
   "9648": "https://image.tmdb.org/t/p/w500/iuFNMS8U5cb6xfzi51Dbkovj7vM.jpg", // Mystery - Knives Out
   "10749": "https://image.tmdb.org/t/p/w500/kEl2t3OhXc3Zb9FBh1AuYzRTgZp.jpg", // Romance - The Notebook
   "878": "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg", // Sci-Fi - Interstellar
-  "10770": "https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg", // TV Movie
-  "53": "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg", // Thriller - Inception
-  "10752": "https://image.tmdb.org/t/p/w500/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg", // War
+  "10770": "https://image.tmdb.org/t/p/w500/nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg", // TV Movie - High School Musical
+  "53": "https://image.tmdb.org/t/p/w500/vzmL6fP7aPKNKPRTFnZmiUfciyV.jpg", // Thriller - Inception
+  "10752": "https://image.tmdb.org/t/p/w500/yFuKvT4Vm3sKHdFY4eG6I4ldAnn.jpg", // War - Saving Private Ryan
   "37": "https://image.tmdb.org/t/p/w500/vfrQk5IPloGg1v9Rzbh2Eg3VGyM.jpg", // Western
   // TV Series (different genre IDs from movies)
   "10759": "https://image.tmdb.org/t/p/w500/4EYPN5mVIhKLfxGruy7Dy41dTVn.jpg", // Action & Adventure - Breaking Bad

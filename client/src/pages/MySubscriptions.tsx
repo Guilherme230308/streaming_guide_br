@@ -10,7 +10,7 @@ import { toast } from "sonner";
 
 // Popular streaming providers in Brazil
 const BRAZILIAN_PROVIDERS = [
-  { id: 8, name: "Netflix", logo: "/emthp0a1h0v6itkgswcgpd0cqT.jpg" },
+  { id: 8, name: "Netflix", logo: "/pbpMk2JmcoNnQwx5JGpXngfoWtp.jpg" },
   { id: 119, name: "Amazon Prime Video", logo: "/pvske1MyAoymrs5bguRfVqYiM9a.jpg" },
   { id: 1899, name: "HBO Max", logo: "/jbe4gVSfRlbPTdESXhEKpornsfu.jpg" },
   { id: 337, name: "Disney Plus", logo: "/8z7rC8uIDaTM91X0ZfkRf04ydj2.jpg" },

@@ -681,3 +681,17 @@ export async function getItemCustomLists(userId: number, tmdbId: number, mediaTy
 
   return lists.filter(list => listIds.includes(list.id));
 }
+
+export async function getListThumbnail(listId: number): Promise<string | null> {
+  const db = await getDb();
+  if (!db) return null;
+
+  const items = await db
+    .select()
+    .from(customListItems)
+    .where(eq(customListItems.listId, listId))
+    .orderBy(desc(customListItems.addedAt))
+    .limit(1);
+
+  return items.length > 0 ? items[0].posterPath : null;
+}

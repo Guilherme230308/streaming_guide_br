@@ -170,8 +170,16 @@ export default function MyLists() {
               <Card key={list.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <CardContent className="p-0">
                   <Link href={`/list/${list.id}`}>
-                    <div className="aspect-video bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center cursor-pointer hover:from-primary/30 hover:to-primary/10 transition-colors">
-                      <Film className="h-16 w-16 text-primary/40" />
+                    <div className="aspect-video bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center cursor-pointer hover:from-primary/30 hover:to-primary/10 transition-colors relative overflow-hidden">
+                      {list.thumbnail ? (
+                        <img
+                          src={getImageUrl(list.thumbnail)}
+                          alt={list.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Film className="h-16 w-16 text-primary/40" />
+                      )}
                     </div>
                   </Link>
                   <div className="p-4">

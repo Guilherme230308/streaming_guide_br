@@ -148,3 +148,15 @@
 - [x] Add "Add to List" and "Mark as Watched" options in dropdown menu
 - [x] Replace all movie/TV card implementations across pages (Home, Search, Genres, Lists, etc)
 - [x] Ensure menu appears on hover/click on card corner
+
+## New Feature Requests (Round 10)
+- [x] Add advanced search filters: year range selector
+- [x] Add advanced search filters: minimum TMDB rating slider
+- [x] Add advanced search filters: multiple genre selection
+- [x] Update search backend to support new filter parameters
+- [x] Add list thumbnails using first item's poster image
+
+## Bug Fixes (Round 11)
+- [x] Fix Netflix logo not loading in Subscriptions page
+- [x] Remove duplicate genre images in Genres page
+- [x] Update ContentCard menu label to show "Assistido" when content is already watched

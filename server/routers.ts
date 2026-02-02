@@ -557,7 +557,15 @@ export const appRouter = router({
 
     getUserLists: protectedProcedure
       .query(async ({ ctx }) => {
-        return await db.getUserCustomLists(ctx.user.id);
+        const lists = await db.getUserCustomLists(ctx.user.id);
+        // Add thumbnail for each list
+        const listsWithThumbnails = await Promise.all(
+          lists.map(async (list) => ({
+            ...list,
+            thumbnail: await db.getListThumbnail(list.id),
+          }))
+        );
+        return listsWithThumbnails;
       }),
 
     getListById: publicProcedure

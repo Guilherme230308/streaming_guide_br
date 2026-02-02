@@ -10,6 +10,11 @@ import { Link, useLocation, useSearch } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
+import { SlidersHorizontal } from "lucide-react";
+import { ALL_GENRES } from "@/lib/genres";
 
 export default function Search() {
   const searchParams = useSearch();
@@ -18,6 +23,9 @@ export default function Search() {
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
   const [filterBySubscriptions, setFilterBySubscriptions] = useState(false);
+  const [yearRange, setYearRange] = useState<[number, number]>([1900, new Date().getFullYear()]);
+  const [minRating, setMinRating] = useState<number>(0);
+  const [selectedGenres, setSelectedGenres] = useState<number[]>([]);
   const { isAuthenticated } = useAuth();
 
   // Get user subscriptions
@@ -45,7 +53,33 @@ export default function Search() {
     { enabled: debouncedQuery.length > 0 && filterBySubscriptions && isAuthenticated }
   );
 
-  const displayResults = filterBySubscriptions && isAuthenticated ? filteredSearchResults : searchResults;
+  // Apply client-side filters
+  const applyFilters = (results: any) => {
+    if (!results?.results) return results;
+
+    const filtered = results.results.filter((item: any) => {
+      // Year filter
+      const year = item.release_date ? new Date(item.release_date).getFullYear() : 
+                   item.first_air_date ? new Date(item.first_air_date).getFullYear() : null;
+      if (year && (year < yearRange[0] || year > yearRange[1])) return false;
+
+      // Rating filter
+      if (minRating > 0 && item.vote_average < minRating) return false;
+
+      // Genre filter
+      if (selectedGenres.length > 0) {
+        const itemGenres = item.genre_ids || [];
+        if (!selectedGenres.some(genreId => itemGenres.includes(genreId))) return false;
+      }
+
+      return true;
+    });
+
+    return { ...results, results: filtered };
+  };
+
+  const rawResults = filterBySubscriptions && isAuthenticated ? filteredSearchResults : searchResults;
+  const displayResults = applyFilters(rawResults);
   const displayLoading = filterBySubscriptions && isAuthenticated ? isLoadingFiltered : isLoading;
 
   const handleSearch = (e: React.FormEvent) => {
@@ -98,19 +132,115 @@ export default function Search() {
             </Button>
           </div>
 
-          {/* Subscription Filter */}
-          {isAuthenticated && (
-            <div className="flex items-center gap-2 mt-4">
-              <Switch
-                id="subscription-filter"
-                checked={filterBySubscriptions}
-                onCheckedChange={setFilterBySubscriptions}
-              />
-              <Label htmlFor="subscription-filter" className="text-sm text-muted-foreground cursor-pointer">
-                Mostrar apenas conteúdo disponível nas minhas assinaturas
-              </Label>
-            </div>
-          )}
+          {/* Filters Row */}
+          <div className="flex flex-wrap items-center gap-4 mt-4">
+            {/* Subscription Filter */}
+            {isAuthenticated && (
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="subscription-filter"
+                  checked={filterBySubscriptions}
+                  onCheckedChange={setFilterBySubscriptions}
+                />
+                <Label htmlFor="subscription-filter" className="text-sm text-muted-foreground cursor-pointer">
+                  Apenas minhas assinaturas
+                </Label>
+              </div>
+            )}
+
+            {/* Advanced Filters Popover */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <SlidersHorizontal className="h-4 w-4" />
+                  Filtros Avançados
+                  {(minRating > 0 || selectedGenres.length > 0 || yearRange[0] > 1900 || yearRange[1] < new Date().getFullYear()) && (
+                    <Badge variant="secondary" className="ml-1">
+                      {[minRating > 0 ? 1 : 0, selectedGenres.length > 0 ? 1 : 0, (yearRange[0] > 1900 || yearRange[1] < new Date().getFullYear()) ? 1 : 0].filter(Boolean).length}
+                    </Badge>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80" align="start">
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="font-medium mb-3">Ano de Lançamento</h4>
+                    <div className="space-y-2">
+                      <Slider
+                        min={1900}
+                        max={new Date().getFullYear()}
+                        step={1}
+                        value={yearRange}
+                        onValueChange={(value) => setYearRange(value as [number, number])}
+                        className="w-full"
+                      />
+                      <div className="flex justify-between text-sm text-muted-foreground">
+                        <span>{yearRange[0]}</span>
+                        <span>{yearRange[1]}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-medium mb-3">Nota Mínima (TMDB)</h4>
+                    <div className="space-y-2">
+                      <Slider
+                        min={0}
+                        max={10}
+                        step={0.5}
+                        value={[minRating]}
+                        onValueChange={(value) => setMinRating(value[0])}
+                        className="w-full"
+                      />
+                      <div className="text-sm text-muted-foreground text-center">
+                        {minRating === 0 ? "Todas" : `${minRating.toFixed(1)}+ ⭐`}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-medium mb-3">Gêneros</h4>
+                    <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto">
+                      {ALL_GENRES.map((genre) => (
+                        <div key={genre.id} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`genre-${genre.id}`}
+                            checked={selectedGenres.includes(genre.id)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setSelectedGenres([...selectedGenres, genre.id]);
+                              } else {
+                                setSelectedGenres(selectedGenres.filter(id => id !== genre.id));
+                              }
+                            }}
+                          />
+                          <label
+                            htmlFor={`genre-${genre.id}`}
+                            className="text-sm cursor-pointer"
+                          >
+                            {genre.name}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => {
+                      setYearRange([1900, new Date().getFullYear()]);
+                      setMinRating(0);
+                      setSelectedGenres([]);
+                    }}
+                  >
+                    Limpar Filtros
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
       </header>
 
