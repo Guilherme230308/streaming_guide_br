@@ -182,6 +182,7 @@ const plugins = [
     },
     workbox: {
       globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
+      navigateFallback: null, // Disable navigate fallback to prevent intercepting API routes
       runtimeCaching: [
         {
           urlPattern: /^https:\/\/api\.themoviedb\.org\/.*/i,

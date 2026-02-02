@@ -505,6 +505,40 @@ export async function getUserViewingHistory(userId: number): Promise<ViewingHist
   }
 }
 
+export async function getWatchHistory(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  try {
+    // Get viewing history with ratings
+    const history = await db
+      .select({
+        tmdbId: viewingHistory.tmdbId,
+        mediaType: viewingHistory.mediaType,
+        genreIds: viewingHistory.genreIds,
+        watchedAt: viewingHistory.watchedAt,
+        rating: ratings.rating,
+      })
+      .from(viewingHistory)
+      .leftJoin(
+        ratings,
+        and(
+          eq(viewingHistory.userId, ratings.userId),
+          eq(viewingHistory.tmdbId, ratings.tmdbId),
+          eq(viewingHistory.mediaType, ratings.mediaType)
+        )
+      )
+      .where(eq(viewingHistory.userId, userId))
+      .orderBy(desc(viewingHistory.watchedAt))
+      .limit(50);
+
+    return history;
+  } catch (error) {
+    console.error("[Database] Failed to get watch history:", error);
+    return [];
+  }
+}
+
 export async function getUserGenrePreferences(userId: number): Promise<number[]> {
   const db = await getDb();
   if (!db) return [];

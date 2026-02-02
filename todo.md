@@ -235,3 +235,19 @@
 - [x] Check if catch-all route is still being applied incorrectly
 - [x] Verify API routes are registered before static file serving
 - [x] Implement regex-based route exclusion for /api/ paths
+
+
+## PWA Service Worker Fix (Round 20 - URGENT)
+- [x] Fix service worker to exclude /api/ routes from caching (disabled navigateFallback)
+- [x] Ensure OAuth callback works correctly with PWA installed
+- [ ] Test login flow after PWA service worker fix and republish
+
+## Personalized Recommendations System (Round 20)
+- [x] Design recommendation algorithm based on watch history and ratings
+- [x] Implement genre similarity scoring
+- [x] Weight recommendations by user ratings (prefer genres from highly-rated content)
+- [x] Create backend procedure to generate personalized recommendations
+- [x] Build RecommendationsSection component for Home page
+- [x] Add genre-based explanation text showing why content is recommended
+- [x] Show fallback to trending content for new users
+- [x] Integrate PersonalizedRecommendations into Home page (logged-in users only)

@@ -15,6 +15,7 @@ import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { PWAWelcome } from "@/components/PWAWelcome";
 import { SearchFilters, type SearchFiltersType } from "@/components/SearchFilters";
+import { PersonalizedRecommendations } from "@/components/PersonalizedRecommendations";
 
 const RECENT_SEARCHES_KEY = "recentSearches";
 const MAX_RECENT_SEARCHES = 5;
@@ -379,6 +380,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Personalized Recommendations (only for logged-in users) */}
+      {user && <PersonalizedRecommendations />}
 
       {/* Trending Movies */}
       <section className="py-12">

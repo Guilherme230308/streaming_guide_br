@@ -298,6 +298,95 @@ export const appRouter = router({
         }
       }),
 
+    getPersonalizedRecommendations: protectedProcedure
+      .input(z.object({
+        limit: z.number().default(20),
+      }))
+      .query(async ({ input, ctx }) => {
+        const userId = ctx.user!.id;
+        
+        // Get user's watch history with ratings
+        const watchHistory = await db.getWatchHistory(userId);
+        
+        // If no history, return trending content
+        if (watchHistory.length === 0) {
+          const trendingMovies = await tmdb.getTrendingMovies('week');
+          const trendingTV = await tmdb.getTrendingTVShows('week');
+          return {
+            results: [...trendingMovies.results.slice(0, 10), ...trendingTV.results.slice(0, 10)],
+            reason: 'trending',
+          };
+        }
+
+        // Calculate genre preferences based on watch history and ratings
+        const genreScores: Record<number, { score: number; count: number }> = {};
+        
+        for (const item of watchHistory) {
+          const weight = item.rating ? item.rating / 5 : 1; // Normalize rating to 0-2 scale
+          const genreIds = item.genreIds ? JSON.parse(item.genreIds) : [];
+          
+          for (const genreId of genreIds) {
+            if (!genreScores[genreId]) {
+              genreScores[genreId] = { score: 0, count: 0 };
+            }
+            genreScores[genreId].score += weight;
+            genreScores[genreId].count += 1;
+          }
+        }
+
+        // Get top 3 preferred genres
+        const topGenres = Object.entries(genreScores)
+          .sort(([, a], [, b]) => b.score - a.score)
+          .slice(0, 3)
+          .map(([genreId]) => parseInt(genreId));
+
+        if (topGenres.length === 0) {
+          const trendingMovies = await tmdb.getTrendingMovies('week');
+          return {
+            results: trendingMovies.results.slice(0, input.limit),
+            reason: 'trending',
+          };
+        }
+
+        // Get content from preferred genres
+        const recommendations: any[] = [];
+        const seenIds = new Set(watchHistory.map(h => `${h.mediaType}-${h.tmdbId}`));
+
+        for (const genreId of topGenres) {
+          const movieResults = await tmdb.discoverMoviesByGenre(genreId, 1);
+          const tvResults = await tmdb.discoverTVShowsByGenre(genreId, 1);
+          
+          // Add movies
+          for (const movie of movieResults.results) {
+            const key = `movie-${movie.id}`;
+            if (!seenIds.has(key) && recommendations.length < input.limit) {
+              recommendations.push({ ...movie, media_type: 'movie' });
+              seenIds.add(key);
+            }
+          }
+          
+          // Add TV shows
+          for (const tv of tvResults.results) {
+            const key = `tv-${tv.id}`;
+            if (!seenIds.has(key) && recommendations.length < input.limit) {
+              recommendations.push({ ...tv, media_type: 'tv' });
+              seenIds.add(key);
+            }
+          }
+          
+          if (recommendations.length >= input.limit) break;
+        }
+
+        // Sort by vote_average to show best content first
+        recommendations.sort((a, b) => (b.vote_average || 0) - (a.vote_average || 0));
+
+        return {
+          results: recommendations.slice(0, input.limit),
+          reason: 'personalized',
+          topGenres,
+        };
+      }),
+
     getUpcoming: publicProcedure
       .input(z.object({
         mediaType: z.enum(['movie', 'tv']),
