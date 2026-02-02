@@ -313,3 +313,10 @@
 - [x] Add PWA install button to Home.tsx header for logged-in users (already present)
 - [x] Improve button mobile visibility with flex-shrink-0 and consistent sizing
 - [x] Test button appears for authenticated users on mobile (visible in screenshot)
+
+## Mobile Navigation UX Improvements (Round 28)
+- [x] Implement hamburger menu for mobile navigation (MobileMenu component with Sheet)
+- [x] Keep only essential icons visible in header (watchlist, PWA install, hamburger menu)
+- [x] Add proper touch targets (h-12 = 48px for menu items)
+- [x] Add active page indicator (secondary variant with primary color)
+- [x] Test on mobile viewport (clean layout, only 3 icons visible)

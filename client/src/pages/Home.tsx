@@ -12,6 +12,7 @@ import { getLoginUrl } from "@/const";
 import LandingPage from "./LandingPage";
 import { useOnboardingTour } from "@/components/OnboardingTour";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
+import { MobileMenu } from "@/components/MobileMenu";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { PWAWelcome } from "@/components/PWAWelcome";
 import { SearchFilters, type SearchFiltersType } from "@/components/SearchFilters";
@@ -204,61 +205,47 @@ export default function Home() {
               </div>
             </Link>
 
-            <nav className="flex items-center gap-1 sm:gap-2 md:gap-4 flex-shrink min-w-0">
+            <nav className="flex items-center gap-2 sm:gap-3">
               {isAuthenticated ? (
                 <>
-                  <Link href="/watchlist">
-                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3">
-                      <Bookmark className="h-4 w-4 flex-shrink-0" />
-                      <span className="hidden sm:inline text-sm">Minha Lista</span>
-                    </Button>
-                  </Link>
-                  <Link href="/lists">
-                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3" data-tour="lists">
-                      <List className="h-4 w-4 flex-shrink-0" />
-                      <span className="hidden lg:inline text-sm">Listas</span>
-                    </Button>
-                  </Link>
-                  <Link href="/subscriptions">
-                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3" data-tour="subscriptions">
-                      <Bell className="h-4 w-4 flex-shrink-0" />
-                      <span className="hidden sm:inline text-sm">Assinaturas</span>
-                    </Button>
-                  </Link>
-                  <Link href="/upcoming">
-                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3">
-                      <Calendar className="h-4 w-4 flex-shrink-0" />
-                      <span className="hidden md:inline text-sm">Em Breve</span>
-                    </Button>
-                  </Link>
-                  <Link href="/alerts">
-                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3" data-tour="alerts">
-                      <Bell className="h-4 w-4 flex-shrink-0" />
-                      <span className="hidden sm:inline text-sm">Alertas</span>
-                    </Button>
-                  </Link>
-                  <Link href="/genres">
-                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3" data-tour="genres">
-                      <Grid3x3 className="h-4 w-4 flex-shrink-0" />
-                      <span className="hidden md:inline text-sm">Gêneros</span>
-                    </Button>
-                  </Link>
-                  <Link href="/history">
-                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3" data-tour="history">
-                      <Clock className="h-4 w-4 flex-shrink-0" />
-                      <span className="hidden lg:inline text-sm">Histórico</span>
-                    </Button>
-                  </Link>
-                  <Link href="/streaming-prices">
-                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3">
-                      <DollarSign className="h-4 w-4 flex-shrink-0" />
-                      <span className="hidden lg:inline text-sm">Preços</span>
-                    </Button>
-                  </Link>
-                  <PWAInstallPrompt />
-                  <span className="text-xs sm:text-sm text-muted-foreground hidden xl:inline truncate max-w-[150px]">
-                    Olá, {user?.name}
-                  </span>
+                  {/* Desktop Navigation - Hidden on mobile */}
+                  <div className="hidden lg:flex items-center gap-2">
+                    <Link href="/watchlist">
+                      <Button variant="ghost" size="sm" className="gap-2 px-3">
+                        <Bookmark className="h-4 w-4" />
+                        <span className="text-sm">Minha Lista</span>
+                      </Button>
+                    </Link>
+                    <Link href="/lists">
+                      <Button variant="ghost" size="sm" className="gap-2 px-3" data-tour="lists">
+                        <List className="h-4 w-4" />
+                        <span className="text-sm">Listas</span>
+                      </Button>
+                    </Link>
+                    <Link href="/alerts">
+                      <Button variant="ghost" size="sm" className="gap-2 px-3" data-tour="alerts">
+                        <Bell className="h-4 w-4" />
+                        <span className="text-sm">Alertas</span>
+                      </Button>
+                    </Link>
+                    <Link href="/streaming-prices">
+                      <Button variant="ghost" size="sm" className="gap-2 px-3">
+                        <DollarSign className="h-4 w-4" />
+                        <span className="text-sm">Preços</span>
+                      </Button>
+                    </Link>
+                  </div>
+
+                  {/* Mobile: Essential icons only */}
+                  <div className="flex items-center gap-2">
+                    <Link href="/watchlist" className="lg:hidden">
+                      <Button variant="ghost" size="sm" className="px-3">
+                        <Bookmark className="h-5 w-5" />
+                      </Button>
+                    </Link>
+                    <PWAInstallPrompt />
+                    <MobileMenu />
+                  </div>
                 </>
               ) : (
                 <>
