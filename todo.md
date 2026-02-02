@@ -126,3 +126,12 @@
 
 ## Design Updates (Round 8)
 - [x] Apply new color palette (dark blue, medium blue, teal, light gray) to website theme
+
+## Marketing & Onboarding (Round 9)
+- [x] Create professional landing page for unauthenticated users
+- [x] Add hero section with compelling headline and CTA
+- [x] Add features section showcasing main capabilities
+- [x] Add "How it works" section with step-by-step guide
+- [x] Add benefits/social proof section
+- [x] Add final CTA section for registration
+- [x] Update routing to show landing page for non-authenticated users

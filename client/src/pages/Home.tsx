@@ -8,6 +8,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
+import LandingPage from "./LandingPage";
 
 const RECENT_SEARCHES_KEY = "recentSearches";
 const MAX_RECENT_SEARCHES = 5;
@@ -80,6 +81,11 @@ export default function Home() {
     mediaType: "tv",
     timeWindow: "week",
   });
+
+  // Show landing page for non-authenticated users (after all hooks)
+  if (!isAuthenticated) {
+    return <LandingPage />;
+  }
 
   const handleSearch = (e?: React.FormEvent, query?: string) => {
     e?.preventDefault();
