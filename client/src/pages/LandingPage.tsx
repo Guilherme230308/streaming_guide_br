@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Film, Search, Bell, List, TrendingUp, CheckCircle, Sparkles, Clock } from "lucide-react";
 import { Link } from "wouter";
 import { getLoginUrl } from "@/const";
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 
 export default function LandingPage() {
   return (
@@ -29,9 +30,12 @@ export default function LandingPage() {
                 </Link>
               </nav>
             </div>
-            <Button onClick={() => (window.location.href = getLoginUrl())}>
-              Entrar
-            </Button>
+            <div className="flex items-center gap-2">
+              <PWAInstallPrompt />
+              <Button onClick={() => (window.location.href = getLoginUrl())}>
+                Entrar
+              </Button>
+            </div>
           </div>
         </div>
       </header>

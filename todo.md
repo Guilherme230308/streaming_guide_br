@@ -289,3 +289,8 @@
 - [ ] Verify beforeinstallprompt event is being captured after fix
 - [ ] Test on Chrome desktop after fixes
 - [x] Document Chrome iOS limitation (no PWA support)
+
+## PWA Installation for Non-Authenticated Users (Round 23)
+- [x] Add PWA install button to landing page header
+- [x] Ensure install button works before user logs in
+- [x] Test installation flow for non-authenticated users (button renders, needs production HTTPS to trigger)
