@@ -23,6 +23,7 @@ import { AddToListDialog } from "@/components/AddToListDialog";
 import { handleProviderClick as handleDeepLink } from "@/lib/deepLinks";
 import { RatingStars } from "@/components/RatingStars";
 import { ReviewDialog } from "@/components/ReviewDialog";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 export default function MovieDetails() {
   const { id } = useParams();
@@ -71,6 +72,7 @@ export default function MovieDetails() {
   );
 
   const [showListDialog, setShowListDialog] = useState(false);
+  const [showMarkAsWatchedDialog, setShowMarkAsWatchedDialog] = useState(false);
 
   const utils = trpc.useUtils();
   
@@ -505,14 +507,7 @@ export default function MovieDetails() {
                         // Ask if user wants to mark as watched
                         if (!isWatched && movie) {
                           setTimeout(() => {
-                            if (window.confirm("Deseja marcar este filme como assistido?")) {
-                              markAsWatchedMutation.mutate({
-                                tmdbId: movieId,
-                                mediaType: "movie",
-                                title: movie.title,
-                                posterPath: movie.poster_path,
-                              });
-                            }
+                            setShowMarkAsWatchedDialog(true);
                           }, 500);
                         }
                       }}
@@ -670,6 +665,27 @@ export default function MovieDetails() {
           title={movie.title}
           posterPath={movie.poster_path}
           releaseDate={movie.release_date}
+        />
+      )}
+
+      {/* Mark as Watched Confirmation Dialog */}
+      {movie && (
+        <ConfirmDialog
+          open={showMarkAsWatchedDialog}
+          onOpenChange={setShowMarkAsWatchedDialog}
+          title="Marcar como Assistido"
+          description="Deseja marcar este filme como assistido?"
+          confirmText="Sim, marcar"
+          cancelText="Não"
+          onConfirm={() => {
+            markAsWatchedMutation.mutate({
+              tmdbId: movieId,
+              mediaType: "movie",
+              title: movie.title,
+              posterPath: movie.poster_path,
+            });
+            setShowMarkAsWatchedDialog(false);
+          }}
         />
       )}
     </div>

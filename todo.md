@@ -178,3 +178,19 @@
 - [x] Add tour steps for: search, subscriptions, lists, alerts, history
 - [x] Implement first-visit detection using localStorage
 - [x] Add skip/restart tour options
+
+## PWA Implementation (Round 14)
+- [x] Install vite-plugin-pwa for service worker generation
+- [x] Create manifest.json with app metadata and icons
+- [x] Generate PWA icons in multiple sizes (192x192, 512x512)
+- [x] Implement service worker with cache-first strategy for static assets
+- [x] Configure Vite PWA plugin with workbox
+- [ ] Add offline fallback page (optional enhancement)
+- [ ] Create install prompt component (optional enhancement)
+
+
+## Bug Fixes (Round 15)
+- [x] Fix alert button label to change from "Criar Alerta" to "Alerta Criado" after clicking
+
+- [x] Substituir window.confirm por modal customizado bonito
+- [x] Usar tons mais escuros nos headers dos streamings na página de preços

@@ -20,7 +20,7 @@ const STREAMING_SERVICES: StreamingService[] = [
   {
     name: "Netflix",
     logo: "🎬",
-    color: "from-red-500 to-red-600",
+    color: "from-red-800 to-red-900",
     website: "https://www.netflix.com/br/",
     plans: [
       {
@@ -44,7 +44,7 @@ const STREAMING_SERVICES: StreamingService[] = [
   {
     name: "Prime Video",
     logo: "📦",
-    color: "from-blue-500 to-blue-600",
+    color: "from-blue-800 to-blue-900",
     website: "https://www.primevideo.com/",
     plans: [
       {
@@ -58,7 +58,7 @@ const STREAMING_SERVICES: StreamingService[] = [
   {
     name: "Disney+",
     logo: "🏰",
-    color: "from-blue-400 to-indigo-500",
+    color: "from-blue-700 to-indigo-800",
     website: "https://www.disneyplus.com/pt-br",
     plans: [
       {
@@ -72,7 +72,7 @@ const STREAMING_SERVICES: StreamingService[] = [
   {
     name: "HBO Max",
     logo: "🎭",
-    color: "from-purple-500 to-purple-600",
+    color: "from-purple-800 to-purple-900",
     website: "https://www.max.com/br/pt",
     plans: [
       {
@@ -86,7 +86,7 @@ const STREAMING_SERVICES: StreamingService[] = [
   {
     name: "Paramount+",
     logo: "⛰️",
-    color: "from-blue-600 to-blue-700",
+    color: "from-blue-800 to-blue-900",
     website: "https://www.paramountplus.com/br/",
     plans: [
       {
@@ -100,7 +100,7 @@ const STREAMING_SERVICES: StreamingService[] = [
   {
     name: "Apple TV+",
     logo: "🍎",
-    color: "from-gray-700 to-gray-800",
+    color: "from-gray-800 to-gray-900",
     website: "https://tv.apple.com/br",
     plans: [
       {
@@ -114,7 +114,7 @@ const STREAMING_SERVICES: StreamingService[] = [
   {
     name: "Globoplay",
     logo: "🌐",
-    color: "from-orange-500 to-red-500",
+    color: "from-orange-800 to-red-900",
     website: "https://globoplay.globo.com/",
     plans: [
       {
@@ -133,7 +133,7 @@ const STREAMING_SERVICES: StreamingService[] = [
   {
     name: "Star+",
     logo: "⭐",
-    color: "from-purple-400 to-pink-500",
+    color: "from-purple-700 to-pink-800",
     website: "https://www.starplus.com/pt-br",
     plans: [
       {

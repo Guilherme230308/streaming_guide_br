@@ -34,6 +34,11 @@ export default function Upcoming() {
 
   const utils = trpc.useUtils();
 
+  // Get user's alerts to check if alert already exists
+  const { data: userAlerts } = trpc.alerts.get.useQuery(undefined, {
+    enabled: isAuthenticated,
+  });
+
   const createAlert = trpc.alerts.create.useMutation({
     onSuccess: () => {
       toast.success("Alerta criado! Você será notificado quando estiver disponível.");
@@ -43,6 +48,14 @@ export default function Upcoming() {
       toast.error("Erro ao criar alerta: " + error.message);
     },
   });
+
+  // Check if alert exists for a specific content
+  const hasAlert = (tmdbId: number, mediaType: "movie" | "tv") => {
+    if (!userAlerts) return false;
+    return userAlerts.some(
+      (alert) => alert.tmdbId === tmdbId && alert.mediaType === mediaType
+    );
+  };
 
   const handleCreateAlert = (tmdbId: number, title: string, mediaType: "movie" | "tv") => {
     if (!isAuthenticated) {
@@ -136,10 +149,10 @@ export default function Upcoming() {
                         size="sm"
                         className="w-full"
                         onClick={() => handleCreateAlert(movie.id, movie.title, "movie")}
-                        disabled={createAlert.isPending}
+                        disabled={createAlert.isPending || hasAlert(movie.id, "movie")}
                       >
                         <Bell className="h-3 w-3 mr-1" />
-                        Criar Alerta
+                        {hasAlert(movie.id, "movie") ? "Alerta Criado" : "Criar Alerta"}
                       </Button>
                     </CardContent>
                   </Card>
@@ -189,10 +202,10 @@ export default function Upcoming() {
                         size="sm"
                         className="w-full"
                         onClick={() => handleCreateAlert(show.id, show.name, "tv")}
-                        disabled={createAlert.isPending}
+                        disabled={createAlert.isPending || hasAlert(show.id, "tv")}
                       >
                         <Bell className="h-3 w-3 mr-1" />
-                        Criar Alerta
+                        {hasAlert(show.id, "tv") ? "Alerta Criado" : "Criar Alerta"}
                       </Button>
                     </CardContent>
                   </Card>
