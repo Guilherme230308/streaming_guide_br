@@ -980,7 +980,9 @@ Se precisar de mais informações, faça perguntas específicas como:
 - "Em que década você acha que foi lançado?"
 - "Lembra de algum ator ou atriz?"
 - "Era um filme de Hollywood ou de outro país?"
-- "Lembra de mais alguma cena ou detalhe?"` ;
+- "Lembra de mais alguma cena ou detalhe?"
+
+IMPORTANTE: Quando identificar filmes ou séries, SEMPRE inclua o título original em inglês entre parênteses após o título em português, e o ano. Isso ajuda na busca. Exemplo: "O Show de Truman (The Truman Show) - 1998"` ;
 
         const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
           { role: 'system', content: systemPrompt },
@@ -1003,34 +1005,82 @@ Se precisar de mais informações, faça perguntas específicas como:
           const response = await invokeLLM({ messages });
           const assistantMessage = response.choices[0]?.message?.content;
           
+          let responseText = '';
           if (typeof assistantMessage === 'string') {
-            return {
-              success: true,
-              response: assistantMessage,
-            };
-          }
-          
-          // Handle array content
-          if (Array.isArray(assistantMessage)) {
-            const textContent = assistantMessage
+            responseText = assistantMessage;
+          } else if (Array.isArray(assistantMessage)) {
+            responseText = assistantMessage
               .filter((part): part is { type: 'text'; text: string } => part.type === 'text')
               .map(part => part.text)
               .join('\n');
+          }
+          
+          if (!responseText) {
             return {
-              success: true,
-              response: textContent || 'Não consegui processar a resposta.',
+              success: false,
+              response: 'Não consegui processar a resposta.',
+              identifiedContent: [],
             };
           }
-
+          
+          // Extract movie/series titles from response to search TMDB
+          const identifiedContent: Array<{ title: string; year?: number; type: 'movie' | 'tv'; tmdbId?: number }> = [];
+          
+          // Pattern to find titles like "Title (Original Title) - Year" or "Title (Year)"
+          const titlePatterns = [
+            /([^\n\-•*]+?)\s*\(([^)]+)\)\s*[-–]?\s*(\d{4})/g,
+            /([^\n\-•*]+?)\s*[-–]\s*(\d{4})/g,
+          ];
+          
+          const foundTitles = new Set<string>();
+          
+          for (const pattern of titlePatterns) {
+            let match;
+            while ((match = pattern.exec(responseText)) !== null) {
+              const title = match[1]?.trim();
+              const yearOrOriginal = match[2]?.trim();
+              const year = match[3] ? parseInt(match[3]) : (yearOrOriginal && /^\d{4}$/.test(yearOrOriginal) ? parseInt(yearOrOriginal) : undefined);
+              const originalTitle = match[3] ? yearOrOriginal : undefined;
+              
+              if (title && !foundTitles.has(title.toLowerCase())) {
+                foundTitles.add(title.toLowerCase());
+                
+                // Search TMDB for the title
+                const searchQuery = originalTitle || title;
+                try {
+                  const tmdbResponse = await fetch(
+                    `https://api.themoviedb.org/3/search/multi?api_key=${process.env.TMDB_API_KEY}&query=${encodeURIComponent(searchQuery)}&language=pt-BR&region=BR`
+                  );
+                  const tmdbData = await tmdbResponse.json();
+                  
+                  if (tmdbData.results && tmdbData.results.length > 0) {
+                    const result = tmdbData.results[0];
+                    identifiedContent.push({
+                      title: result.title || result.name || title,
+                      year: year || (result.release_date ? parseInt(result.release_date.substring(0, 4)) : (result.first_air_date ? parseInt(result.first_air_date.substring(0, 4)) : undefined)),
+                      type: result.media_type === 'tv' ? 'tv' : 'movie',
+                      tmdbId: result.id,
+                    });
+                  }
+                } catch (e) {
+                  // If TMDB search fails, still add the title without ID
+                  identifiedContent.push({ title, year, type: 'movie' });
+                }
+              }
+            }
+          }
+          
           return {
-            success: false,
-            response: 'Não consegui processar a resposta.',
+            success: true,
+            response: responseText,
+            identifiedContent,
           };
         } catch (error) {
           console.error('AI identification error:', error);
           return {
             success: false,
             response: 'Desculpe, ocorreu um erro ao processar sua solicitação. Tente novamente.',
+            identifiedContent: [],
           };
         }
       }),

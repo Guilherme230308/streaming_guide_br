@@ -4,12 +4,21 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { trpc } from '@/lib/trpc';
-import { Sparkles, Send, Loader2, User, Bot } from 'lucide-react';
+import { Sparkles, Send, Loader2, User, Bot, ExternalLink } from 'lucide-react';
 import { Streamdown } from 'streamdown';
+import { useLocation } from 'wouter';
+
+interface IdentifiedContent {
+  title: string;
+  year?: number;
+  type: 'movie' | 'tv';
+  tmdbId?: number;
+}
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
+  identifiedContent?: IdentifiedContent[];
 }
 
 interface AIAssistantDialogProps {
@@ -22,19 +31,21 @@ export function AIAssistantDialog({ open, onOpenChange }: AIAssistantDialogProps
   const [input, setInput] = useState('');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [, setLocation] = useLocation();
 
   const identifyMutation = trpc.ai.identifyContent.useMutation({
     onSuccess: (data) => {
-      if (data.success) {
-        setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
-      } else {
-        setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
-      }
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: data.response,
+        identifiedContent: data.identifiedContent || [],
+      }]);
     },
     onError: () => {
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: 'Desculpe, ocorreu um erro. Tente novamente.' 
+        content: 'Desculpe, ocorreu um erro. Tente novamente.',
+        identifiedContent: [],
       }]);
     },
   });
@@ -47,15 +58,23 @@ export function AIAssistantDialog({ open, onOpenChange }: AIAssistantDialogProps
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setInput('');
 
-    // Send to AI with conversation history
+    // Send to AI with conversation history (without identifiedContent for the API)
     identifyMutation.mutate({
       description: userMessage,
-      conversationHistory: messages,
+      conversationHistory: messages.map(m => ({ role: m.role, content: m.content })),
     });
   };
 
   const handleClearChat = () => {
     setMessages([]);
+  };
+
+  const handleViewContent = (content: IdentifiedContent) => {
+    if (content.tmdbId) {
+      const path = content.type === 'tv' ? `/tv/${content.tmdbId}` : `/movie/${content.tmdbId}`;
+      onOpenChange(false);
+      setLocation(path);
+    }
   };
 
   // Scroll to bottom when messages change
@@ -135,8 +154,29 @@ export function AIAssistantDialog({ open, onOpenChange }: AIAssistantDialogProps
                   }`}
                 >
                   {message.role === 'assistant' ? (
-                    <div className="text-sm prose prose-sm dark:prose-invert max-w-none">
-                      <Streamdown>{message.content}</Streamdown>
+                    <div className="space-y-3">
+                      <div className="text-sm prose prose-sm dark:prose-invert max-w-none">
+                        <Streamdown>{message.content}</Streamdown>
+                      </div>
+                      {message.identifiedContent && message.identifiedContent.length > 0 && (
+                        <div className="flex flex-wrap gap-2 pt-2 border-t border-border/50">
+                          {message.identifiedContent.map((content, i) => (
+                            content.tmdbId && (
+                              <Button
+                                key={i}
+                                variant="secondary"
+                                size="sm"
+                                onClick={() => handleViewContent(content)}
+                                className="text-xs h-7 gap-1"
+                              >
+                                <ExternalLink className="h-3 w-3" />
+                                Ver {content.type === 'tv' ? 'série' : 'filme'}
+                                {content.year && ` (${content.year})`}
+                              </Button>
+                            )
+                          ))}
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <p className="text-sm">{message.content}</p>
