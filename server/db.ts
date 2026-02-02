@@ -467,6 +467,33 @@ export async function getContentReviews(tmdbId: number, mediaType: 'movie' | 'tv
   }));
 }
 
+export async function getAllRecentReviews(limit: number = 20, offset: number = 0): Promise<Array<Review & { userName: string; posterPath?: string }>> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const result = await db.select({
+    id: reviews.id,
+    userId: reviews.userId,
+    tmdbId: reviews.tmdbId,
+    mediaType: reviews.mediaType,
+    title: reviews.title,
+    content: reviews.content,
+    createdAt: reviews.createdAt,
+    updatedAt: reviews.updatedAt,
+    userName: users.name
+  })
+    .from(reviews)
+    .leftJoin(users, eq(reviews.userId, users.id))
+    .orderBy(desc(reviews.createdAt))
+    .limit(limit)
+    .offset(offset);
+  
+  return result.map(r => ({
+    ...r,
+    userName: r.userName || 'Usuário Anônimo'
+  }));
+}
+
 
 // Viewing History functions
 export async function addToViewingHistory(history: InsertViewingHistory): Promise<void> {

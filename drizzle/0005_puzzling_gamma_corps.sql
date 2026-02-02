@@ -1,0 +1,1 @@
+ALTER TABLE `custom_lists` ADD `coverImage` varchar(500);

@@ -194,6 +194,7 @@ export const customLists = mysqlTable("custom_lists", {
   userId: int("userId").notNull(),
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
+  coverImage: varchar("coverImage", { length: 500 }),
   isPublic: boolean("isPublic").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

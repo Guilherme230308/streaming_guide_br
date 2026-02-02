@@ -251,3 +251,32 @@
 - [x] Add genre-based explanation text showing why content is recommended
 - [x] Show fallback to trending content for new users
 - [x] Integrate PersonalizedRecommendations into Home page (logged-in users only)
+
+
+## Reviews System with Community Feed (Round 21)
+- [x] Reviews schema already has text field for detailed comments
+- [x] Create backend procedures for submitting and fetching reviews (getAllRecentReviews added)
+- [x] Build ReviewForm component with star rating and text input
+- [x] Create CommunityFeed component showing latest reviews from all users
+- [x] Integrate CommunityFeed into Home page
+- [ ] Add ReviewForm to MovieDetails and TVShowDetails pages
+- [x] Review moderation already implemented (edit/delete own reviews)
+- [ ] Add pagination for community feed (future enhancement)
+
+## Public Shareable Lists (Round 21)
+- [ ] Add isPublic field to customLists schema
+- [ ] Add coverImage and description fields to customLists
+- [ ] Create public list view page with unique URL
+- [ ] Add toggle to make lists public/private in list settings
+- [ ] Implement Web Share API for social sharing
+- [ ] Create shareable preview cards with Open Graph meta tags
+- [ ] Add "Copy Link" button for easy sharing
+
+## Web Push Notifications (Round 21)
+- [ ] Set up VAPID keys for Web Push
+- [ ] Add push subscription storage to database
+- [ ] Implement service worker push event handler
+- [ ] Create notification permission request UI
+- [ ] Add backend procedure to send push notifications when alert content arrives
+- [ ] Create notification settings page for users
+- [ ] Test push notifications on different browsers

@@ -659,6 +659,15 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return await db.getContentReviews(input.tmdbId, input.mediaType);
       }),
+
+    getAllRecentReviews: publicProcedure
+      .input(z.object({
+        limit: z.number().optional().default(20),
+        offset: z.number().optional().default(0),
+      }))
+      .query(async ({ input }) => {
+        return await db.getAllRecentReviews(input.limit, input.offset);
+      }),
   }),
 
   viewingHistory: router({
