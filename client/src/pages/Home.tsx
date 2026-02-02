@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { ContentCard } from "@/components/ContentCard";
 import { Badge } from "@/components/ui/badge";
-import { Search, Film, Tv, Bookmark, Bell, Calendar, Grid3x3, Clock, Check, List } from "lucide-react";
+import { Search, Film, Tv, Bookmark, Bell, Calendar, Grid3x3, Clock, Check, List, DollarSign } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -190,6 +190,12 @@ export default function Home() {
                     <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3">
                       <Clock className="h-4 w-4 flex-shrink-0" />
                       <span className="hidden lg:inline text-sm">Histórico</span>
+                    </Button>
+                  </Link>
+                  <Link href="/streaming-prices">
+                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3">
+                      <DollarSign className="h-4 w-4 flex-shrink-0" />
+                      <span className="hidden lg:inline text-sm">Preços</span>
                     </Button>
                   </Link>
                   <span className="text-xs sm:text-sm text-muted-foreground hidden xl:inline truncate max-w-[150px]">

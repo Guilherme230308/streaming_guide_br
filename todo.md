@@ -160,3 +160,6 @@
 - [x] Fix Netflix logo not loading in Subscriptions page
 - [x] Remove duplicate genre images in Genres page
 - [x] Update ContentCard menu label to show "Assistido" when content is already watched
+
+## Navigation Improvements (Round 12)
+- [x] Add "Preços" link to authenticated user navigation menu
