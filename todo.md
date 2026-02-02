@@ -401,3 +401,9 @@
 - [x] Deduplicação de providers na página principal
 
 - [x] Fix HBO Max deduplication (remove HBO Max Amazon Channel when HBO Max is available)
+
+## AI Chat Assistant - Identificar Filmes por Descrição
+- [x] Create backend tRPC procedure for AI movie identification
+- [x] Create AI chat dialog component with UI
+- [x] Add AI assistant button next to search and filter buttons
+- [x] Test the feature end-to-end

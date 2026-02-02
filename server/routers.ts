@@ -6,6 +6,7 @@ import { z } from "zod";
 import * as tmdb from "./tmdb";
 import * as db from "./db";
 import { runAvailabilityCheckJob, runAllJobs } from "./backgroundJobs";
+import { invokeLLM } from "./_core/llm";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -945,6 +946,93 @@ export const appRouter = router({
         
         const results = await runAllJobs();
         return results;
+      }),
+  }),
+
+  ai: router({
+    identifyContent: publicProcedure
+      .input(z.object({
+        description: z.string().min(3).max(1000),
+        conversationHistory: z.array(z.object({
+          role: z.enum(['user', 'assistant']),
+          content: z.string(),
+        })).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const systemPrompt = `Você é um assistente especializado em identificar filmes e séries de TV baseado em descrições dos usuários. 
+
+Quando o usuário descrever um filme ou série (pode ser uma cena, personagem, enredo, ator, etc.), você deve:
+1. Tentar identificar o conteúdo descrito
+2. Retornar uma lista de possíveis correspondências com o título original e em português (se houver)
+3. Incluir o ano de lançamento quando souber
+4. Se não tiver certeza, faça perguntas para esclarecer
+
+Sempre responda em português brasileiro.
+Seja conciso mas informativo.
+Se identificar múltiplas possibilidades, liste as mais prováveis primeiro.
+
+Formato da resposta quando identificar conteúdo:
+- Liste os títulos encontrados
+- Inclua uma breve descrição de por que cada um pode ser o que o usuário procura
+- Se tiver alta confiança em um resultado específico, destaque-o
+
+Se precisar de mais informações, faça perguntas específicas como:
+- "Em que década você acha que foi lançado?"
+- "Lembra de algum ator ou atriz?"
+- "Era um filme de Hollywood ou de outro país?"
+- "Lembra de mais alguma cena ou detalhe?"` ;
+
+        const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
+          { role: 'system', content: systemPrompt },
+        ];
+
+        // Add conversation history if provided
+        if (input.conversationHistory && input.conversationHistory.length > 0) {
+          for (const msg of input.conversationHistory) {
+            messages.push({
+              role: msg.role as 'user' | 'assistant',
+              content: msg.content,
+            });
+          }
+        }
+
+        // Add current user message
+        messages.push({ role: 'user', content: input.description });
+
+        try {
+          const response = await invokeLLM({ messages });
+          const assistantMessage = response.choices[0]?.message?.content;
+          
+          if (typeof assistantMessage === 'string') {
+            return {
+              success: true,
+              response: assistantMessage,
+            };
+          }
+          
+          // Handle array content
+          if (Array.isArray(assistantMessage)) {
+            const textContent = assistantMessage
+              .filter((part): part is { type: 'text'; text: string } => part.type === 'text')
+              .map(part => part.text)
+              .join('\n');
+            return {
+              success: true,
+              response: textContent || 'Não consegui processar a resposta.',
+            };
+          }
+
+          return {
+            success: false,
+            response: 'Não consegui processar a resposta.',
+          };
+        } catch (error) {
+          console.error('AI identification error:', error);
+          return {
+            success: false,
+            response: 'Desculpe, ocorreu um erro ao processar sua solicitação. Tente novamente.',
+          };
+        }
       }),
   }),
 });

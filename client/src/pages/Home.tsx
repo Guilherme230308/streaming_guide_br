@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { ContentCard } from "@/components/ContentCard";
 import { Badge } from "@/components/ui/badge";
-import { Search, Film, Tv, Bookmark, Bell, Calendar, Grid3x3, Clock, Check, List, DollarSign, X } from "lucide-react";
+import { Search, Film, Tv, Bookmark, Bell, Calendar, Grid3x3, Clock, Check, List, DollarSign, X, Sparkles } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -20,6 +20,7 @@ import { PWAWelcome } from "@/components/PWAWelcome";
 import { SearchFilters, type SearchFiltersType } from "@/components/SearchFilters";
 import { PersonalizedRecommendations } from "@/components/PersonalizedRecommendations";
 import { CommunityFeed } from "@/components/CommunityFeed";
+import { AIAssistantDialog } from "@/components/AIAssistantDialog";
 
 const RECENT_SEARCHES_KEY = "recentSearches";
 const MAX_RECENT_SEARCHES = 5;
@@ -39,6 +40,7 @@ export default function Home() {
     providers: [],
   });
   const searchRef = useRef<HTMLDivElement>(null);
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
 
   // Initialize onboarding tour for new users
   useOnboardingTour();
@@ -300,6 +302,15 @@ export default function Home() {
                   filters={searchFilters}
                   onFiltersChange={setSearchFilters}
                 />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-14 w-14 flex-shrink-0"
+                  onClick={() => setShowAIAssistant(true)}
+                  title="Qual filme é esse?"
+                >
+                  <Sparkles className="h-5 w-5" />
+                </Button>
               </div>
 
               {/* Active Filters Display */}
@@ -601,6 +612,12 @@ export default function Home() {
       {/* PWA Installation Flow */}
       <PWAInstallBanner />
       <PWAWelcome />
+
+      {/* AI Assistant Dialog */}
+      <AIAssistantDialog
+        open={showAIAssistant}
+        onOpenChange={setShowAIAssistant}
+      />
     </div>
   );
 }

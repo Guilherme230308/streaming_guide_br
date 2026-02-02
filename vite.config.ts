@@ -183,6 +183,7 @@ const plugins = [
     workbox: {
       globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
       navigateFallback: null, // Disable navigate fallback to prevent intercepting API routes
+      maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB limit for large bundles
       runtimeCaching: [
         {
           urlPattern: /^https:\/\/api\.themoviedb\.org\/.*/i,
