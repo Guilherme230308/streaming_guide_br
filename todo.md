@@ -332,3 +332,11 @@
 - [x] Implement reverse swipe (right to left) to close menu
 - [x] Add visual edge indicator showing swipe area (1px gradient line, fades in/out)
 - [x] Test all enhancements on mobile (implemented, ready for real device validation)
+
+## Pull-to-Refresh & Card Swipe Gestures (Round 31)
+- [x] Implement pull-to-refresh at top of page
+- [x] Add loading animation for pull-to-refresh (rotating icon with resistance effect)
+- [x] Implement swipe right on cards to add to watchlist
+- [x] Implement swipe left on cards to mark as not interested
+- [x] Add visual feedback for card swipes (green heart for right, red X for left)
+- [x] Test both features on mobile (implemented, ready for real device testing)

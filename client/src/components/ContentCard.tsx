@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { AddToListDialog } from "@/components/AddToListDialog";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { SwipeableCard } from "@/components/SwipeableCard";
 
 interface ContentCardProps {
   id: number;
@@ -68,9 +69,34 @@ export function ContentCard({
   const detailPath = mediaType === "movie" ? `/movie/${id}` : `/tv/${id}`;
   const year = releaseDate ? new Date(releaseDate).getFullYear() : null;
 
+  const addToWatchlistMutation = trpc.watchlist.add.useMutation({
+    onSuccess: () => {
+      toast.success("Adicionado à lista!");
+      utils.watchlist.get.invalidate();
+    },
+    onError: () => {
+      toast.error("Erro ao adicionar à lista");
+    },
+  });
+
+  const handleSwipeRight = () => {
+    addToWatchlistMutation.mutate({
+      tmdbId: id,
+      mediaType,
+      title,
+      posterPath: posterPath || null,
+    });
+  };
+
+  const handleSwipeLeft = () => {
+    toast.info("Marcado como não interessado");
+    // Could implement a "not interested" feature here
+  };
+
   return (
     <>
-      <Link href={detailPath}>
+      <SwipeableCard onSwipeRight={handleSwipeRight} onSwipeLeft={handleSwipeLeft}>
+        <Link href={detailPath}>
         <a className="group block relative rounded-lg overflow-hidden bg-card hover:ring-2 hover:ring-primary transition-all">
           {/* Poster Image */}
           <div className="aspect-[2/3] relative">
@@ -136,6 +162,7 @@ export function ContentCard({
           </div>
         </a>
       </Link>
+      </SwipeableCard>
 
       {/* Add to List Dialog */}
       <AddToListDialog

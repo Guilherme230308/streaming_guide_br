@@ -14,6 +14,7 @@ import { useOnboardingTour } from "@/components/OnboardingTour";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { MobileMenu } from "@/components/MobileMenu";
 import { SwipeEdgeIndicator } from "@/components/SwipeEdgeIndicator";
+import { PullToRefresh } from "@/components/PullToRefresh";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { PWAWelcome } from "@/components/PWAWelcome";
 import { SearchFilters, type SearchFiltersType } from "@/components/SearchFilters";
@@ -107,15 +108,23 @@ export default function Home() {
     setSelectedIndex(-1);
   }, [searchQuery]);
 
-  const { data: trendingMovies } = trpc.content.getTrending.useQuery({
+  const { data: trendingMovies, refetch: refetchMovies } = trpc.content.getTrending.useQuery({
     mediaType: "movie",
     timeWindow: "week",
   });
 
-  const { data: trendingTV } = trpc.content.getTrending.useQuery({
+  const { data: trendingTV, refetch: refetchTV } = trpc.content.getTrending.useQuery({
     mediaType: "tv",
     timeWindow: "week",
   });
+
+  // Pull-to-refresh handler
+  const handleRefresh = async () => {
+    await Promise.all([
+      refetchMovies(),
+      refetchTV(),
+    ]);
+  };
 
   // Show landing page for non-authenticated users (after all hooks)
   if (!isAuthenticated) {
@@ -262,8 +271,9 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero Section with Search */}
-      <section className="py-12 sm:py-16 bg-gradient-to-b from-background to-background/50">
+      <PullToRefresh onRefresh={handleRefresh}>
+        {/* Hero Section with Search */}
+        <section className="py-12 sm:py-16 bg-gradient-to-b from-background to-background/50">
         <div className="container px-4">
           <div className="max-w-3xl mx-auto text-center space-y-6">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">
@@ -424,6 +434,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      </PullToRefresh>
 
       {/* Footer */}
       <footer className="border-t border-border/40 py-8 mt-12">
