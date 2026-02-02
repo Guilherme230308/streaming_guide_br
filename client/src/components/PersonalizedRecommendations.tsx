@@ -1,6 +1,7 @@
 import { trpc } from "@/lib/trpc";
 import { Sparkles, TrendingUp } from "lucide-react";
 import { Link } from "wouter";
+import { type SearchFiltersType } from "@/components/SearchFilters";
 
 const GENRE_NAMES: Record<number, string> = {
   28: "Ação",
@@ -32,7 +33,11 @@ const GENRE_NAMES: Record<number, string> = {
   10768: "War & Politics",
 };
 
-export function PersonalizedRecommendations() {
+interface PersonalizedRecommendationsProps {
+  filters?: SearchFiltersType;
+}
+
+export function PersonalizedRecommendations({ filters }: PersonalizedRecommendationsProps) {
   const { data, isLoading } = trpc.content.getPersonalizedRecommendations.useQuery(
     { limit: 12 },
     {
@@ -69,6 +74,53 @@ export function PersonalizedRecommendations() {
       ? data.topGenres.map((id) => GENRE_NAMES[id] || "").filter(Boolean).join(", ")
       : "";
 
+  // Apply filters to results
+  const filteredResults = data.results.filter((item: any) => {
+    // Apply filters if provided
+    if (!filters) return true;
+
+    // Apply genre filter
+    if (filters.genres.length > 0) {
+      const hasMatchingGenre = item.genre_ids?.some((genreId: number) =>
+        filters.genres.includes(String(genreId))
+      );
+      if (!hasMatchingGenre) return false;
+    }
+
+    // Apply year filter
+    if (filters.yearMin || filters.yearMax) {
+      const dateField = item.media_type === 'movie' ? item.release_date : item.first_air_date;
+      const year = dateField ? new Date(dateField).getFullYear() : 0;
+      if (filters.yearMin && year < filters.yearMin) return false;
+      if (filters.yearMax && year > filters.yearMax) return false;
+    }
+
+    // Apply rating filter
+    if (filters.ratingMin !== undefined && filters.ratingMin > 0) {
+      if (item.vote_average < filters.ratingMin) return false;
+    }
+
+    // Apply provider filter
+    if (filters.providers.length > 0) {
+      const hasMatchingProvider = item.providers?.some((provider: any) =>
+        filters.providers.includes(String(provider.provider_id))
+      );
+      if (!hasMatchingProvider) return false;
+    }
+
+    // Apply streaming filter if enabled
+    if (filters.streamingOnly) {
+      return item.providers && item.providers.length > 0;
+    }
+
+    return true;
+  });
+
+  // Don't render if all items are filtered out
+  if (filteredResults.length === 0) {
+    return null;
+  }
+
   return (
     <section className="container py-8">
       <div className="flex items-center gap-2 mb-2">
@@ -88,7 +140,7 @@ export function PersonalizedRecommendations() {
       )}
 
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        {data.results.map((item: any) => {
+        {filteredResults.map((item: any) => {
           const isMovie = item.media_type === "movie";
           const title = isMovie ? item.title : item.name;
           const posterPath = item.poster_path

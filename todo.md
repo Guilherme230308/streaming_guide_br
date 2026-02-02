@@ -378,3 +378,13 @@
 - [x] Fix button layout - search and filter buttons should be side-by-side horizontally
 - [x] Implement filter application - clicking "Aplicar Filtros" should update "Em Alta" content (all filters: genre, year, rating, provider, streaming)
 - [x] Test filter application on trending movies and TV shows (buttons side-by-side, filters working)
+
+## Apply Filters to All Home Page Content (Round 38)
+- [ ] Identify all content sections on home page (hero, recommendations, etc.)
+- [ ] Apply filter logic to hero/featured content
+- [ ] Apply filter logic to any other content sections
+- [ ] Test filters work across all sections
+
+- [x] Identify all content sections on home page (hero, recommendations, etc.)
+- [x] Apply filter logic to PersonalizedRecommendations component
+- [x] Test filters work across all sections (Em Alta, Filmes em Alta, Séries em Alta)

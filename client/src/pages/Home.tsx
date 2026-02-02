@@ -458,7 +458,7 @@ export default function Home() {
       </section>
 
       {/* Personalized Recommendations (only for logged-in users) */}
-      {user && <PersonalizedRecommendations />}
+      {user && <PersonalizedRecommendations filters={searchFilters} />}
 
       {/* Community Feed */}
       <CommunityFeed />
