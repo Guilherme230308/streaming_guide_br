@@ -10,6 +10,7 @@ import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
 import LandingPage from "./LandingPage";
+import { useOnboardingTour } from "@/components/OnboardingTour";
 
 const RECENT_SEARCHES_KEY = "recentSearches";
 const MAX_RECENT_SEARCHES = 5;
@@ -22,6 +23,9 @@ export default function Home() {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const searchRef = useRef<HTMLDivElement>(null);
+
+  // Initialize onboarding tour for new users
+  useOnboardingTour();
 
   // Load recent searches from localStorage
   useEffect(() => {
@@ -163,13 +167,13 @@ export default function Home() {
                     </Button>
                   </Link>
                   <Link href="/lists">
-                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3">
+                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3" data-tour="lists">
                       <List className="h-4 w-4 flex-shrink-0" />
                       <span className="hidden lg:inline text-sm">Listas</span>
                     </Button>
                   </Link>
                   <Link href="/subscriptions">
-                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3">
+                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3" data-tour="subscriptions">
                       <Bell className="h-4 w-4 flex-shrink-0" />
                       <span className="hidden sm:inline text-sm">Assinaturas</span>
                     </Button>
@@ -180,14 +184,20 @@ export default function Home() {
                       <span className="hidden md:inline text-sm">Em Breve</span>
                     </Button>
                   </Link>
+                  <Link href="/alerts">
+                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3" data-tour="alerts">
+                      <Bell className="h-4 w-4 flex-shrink-0" />
+                      <span className="hidden sm:inline text-sm">Alertas</span>
+                    </Button>
+                  </Link>
                   <Link href="/genres">
-                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3">
+                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3" data-tour="genres">
                       <Grid3x3 className="h-4 w-4 flex-shrink-0" />
                       <span className="hidden md:inline text-sm">Gêneros</span>
                     </Button>
                   </Link>
                   <Link href="/history">
-                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3">
+                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3" data-tour="history">
                       <Clock className="h-4 w-4 flex-shrink-0" />
                       <span className="hidden lg:inline text-sm">Histórico</span>
                     </Button>
@@ -223,7 +233,7 @@ export default function Home() {
               Encontre em qual streaming está disponível no Brasil
             </p>
 
-            <div ref={searchRef} className="relative max-w-2xl mx-auto">
+            <div ref={searchRef} className="relative max-w-2xl mx-auto" data-tour="search">
               <form onSubmit={handleSearch} className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input

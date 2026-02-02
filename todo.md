@@ -171,3 +171,10 @@
 - [x] Update all streaming service buttons to use affiliate links
 - [x] Create analytics dashboard showing click statistics and conversions
 - [x] Add affiliate parameters to rent/buy links
+
+## Onboarding & UX Improvements (Round 13)
+- [x] Install tour library (driver.js or intro.js)
+- [x] Create OnboardingTour component with step-by-step guide
+- [x] Add tour steps for: search, subscriptions, lists, alerts, history
+- [x] Implement first-visit detection using localStorage
+- [x] Add skip/restart tour options
