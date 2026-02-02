@@ -202,3 +202,16 @@
 - [x] Show install button for Chrome/Edge Android and Desktop
 - [x] Hide button after app is installed
 - [x] Integrate into app header
+
+
+## Bug Fixes (Round 16)
+- [ ] Fix 404 error during login process
+
+
+## PWA Installation UX Flow (Round 17)
+- [x] Smart install banner - appears after 30s of engagement or 2 page views
+- [x] Value proposition messaging - explain benefits (offline, faster, home screen)
+- [x] Dismiss logic - don't show again for 7 days if dismissed
+- [x] Post-install welcome screen - show on first launch after installation
+- [x] Install analytics - track impressions, dismissals, and successful installs
+- [ ] A/B test different messaging and timing (future enhancement)

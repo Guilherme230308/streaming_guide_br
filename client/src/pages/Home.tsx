@@ -12,6 +12,8 @@ import { getLoginUrl } from "@/const";
 import LandingPage from "./LandingPage";
 import { useOnboardingTour } from "@/components/OnboardingTour";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
+import { PWAInstallBanner } from "@/components/PWAInstallBanner";
+import { PWAWelcome } from "@/components/PWAWelcome";
 
 const RECENT_SEARCHES_KEY = "recentSearches";
 const MAX_RECENT_SEARCHES = 5;
@@ -385,6 +387,10 @@ export default function Home() {
           <p className="mt-2">© 2026 Onde Assistir. Todos os direitos reservados.</p>
         </div>
       </footer>
+
+      {/* PWA Installation Flow */}
+      <PWAInstallBanner />
+      <PWAWelcome />
     </div>
   );
 }
