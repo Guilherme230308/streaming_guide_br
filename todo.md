@@ -294,3 +294,9 @@
 - [x] Add PWA install button to landing page header
 - [x] Ensure install button works before user logs in
 - [x] Test installation flow for non-authenticated users (button renders, needs production HTTPS to trigger)
+
+## PWA Install Button Always Visible Fix (Round 24)
+- [x] Analyze current PWAInstallPrompt component logic
+- [x] Remove dependency on beforeinstallprompt event for button visibility
+- [x] Make button always visible with browser-specific behavior (shows unless already installed)
+- [x] Test on Chrome Desktop and Safari iOS (button now visible in dev environment)

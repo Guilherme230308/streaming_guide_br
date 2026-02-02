@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Download, Share, X } from "lucide-react";
+import { Download, Share } from "lucide-react";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -11,10 +10,10 @@ interface BeforeInstallPromptEvent extends Event {
 
 export function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [showInstallButton, setShowInstallButton] = useState(false);
   const [showIOSInstructions, setShowIOSInstructions] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
+  const [isSafari, setIsSafari] = useState(false);
 
   useEffect(() => {
     // Check if already installed (running in standalone mode)
@@ -27,27 +26,20 @@ export function PWAInstallPrompt() {
     const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     setIsIOS(iOS);
 
-    // For iOS, show instructions if not installed
-    if (iOS && !isInStandaloneMode) {
-      // Check if user dismissed the instructions before
-      const dismissed = localStorage.getItem("pwa-ios-instructions-dismissed");
-      if (!dismissed) {
-        setShowInstallButton(true);
-      }
-    }
+    // Detect Safari (not Chrome on iOS)
+    const safari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    setIsSafari(safari);
 
     // For other browsers, listen for beforeinstallprompt event
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      setShowInstallButton(true);
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
     // Check if app was installed
     window.addEventListener("appinstalled", () => {
-      setShowInstallButton(false);
       setDeferredPrompt(null);
     });
 
@@ -66,17 +58,14 @@ export function PWAInstallPrompt() {
       const { outcome } = await deferredPrompt.userChoice;
       
       if (outcome === "accepted") {
-        setShowInstallButton(false);
+        console.log("PWA installed successfully");
       }
       
       setDeferredPrompt(null);
-    }
-  };
-
-  const handleDismiss = () => {
-    setShowInstallButton(false);
-    if (isIOS) {
-      localStorage.setItem("pwa-ios-instructions-dismissed", "true");
+    } else {
+      // For browsers that don't support beforeinstallprompt yet
+      // Show generic instructions
+      alert("Para instalar este app:\n\n1. Abra o menu do navegador (⋮)\n2. Selecione 'Instalar app' ou 'Adicionar à tela inicial'\n3. Confirme a instalação");
     }
   };
 
@@ -84,14 +73,14 @@ export function PWAInstallPrompt() {
     setShowIOSInstructions(false);
   };
 
-  // Don't show anything if already installed
-  if (isStandalone || !showInstallButton) {
+  // Don't show button if already installed
+  if (isStandalone) {
     return null;
   }
 
   return (
     <>
-      {/* Install Button */}
+      {/* Install Button - Always visible unless already installed */}
       <div className="relative">
         <Button
           onClick={handleInstallClick}
