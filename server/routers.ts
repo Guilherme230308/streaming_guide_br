@@ -264,11 +264,56 @@ export const appRouter = router({
         timeWindow: z.enum(['day', 'week']).default('week'),
       }))
       .query(async ({ input }) => {
-        if (input.mediaType === 'movie') {
-          return await tmdb.getTrendingMovies(input.timeWindow);
-        } else {
-          return await tmdb.getTrendingTVShows(input.timeWindow);
-        }
+        const results = input.mediaType === 'movie' 
+          ? await tmdb.getTrendingMovies(input.timeWindow)
+          : await tmdb.getTrendingTVShows(input.timeWindow);
+        
+        // Fetch providers for each item with timeout
+        const resultsWithProviders = await Promise.all(
+          results.results.map(async (item: any) => {
+            try {
+              // Add timeout to prevent hanging
+              const providerPromise = input.mediaType === 'movie'
+                ? tmdb.getMovieWatchProviders(item.id)
+                : tmdb.getTVShowWatchProviders(item.id);
+              
+              const timeoutPromise = new Promise<null>((resolve) => 
+                setTimeout(() => resolve(null), 2000)
+              );
+              
+              const providers = await Promise.race([providerPromise, timeoutPromise]);
+              
+              // Combine all provider types (flatrate, rent, buy)
+              const allProviders = [
+                ...(providers?.flatrate || []),
+                ...(providers?.rent || []),
+                ...(providers?.buy || []),
+              ];
+              
+              // Remove duplicates based on provider_id
+              const uniqueProviders = Array.from(
+                new Map(allProviders.map(p => [p.provider_id, p])).values()
+              );
+              
+              return {
+                ...item,
+                providers: uniqueProviders,
+              };
+            } catch (error) {
+              // If provider fetch fails, return item without providers
+              console.error(`Failed to fetch providers for ${item.id}:`, error);
+              return {
+                ...item,
+                providers: [],
+              };
+            }
+          })
+        );
+        
+        return {
+          ...results,
+          results: resultsWithProviders,
+        };
       }),
 
     getPopular: publicProcedure

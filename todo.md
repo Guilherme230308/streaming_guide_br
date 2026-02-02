@@ -340,3 +340,10 @@
 - [x] Implement swipe left on cards to mark as not interested
 - [x] Add visual feedback for card swipes (green heart for right, red X for left)
 - [x] Test both features on mobile (implemented, ready for real device testing)
+
+## Streaming Provider Icons on Cards (Round 32)
+- [x] Add provider icons to ContentCard component
+- [x] Fetch provider data from TMDB API for each content (getTrending modified)
+- [x] Display small non-clickable icons at bottom of cards (6x6, max 4 shown, all types: flatrate/rent/buy)
+- [x] Handle multiple providers with proper spacing (+N indicator for overflow)
+- [x] Test provider icons display on home page (implemented, ready for production testing)

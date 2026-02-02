@@ -20,6 +20,11 @@ interface ContentCardProps {
   mediaType: "movie" | "tv";
   releaseDate?: string;
   voteAverage?: number;
+  providers?: Array<{
+    provider_id: number;
+    provider_name: string;
+    logo_path: string;
+  }>;
 }
 
 export function ContentCard({
@@ -29,6 +34,7 @@ export function ContentCard({
   mediaType,
   releaseDate,
   voteAverage,
+  providers = [],
 }: ContentCardProps) {
   const [showListDialog, setShowListDialog] = useState(false);
   const utils = trpc.useUtils();
@@ -156,9 +162,30 @@ export function ContentCard({
             <h3 className="font-semibold text-foreground line-clamp-2 mb-1">
               {title}
             </h3>
-            {year && (
-              <p className="text-sm text-muted-foreground">{year}</p>
-            )}
+            <div className="flex items-center justify-between gap-2">
+              {year && (
+                <p className="text-sm text-muted-foreground">{year}</p>
+              )}
+              
+              {/* Streaming Provider Icons */}
+              {providers && providers.length > 0 && (
+                <div className="flex items-center gap-1 mt-1 flex-wrap">
+                  {providers.slice(0, 4).map((provider) => (
+                    <img
+                      key={provider.provider_id}
+                      src={`https://image.tmdb.org/t/p/w92${provider.logo_path}`}
+                      alt={provider.provider_name}
+                      title={provider.provider_name}
+                      className="h-6 w-6 rounded-md object-cover border border-border/50"
+                      loading="lazy"
+                    />
+                  ))}
+                  {providers.length > 4 && (
+                    <span className="text-xs text-muted-foreground font-medium">+{providers.length - 4}</span>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </a>
       </Link>

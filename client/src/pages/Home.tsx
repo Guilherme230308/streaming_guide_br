@@ -405,6 +405,7 @@ export default function Home() {
                 mediaType="movie"
                 releaseDate={movie.release_date}
                 voteAverage={movie.vote_average}
+                providers={movie.providers}
               />
             ))}
           </div>
@@ -429,6 +430,7 @@ export default function Home() {
                 mediaType="tv"
                 releaseDate={show.first_air_date}
                 voteAverage={show.vote_average}
+                providers={show.providers}
               />
             ))}
           </div>
