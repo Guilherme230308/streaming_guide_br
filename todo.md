@@ -399,3 +399,5 @@
 
 ## Checkpoint para publicação
 - [x] Deduplicação de providers na página principal
+
+- [x] Fix HBO Max deduplication (remove HBO Max Amazon Channel when HBO Max is available)
