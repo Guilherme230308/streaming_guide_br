@@ -86,23 +86,23 @@ export default function Alerts() {
               </div>
             </Link>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1 sm:gap-2 md:gap-4 flex-shrink min-w-0">
               <Link href="/watchlist">
-                <Button variant="ghost" size="sm">
-                  Minha Lista
+                <Button variant="ghost" size="sm" className="px-2 sm:px-3">
+                  <span className="text-sm">Minha Lista</span>
                 </Button>
               </Link>
               <Link href="/subscriptions">
-                <Button variant="ghost" size="sm">
-                  Assinaturas
+                <Button variant="ghost" size="sm" className="px-2 sm:px-3">
+                  <span className="text-sm">Assinaturas</span>
                 </Button>
               </Link>
               <Link href="/alerts">
-                <Button variant="ghost" size="sm">
-                  Alertas
+                <Button variant="ghost" size="sm" className="px-2 sm:px-3">
+                  <span className="text-sm">Alertas</span>
                 </Button>
               </Link>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-xs sm:text-sm text-muted-foreground hidden md:inline truncate max-w-[150px]">
                 Olá, {user?.name || "Usuário"}
               </span>
             </div>

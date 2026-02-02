@@ -2,20 +2,54 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Film, Tv, Bookmark, Bell, Calendar, Grid3x3, Clock } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Search, Film, Tv, Bookmark, Bell, Calendar, Grid3x3, Clock, Check } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
+
+const RECENT_SEARCHES_KEY = "recentSearches";
+const MAX_RECENT_SEARCHES = 5;
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const searchRef = useRef<HTMLDivElement>(null);
 
-  // Search suggestions query with debouncing
+  // Load recent searches from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem(RECENT_SEARCHES_KEY);
+    if (stored) {
+      try {
+        setRecentSearches(JSON.parse(stored));
+      } catch (e) {
+        console.error("Failed to parse recent searches", e);
+      }
+    }
+  }, []);
+
+  // Save search to recent searches
+  const saveRecentSearch = (query: string) => {
+    const trimmed = query.trim();
+    if (!trimmed) return;
+
+    const updated = [trimmed, ...recentSearches.filter(s => s !== trimmed)].slice(0, MAX_RECENT_SEARCHES);
+    setRecentSearches(updated);
+    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
+  };
+
+  // Get user subscriptions
+  const { data: subscriptions } = trpc.subscriptions.get.useQuery(
+    undefined,
+    { enabled: isAuthenticated }
+  );
+
+  // Search suggestions query
   const { data: suggestions } = trpc.content.search.useQuery(
     { query: searchQuery, page: 1 },
     { enabled: searchQuery.length >= 2 }
@@ -32,6 +66,11 @@ export default function Home() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Reset selected index when suggestions change
+  useEffect(() => {
+    setSelectedIndex(-1);
+  }, [searchQuery]);
+
   const { data: trendingMovies } = trpc.content.getTrending.useQuery({
     mediaType: "movie",
     timeWindow: "week",
@@ -42,10 +81,40 @@ export default function Home() {
     timeWindow: "week",
   });
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      setLocation(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+  const handleSearch = (e?: React.FormEvent, query?: string) => {
+    e?.preventDefault();
+    const searchTerm = query || searchQuery.trim();
+    if (searchTerm) {
+      saveRecentSearch(searchTerm);
+      setShowSuggestions(false);
+      setLocation(`/search?q=${encodeURIComponent(searchTerm)}`);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!showSuggestions) return;
+
+    const items = searchQuery.length >= 2 && suggestions?.results 
+      ? suggestions.results.slice(0, 8)
+      : [];
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedIndex(prev => (prev < items.length - 1 ? prev + 1 : prev));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedIndex(prev => (prev > 0 ? prev - 1 : -1));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (selectedIndex >= 0 && items[selectedIndex]) {
+        const item = items[selectedIndex] as any;
+        setShowSuggestions(false);
+        setLocation(`/${item.media_type === 'movie' ? 'movie' : 'tv'}/${item.id}`);
+      } else {
+        handleSearch(e);
+      }
+    } else if (e.key === "Escape") {
+      setShowSuggestions(false);
     }
   };
 
@@ -54,56 +123,68 @@ export default function Home() {
     return `https://image.tmdb.org/t/p/w500${path}`;
   };
 
+  // Check if content is available on user's subscriptions
+  const checkAvailability = async (tmdbId: number, mediaType: string) => {
+    // This would need to be implemented with a tRPC endpoint that checks providers
+    // For now, return empty array
+    return [];
+  };
+
+  const showRecentSearches = showSuggestions && searchQuery.length === 0 && recentSearches.length > 0;
+  const showAutocomplete = showSuggestions && searchQuery.length >= 2 && suggestions?.results && suggestions.results.length > 0;
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       {/* Header */}
       <header className="border-b border-border/40 backdrop-blur-sm sticky top-0 z-50 bg-background/95">
         <div className="container py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
             <Link href="/">
-              <div className="flex items-center gap-2 cursor-pointer">
-                <Film className="h-8 w-8 text-primary" />
-                <span className="text-2xl font-bold text-foreground">Onde Assistir</span>
+              <div className="flex items-center gap-2 cursor-pointer flex-shrink-0">
+                <Film className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+                <span className="text-lg sm:text-2xl font-bold text-foreground whitespace-nowrap">Onde Assistir</span>
               </div>
             </Link>
 
-            <nav className="flex items-center gap-2 md:gap-4">
+            <nav className="flex items-center gap-1 sm:gap-2 md:gap-4 flex-shrink min-w-0">
               {isAuthenticated ? (
                 <>
                   <Link href="/watchlist">
-                    <Button variant="ghost" size="sm" className="gap-2">
-                      <Bookmark className="h-4 w-4" />
-                      <span className="hidden sm:inline">Minha Lista</span>
+                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3">
+                      <Bookmark className="h-4 w-4 flex-shrink-0" />
+                      <span className="hidden sm:inline text-sm">Minha Lista</span>
                     </Button>
                   </Link>
                   <Link href="/subscriptions">
-                    <Button variant="ghost" size="sm" className="gap-2">
-                      <Bell className="h-4 w-4" />
-                      <span className="hidden sm:inline">Assinaturas</span>
+                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3">
+                      <Bell className="h-4 w-4 flex-shrink-0" />
+                      <span className="hidden sm:inline text-sm">Assinaturas</span>
                     </Button>
                   </Link>
                   <Link href="/upcoming">
-                    <Button variant="ghost" size="sm" className="gap-2">
-                      <Calendar className="h-4 w-4" />
-                      <span className="hidden sm:inline">Em Breve</span>
+                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3">
+                      <Calendar className="h-4 w-4 flex-shrink-0" />
+                      <span className="hidden md:inline text-sm">Em Breve</span>
                     </Button>
                   </Link>
                   <Link href="/genres">
-                    <Button variant="ghost" size="sm" className="gap-2">
-                      <Grid3x3 className="h-4 w-4" />
-                      <span className="hidden sm:inline">Gêneros</span>
+                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3">
+                      <Grid3x3 className="h-4 w-4 flex-shrink-0" />
+                      <span className="hidden md:inline text-sm">Gêneros</span>
                     </Button>
                   </Link>
                   <Link href="/history">
-                    <Button variant="ghost" size="sm" className="gap-2">
-                      <Clock className="h-4 w-4" />
-                      <span className="hidden sm:inline">Histórico</span>
+                    <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3">
+                      <Clock className="h-4 w-4 flex-shrink-0" />
+                      <span className="hidden lg:inline text-sm">Histórico</span>
                     </Button>
                   </Link>
-                  <span className="text-sm text-muted-foreground hidden md:inline">Olá, {user?.name}</span>
+                  <span className="text-xs sm:text-sm text-muted-foreground hidden xl:inline truncate max-w-[150px]">
+                    Olá, {user?.name}
+                  </span>
                 </>
               ) : (
-                <Button asChild variant="default">
+                <Button asChild variant="default" size="sm">
                   <a href={getLoginUrl()}>Entrar</a>
                 </Button>
               )}
@@ -113,19 +194,19 @@ export default function Home() {
       </header>
 
       {/* Hero Section with Search */}
-      <section className="py-16 bg-gradient-to-b from-background to-background/50">
-        <div className="container">
+      <section className="py-12 sm:py-16 bg-gradient-to-b from-background to-background/50">
+        <div className="container px-4">
           <div className="max-w-3xl mx-auto text-center space-y-6">
-            <h1 className="text-5xl font-bold text-foreground">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">
               Descubra onde assistir seus filmes e séries favoritos
             </h1>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-lg sm:text-xl text-muted-foreground">
               Encontre em qual streaming está disponível no Brasil
             </p>
 
             <div ref={searchRef} className="relative max-w-2xl mx-auto">
               <form onSubmit={handleSearch} className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
                   type="text"
                   placeholder="Buscar filmes ou séries..."
@@ -135,6 +216,7 @@ export default function Home() {
                     setShowSuggestions(true);
                   }}
                   onFocus={() => setShowSuggestions(true)}
+                  onKeyDown={handleKeyDown}
                   className="pl-12 h-14 text-lg bg-card border-border"
                 />
                 <Button
@@ -146,31 +228,64 @@ export default function Home() {
                 </Button>
               </form>
 
+              {/* Recent Searches */}
+              {showRecentSearches && (
+                <div className="absolute top-full mt-2 w-full bg-card border border-border rounded-lg shadow-lg z-50">
+                  <div className="p-3 border-b border-border">
+                    <p className="text-sm font-medium text-muted-foreground">Buscas Recentes</p>
+                  </div>
+                  {recentSearches.map((search, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        setSearchQuery(search);
+                        handleSearch(undefined, search);
+                      }}
+                      className="w-full flex items-center gap-3 p-3 hover:bg-accent transition-colors text-left"
+                    >
+                      <Clock className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-foreground">{search}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+
               {/* Autocomplete Suggestions */}
-              {showSuggestions && searchQuery.length >= 2 && suggestions?.results && suggestions.results.length > 0 && (
+              {showAutocomplete && (
                 <div className="absolute top-full mt-2 w-full bg-card border border-border rounded-lg shadow-lg max-h-96 overflow-y-auto z-50">
-                  {suggestions.results.slice(0, 8).map((item: any) => (
+                  {suggestions.results.slice(0, 8).map((item: any, index: number) => (
                     <button
                       key={`${item.media_type}-${item.id}`}
                       onClick={() => {
                         setShowSuggestions(false);
                         setLocation(`/${item.media_type === 'movie' ? 'movie' : 'tv'}/${item.id}`);
                       }}
-                      className="w-full flex items-center gap-3 p-3 hover:bg-accent transition-colors text-left"
+                      className={`w-full flex items-center gap-3 p-3 transition-colors text-left ${
+                        index === selectedIndex ? 'bg-accent' : 'hover:bg-accent'
+                      }`}
                     >
                       <img
                         src={getImageUrl(item.poster_path)}
                         alt={item.title || item.name}
-                        className="w-12 h-16 object-cover rounded"
+                        className="w-12 h-16 object-cover rounded flex-shrink-0"
                       />
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-foreground truncate">
                           {item.title || item.name}
                         </p>
-                        <p className="text-sm text-muted-foreground">
-                          {item.media_type === 'movie' ? 'Filme' : 'Série'}
-                          {item.release_date || item.first_air_date ? ` • ${(item.release_date || item.first_air_date).split('-')[0]}` : ''}
-                        </p>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="text-sm text-muted-foreground">
+                            {item.media_type === 'movie' ? 'Filme' : 'Série'}
+                            {item.release_date || item.first_air_date ? ` • ${(item.release_date || item.first_air_date).split('-')[0]}` : ''}
+                          </p>
+                          {/* Availability indicator - placeholder for now */}
+                          {subscriptions && subscriptions.length > 0 && (
+                            <Badge variant="secondary" className="text-xs gap-1">
+                              <Check className="h-3 w-3" />
+                              Disponível
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                     </button>
                   ))}
@@ -183,7 +298,7 @@ export default function Home() {
 
       {/* Trending Movies */}
       <section className="py-12">
-        <div className="container">
+        <div className="container px-4">
           <div className="flex items-center gap-2 mb-6">
             <Film className="h-6 w-6 text-primary" />
             <h2 className="text-2xl font-bold text-foreground">Filmes em Alta</h2>
@@ -206,7 +321,7 @@ export default function Home() {
                         {movie.title}
                       </h3>
                       <p className="text-xs text-muted-foreground mt-1">
-                        {movie.release_date?.split("-")[0]}
+                        {movie.release_date?.split('-')[0]}
                       </p>
                     </div>
                   </CardContent>
@@ -218,8 +333,8 @@ export default function Home() {
       </section>
 
       {/* Trending TV Shows */}
-      <section className="py-12 bg-card/30">
-        <div className="container">
+      <section className="py-12">
+        <div className="container px-4">
           <div className="flex items-center gap-2 mb-6">
             <Tv className="h-6 w-6 text-primary" />
             <h2 className="text-2xl font-bold text-foreground">Séries em Alta</h2>
@@ -242,7 +357,7 @@ export default function Home() {
                         {show.name}
                       </h3>
                       <p className="text-xs text-muted-foreground mt-1">
-                        {show.first_air_date?.split("-")[0]}
+                        {show.first_air_date?.split('-')[0]}
                       </p>
                     </div>
                   </CardContent>
@@ -255,23 +370,9 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="border-t border-border/40 py-8 mt-12">
-        <div className="container">
-          <div className="flex flex-col items-center gap-4 text-center">
-            <p className="text-sm text-muted-foreground">
-              Dados de disponibilidade fornecidos por{" "}
-              <a
-                href="https://www.justwatch.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                JustWatch
-              </a>
-            </p>
-            <p className="text-xs text-muted-foreground">
-              © 2026 Onde Assistir. Todos os direitos reservados.
-            </p>
-          </div>
+        <div className="container px-4 text-center text-sm text-muted-foreground">
+          <p>Dados de disponibilidade fornecidos por <a href="https://www.justwatch.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">JustWatch</a></p>
+          <p className="mt-2">© 2026 Onde Assistir. Todos os direitos reservados.</p>
         </div>
       </footer>
     </div>

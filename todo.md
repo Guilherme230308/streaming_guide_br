@@ -82,5 +82,10 @@
 - [x] Build personalized recommendations based on viewing history
 - [x] Create custom lists system - Allow users to create multiple lists beyond watchlist (backend ready, UI in progress)
 
-## New Feature Request
+## New Feature Requests (Round 2)
 - [x] Add autocomplete to homepage search bar with real-time suggestions
+- [x] Add availability indicators in autocomplete suggestions (show which content is on user's subscriptions)
+- [x] Implement keyboard navigation (arrow keys + Enter) in autocomplete
+- [x] Add "Recent Searches" section when clicking empty search bar
+- [x] Make search results appear live as user types (without clicking Search button) - Already implemented with debounce
+- [x] Fix mobile horizontal scrolling on pages with user header
