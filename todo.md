@@ -407,3 +407,5 @@
 - [x] Create AI chat dialog component with UI
 - [x] Add AI assistant button next to search and filter buttons
 - [x] Test the feature end-to-end
+
+- [x] Fix AI chat dialog scrolling - messages are being cut off and cannot scroll to see full conversation

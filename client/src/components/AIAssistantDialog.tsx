@@ -77,7 +77,7 @@ export function AIAssistantDialog({ open, onOpenChange }: AIAssistantDialogProps
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] h-[600px] flex flex-col p-0 gap-0">
+      <DialogContent className="sm:max-w-[500px] max-h-[80vh] h-[600px] flex flex-col p-0 gap-0 overflow-hidden">
         <DialogHeader className="px-4 py-3 border-b border-border">
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" />
@@ -85,8 +85,8 @@ export function AIAssistantDialog({ open, onOpenChange }: AIAssistantDialogProps
           </DialogTitle>
         </DialogHeader>
 
-        <ScrollArea ref={scrollAreaRef} className="flex-1 px-4">
-          <div className="py-4 space-y-4">
+        <ScrollArea ref={scrollAreaRef} className="flex-1 px-4 overflow-y-auto" style={{ minHeight: 0 }}>
+          <div className="py-4 space-y-4 pb-2">
             {messages.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
                 <Sparkles className="h-12 w-12 mx-auto mb-4 opacity-50" />
