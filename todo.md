@@ -228,3 +228,10 @@
 - [x] Integrate filters into Home page search
 - [x] Save filter state in URL params for sharing
 - [x] Add "Clear Filters" button
+
+
+## OAuth 404 Fix (Round 19)
+- [x] Investigate why previous OAuth callback fix didn't work in production
+- [x] Check if catch-all route is still being applied incorrectly
+- [x] Verify API routes are registered before static file serving
+- [x] Implement regex-based route exclusion for /api/ paths
