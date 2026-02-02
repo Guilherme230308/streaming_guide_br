@@ -14,6 +14,39 @@ function getImageUrl(path: string | null, size: string = "w500"): string {
   return `${TMDB_IMAGE_BASE}/${size}${path}`;
 }
 
+// Genre background images mapping (using representative movie posters)
+const GENRE_IMAGES: Record<string, string> = {
+  // Movies
+  "28": "https://image.tmdb.org/t/p/w500/qmDpIHrmpJINaRKAfWQfftjCdyi.jpg", // Action - John Wick
+  "12": "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg", // Adventure - Indiana Jones
+  "16": "https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg", // Animation - Toy Story
+  "35": "https://image.tmdb.org/t/p/w500/iiXliCeykkzmJ0Eg9RYJ7F2CWSz.jpg", // Comedy - The Hangover
+  "80": "https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg", // Crime - The Godfather
+  "99": "https://image.tmdb.org/t/p/w500/yDHYTfA3R0jFYba16jBB1ef8oIt.jpg", // Documentary
+  "18": "https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg", // Drama - Forrest Gump
+  "10751": "https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg", // Family
+  "14": "https://image.tmdb.org/t/p/w500/wuMc08IPKEatf9rnMNXvIDxqP4W.jpg", // Fantasy - Harry Potter
+  "36": "https://image.tmdb.org/t/p/w500/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg", // History
+  "27": "https://image.tmdb.org/t/p/w500/lifXEMX4l4PLborYcd6Ow4VYdXy.jpg", // Horror - The Conjuring
+  "10402": "https://image.tmdb.org/t/p/w500/qNBAXBIQlnOThrVvA6mA2B5ggV6.jpg", // Music - La La Land
+  "9648": "https://image.tmdb.org/t/p/w500/iuFNMS8U5cb6xfzi51Dbkovj7vM.jpg", // Mystery - Knives Out
+  "10749": "https://image.tmdb.org/t/p/w500/kEl2t3OhXc3Zb9FBh1AuYzRTgZp.jpg", // Romance - The Notebook
+  "878": "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg", // Sci-Fi - Interstellar
+  "10770": "https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg", // TV Movie
+  "53": "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg", // Thriller - Inception
+  "10752": "https://image.tmdb.org/t/p/w500/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg", // War
+  "37": "https://image.tmdb.org/t/p/w500/vfrQk5IPloGg1v9Rzbh2Eg3VGyM.jpg", // Western
+  // TV
+  "10759": "https://image.tmdb.org/t/p/w500/qmDpIHrmpJINaRKAfWQfftjCdyi.jpg", // Action & Adventure
+  "10762": "https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg", // Kids
+  "10763": "https://image.tmdb.org/t/p/w500/yDHYTfA3R0jFYba16jBB1ef8oIt.jpg", // News
+  "10764": "https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg", // Reality
+  "10765": "https://image.tmdb.org/t/p/w500/wuMc08IPKEatf9rnMNXvIDxqP4W.jpg", // Sci-Fi & Fantasy
+  "10766": "https://image.tmdb.org/t/p/w500/kEl2t3OhXc3Zb9FBh1AuYzRTgZp.jpg", // Soap
+  "10767": "https://image.tmdb.org/t/p/w500/iiXliCeykkzmJ0Eg9RYJ7F2CWSz.jpg", // Talk
+  "10768": "https://image.tmdb.org/t/p/w500/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg", // War & Politics
+};
+
 export default function Genres() {
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState<"movie" | "tv">("movie");
@@ -90,12 +123,20 @@ export default function Genres() {
                 {movieGenres?.genres.map((genre) => (
                   <Card
                     key={genre.id}
-                    className="cursor-pointer hover:bg-accent transition-colors"
+                    className="cursor-pointer hover:ring-2 hover:ring-primary transition-all overflow-hidden group"
                     onClick={() => setSelectedGenre(genre.id)}
                   >
-                    <CardContent className="p-6 text-center">
-                      <h3 className="font-semibold text-lg">{genre.name}</h3>
-                    </CardContent>
+                    <div className="relative aspect-[3/2] overflow-hidden">
+                      <img
+                        src={GENRE_IMAGES[genre.id.toString()] || "/placeholder-poster.png"}
+                        alt={genre.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                      <h3 className="absolute bottom-4 left-4 right-4 font-bold text-xl text-white">
+                        {genre.name}
+                      </h3>
+                    </div>
                   </Card>
                 ))}
               </div>
@@ -165,12 +206,20 @@ export default function Genres() {
                 {tvGenres?.genres.map((genre) => (
                   <Card
                     key={genre.id}
-                    className="cursor-pointer hover:bg-accent transition-colors"
+                    className="cursor-pointer hover:ring-2 hover:ring-primary transition-all overflow-hidden group"
                     onClick={() => setSelectedGenre(genre.id)}
                   >
-                    <CardContent className="p-6 text-center">
-                      <h3 className="font-semibold text-lg">{genre.name}</h3>
-                    </CardContent>
+                    <div className="relative aspect-[3/2] overflow-hidden">
+                      <img
+                        src={GENRE_IMAGES[genre.id.toString()] || "/placeholder-poster.png"}
+                        alt={genre.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                      <h3 className="absolute bottom-4 left-4 right-4 font-bold text-xl text-white">
+                        {genre.name}
+                      </h3>
+                    </div>
                   </Card>
                 ))}
               </div>

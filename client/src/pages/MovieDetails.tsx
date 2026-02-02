@@ -97,6 +97,13 @@ export default function MovieDetails() {
     },
   });
 
+  const markAsWatchedMutation = trpc.viewingHistory.add.useMutation({
+    onSuccess: () => {
+      utils.viewingHistory.get.invalidate();
+      toast.success("Marcado como assistido!");
+    },
+  });
+
   const handleWatchlistToggle = () => {
     if (!isAuthenticated) {
       window.location.href = getLoginUrl();
@@ -119,6 +126,22 @@ export default function MovieDetails() {
         releaseDate: movie.release_date,
       });
     }
+  };
+
+  const handleMarkAsWatched = () => {
+    if (!isAuthenticated) {
+      window.location.href = getLoginUrl();
+      return;
+    }
+
+    if (!movie) return;
+
+    markAsWatchedMutation.mutate({
+      tmdbId: movieId,
+      mediaType: "movie",
+      title: movie.title,
+      posterPath: movie.poster_path,
+    });
   };
 
   const handleProviderClick = async (provider: any, clickType: 'stream' | 'rent' | 'buy', event: React.MouseEvent) => {
@@ -262,24 +285,48 @@ export default function MovieDetails() {
                 ))}
               </div>
 
-              <Button
-                size="lg"
-                variant={isInWatchlist ? "outline" : "default"}
-                onClick={handleWatchlistToggle}
-                className="gap-2"
-              >
-                {isInWatchlist ? (
-                  <>
-                    <BookmarkCheck className="h-5 w-5" />
-                    Na minha lista
-                  </>
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  size="lg"
+                  variant={isInWatchlist ? "outline" : "default"}
+                  onClick={handleWatchlistToggle}
+                  className="gap-2"
+                >
+                  {isInWatchlist ? (
+                    <>
+                      <BookmarkCheck className="h-5 w-5" />
+                      Na minha lista
+                    </>
+                  ) : (
+                    <>
+                      <Bookmark className="h-5 w-5" />
+                      Adicionar à lista
+                    </>
+                  )}
+                </Button>
+
+                {isAuthenticated ? (
+                  <Button
+                    size="lg"
+                    variant="secondary"
+                    onClick={handleMarkAsWatched}
+                    className="gap-2"
+                  >
+                    <Clock className="h-5 w-5" />
+                    Marcar como assistido
+                  </Button>
                 ) : (
-                  <>
-                    <Bookmark className="h-5 w-5" />
-                    Adicionar à lista
-                  </>
+                  <Button
+                    size="lg"
+                    variant="secondary"
+                    onClick={() => window.location.href = getLoginUrl()}
+                    className="gap-2"
+                  >
+                    <Clock className="h-5 w-5" />
+                    Marcar como assistido
+                  </Button>
                 )}
-              </Button>
+              </div>
 
               <div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">Sinopse</h3>

@@ -89,3 +89,7 @@
 - [x] Add "Recent Searches" section when clicking empty search bar
 - [x] Make search results appear live as user types (without clicking Search button) - Already implemented with debounce
 - [x] Fix mobile horizontal scrolling on pages with user header
+
+## New Feature Requests (Round 3)
+- [x] Add "Mark as Watched" button to movie and TV show detail pages
+- [x] Add genre images/backgrounds to genres page for better visual appeal
