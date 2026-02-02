@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE `viewing_history` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`userId` int NOT NULL,\n\t`tmdbId` int NOT NULL,\n\t`mediaType` enum('movie','tv') NOT NULL,\n\t`title` varchar(500) NOT NULL,\n\t`posterPath` varchar(255),\n\t`watchedAt` timestamp NOT NULL DEFAULT (now()),\n\t`genreIds` text,\n\tCONSTRAINT `viewing_history_id` PRIMARY KEY(`id`),\n\tCONSTRAINT `viewing_history_userId_tmdbId_mediaType_unique` UNIQUE(`userId`,`tmdbId`,`mediaType`)\n);\n\nCREATE INDEX `userIdIdx` ON `viewing_history` (`userId`);\nCREATE INDEX `watchedAtIdx` ON `viewing_history` (`watchedAt`);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2ZhujiYnxXczSgu.root --database Cvg8278ofufQzThj4s4h83 --execute CREATE TABLE `viewing_history` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`userId` int NOT NULL,\n\t`tmdbId` int NOT NULL,\n\t`mediaType` enum('movie','tv') NOT NULL,\n\t`title` varchar(500) NOT NULL,\n\t`posterPath` varchar(255),\n\t`watchedAt` timestamp NOT NULL DEFAULT (now()),\n\t`genreIds` text,\n\tCONSTRAINT `viewing_history_id` PRIMARY KEY(`id`),\n\tCONSTRAINT `viewing_history_userId_tmdbId_mediaType_unique` UNIQUE(`userId`,`tmdbId`,`mediaType`)\n);\n\nCREATE INDEX `userIdIdx` ON `viewing_history` (`userId`);\nCREATE INDEX `watchedAtIdx` ON `viewing_history` (`watchedAt`);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 2682
+}

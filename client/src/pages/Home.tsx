@@ -2,7 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Film, Tv, Bookmark, Bell, Calendar } from "lucide-react";
+import { Search, Film, Tv, Bookmark, Bell, Calendar, Grid3x3, Clock } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -48,28 +48,40 @@ export default function Home() {
               </div>
             </Link>
 
-            <nav className="flex items-center gap-4">
+            <nav className="flex items-center gap-2 md:gap-4">
               {isAuthenticated ? (
                 <>
                   <Link href="/watchlist">
                     <Button variant="ghost" size="sm" className="gap-2">
                       <Bookmark className="h-4 w-4" />
-                      Minha Lista
+                      <span className="hidden sm:inline">Minha Lista</span>
                     </Button>
                   </Link>
                   <Link href="/subscriptions">
                     <Button variant="ghost" size="sm" className="gap-2">
                       <Bell className="h-4 w-4" />
-                      Assinaturas
+                      <span className="hidden sm:inline">Assinaturas</span>
                     </Button>
                   </Link>
                   <Link href="/upcoming">
                     <Button variant="ghost" size="sm" className="gap-2">
                       <Calendar className="h-4 w-4" />
-                      Em Breve
+                      <span className="hidden sm:inline">Em Breve</span>
                     </Button>
                   </Link>
-                  <span className="text-sm text-muted-foreground">Olá, {user?.name}</span>
+                  <Link href="/genres">
+                    <Button variant="ghost" size="sm" className="gap-2">
+                      <Grid3x3 className="h-4 w-4" />
+                      <span className="hidden sm:inline">Gêneros</span>
+                    </Button>
+                  </Link>
+                  <Link href="/history">
+                    <Button variant="ghost" size="sm" className="gap-2">
+                      <Clock className="h-4 w-4" />
+                      <span className="hidden sm:inline">Histórico</span>
+                    </Button>
+                  </Link>
+                  <span className="text-sm text-muted-foreground hidden md:inline">Olá, {user?.name}</span>
                 </>
               ) : (
                 <Button asChild variant="default">

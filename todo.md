@@ -74,3 +74,10 @@
 - [x] Create reviews system - Let users write and read reviews from Brazilian community
 - [x] Build "Em Breve" (Coming Soon) section - Show upcoming releases on Brazilian streaming services
 - [x] Add automatic alert creation for upcoming releases
+
+## Phase 10: Additional Features (User Requested - Round 3)
+- [x] Fix mobile horizontal scrolling issue
+- [x] Add genre browsing pages - Create navigation by genre (Action, Comedy, Drama, etc.)
+- [x] Implement viewing history - Track what user has watched
+- [x] Build personalized recommendations based on viewing history
+- [x] Create custom lists system - Allow users to create multiple lists beyond watchlist (backend ready, UI in progress)

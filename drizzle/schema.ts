@@ -162,3 +162,63 @@ export const reviews = mysqlTable("reviews", {
 
 export type Review = typeof reviews.$inferSelect;
 export type InsertReview = typeof reviews.$inferInsert;
+
+
+/**
+ * Viewing history - tracks what users have watched
+ */
+export const viewingHistory = mysqlTable("viewing_history", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  tmdbId: int("tmdbId").notNull(), // TMDB content ID
+  mediaType: mysqlEnum("mediaType", ["movie", "tv"]).notNull(),
+  title: varchar("title", { length: 500 }).notNull(),
+  posterPath: varchar("posterPath", { length: 255 }),
+  watchedAt: timestamp("watchedAt").defaultNow().notNull(),
+  genreIds: text("genreIds"), // JSON array of genre IDs for recommendations
+}, (table) => ({
+  userIdIdx: index("userIdIdx").on(table.userId),
+  watchedAtIdx: index("watchedAtIdx").on(table.watchedAt),
+  userTmdbUnique: unique().on(table.userId, table.tmdbId, table.mediaType),
+}));
+
+export type ViewingHistory = typeof viewingHistory.$inferSelect;
+export type InsertViewingHistory = typeof viewingHistory.$inferInsert;
+
+
+/**
+ * Custom lists - user-created lists for organizing content
+ */
+export const customLists = mysqlTable("custom_lists", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  isPublic: boolean("isPublic").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("userIdIdx").on(table.userId),
+}));
+
+export type CustomList = typeof customLists.$inferSelect;
+export type InsertCustomList = typeof customLists.$inferInsert;
+
+/**
+ * Custom list items - content in custom lists
+ */
+export const customListItems = mysqlTable("custom_list_items", {
+  id: int("id").autoincrement().primaryKey(),
+  listId: int("listId").notNull(),
+  tmdbId: int("tmdbId").notNull(), // TMDB content ID
+  mediaType: mysqlEnum("mediaType", ["movie", "tv"]).notNull(),
+  title: varchar("title", { length: 500 }).notNull(),
+  posterPath: varchar("posterPath", { length: 255 }),
+  addedAt: timestamp("addedAt").defaultNow().notNull(),
+}, (table) => ({
+  listIdIdx: index("listIdIdx").on(table.listId),
+  listTmdbUnique: unique().on(table.listId, table.tmdbId, table.mediaType),
+}));
+
+export type CustomListItem = typeof customListItems.$inferSelect;
+export type InsertCustomListItem = typeof customListItems.$inferInsert;

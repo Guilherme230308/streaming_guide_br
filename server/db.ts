@@ -22,7 +22,10 @@ import {
   Rating,
   reviews,
   InsertReview,
-  Review
+  Review,
+  viewingHistory,
+  InsertViewingHistory,
+  ViewingHistory
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -433,4 +436,81 @@ export async function getContentReviews(tmdbId: number, mediaType: 'movie' | 'tv
     ...r,
     userName: r.userName || 'Usuário Anônimo'
   }));
+}
+
+
+// Viewing History functions
+export async function addToViewingHistory(history: InsertViewingHistory): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+
+  try {
+    await db.insert(viewingHistory).values(history).onDuplicateKeyUpdate({
+      set: {
+        watchedAt: new Date(),
+        title: history.title,
+        posterPath: history.posterPath,
+        genreIds: history.genreIds,
+      },
+    });
+  } catch (error) {
+    console.error("[Database] Failed to add to viewing history:", error);
+    throw error;
+  }
+}
+
+export async function getUserViewingHistory(userId: number): Promise<ViewingHistory[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  try {
+    return await db
+      .select()
+      .from(viewingHistory)
+      .where(eq(viewingHistory.userId, userId))
+      .orderBy(desc(viewingHistory.watchedAt))
+      .limit(100);
+  } catch (error) {
+    console.error("[Database] Failed to get viewing history:", error);
+    return [];
+  }
+}
+
+export async function getUserGenrePreferences(userId: number): Promise<number[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  try {
+    const history = await db
+      .select()
+      .from(viewingHistory)
+      .where(eq(viewingHistory.userId, userId))
+      .orderBy(desc(viewingHistory.watchedAt))
+      .limit(50);
+
+    // Extract and count genre occurrences
+    const genreCounts: Record<number, number> = {};
+    
+    for (const item of history) {
+      if (item.genreIds) {
+        try {
+          const genres = JSON.parse(item.genreIds) as number[];
+          for (const genreId of genres) {
+            genreCounts[genreId] = (genreCounts[genreId] || 0) + 1;
+          }
+        } catch (e) {
+          // Skip invalid JSON
+        }
+      }
+    }
+
+    // Return top 5 genres sorted by frequency
+    return Object.entries(genreCounts)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 5)
+      .map(([genreId]) => parseInt(genreId));
+  } catch (error) {
+    console.error("[Database] Failed to get genre preferences:", error);
+    return [];
+  }
 }

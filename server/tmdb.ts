@@ -344,3 +344,52 @@ export async function getUpcomingTVShows(page: number = 1): Promise<{ results: T
     return { results: [], total_pages: 0, total_results: 0 };
   }
 }
+
+
+export interface TMDBGenre {
+  id: number;
+  name: string;
+}
+
+export async function getMovieGenres(): Promise<{ genres: TMDBGenre[] }> {
+  const response = await tmdbApi.get('/genre/movie/list', {
+    params: {
+      language: 'pt-BR',
+    },
+  });
+  return response.data;
+}
+
+export async function getTVGenres(): Promise<{ genres: TMDBGenre[] }> {
+  const response = await tmdbApi.get('/genre/tv/list', {
+    params: {
+      language: 'pt-BR',
+    },
+  });
+  return response.data;
+}
+
+export async function discoverMoviesByGenre(genreId: number, page: number = 1): Promise<{ results: TMDBMovie[]; page: number; total_pages: number; total_results: number }> {
+  const response = await tmdbApi.get('/discover/movie', {
+    params: {
+      with_genres: genreId,
+      page,
+      language: 'pt-BR',
+      region: 'BR',
+      sort_by: 'popularity.desc',
+    },
+  });
+  return response.data;
+}
+
+export async function discoverTVShowsByGenre(genreId: number, page: number = 1): Promise<{ results: TMDBTVShow[]; page: number; total_pages: number; total_results: number }> {
+  const response = await tmdbApi.get('/discover/tv', {
+    params: {
+      with_genres: genreId,
+      page,
+      language: 'pt-BR',
+      sort_by: 'popularity.desc',
+    },
+  });
+  return response.data;
+}

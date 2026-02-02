@@ -224,6 +224,32 @@ export const appRouter = router({
           return await tmdb.getTVShowRecommendations(input.id, input.page);
         }
       }),
+
+    getGenres: publicProcedure
+      .input(z.object({
+        mediaType: z.enum(['movie', 'tv']),
+      }))
+      .query(async ({ input }) => {
+        if (input.mediaType === 'movie') {
+          return await tmdb.getMovieGenres();
+        } else {
+          return await tmdb.getTVGenres();
+        }
+      }),
+
+    discoverByGenre: publicProcedure
+      .input(z.object({
+        mediaType: z.enum(['movie', 'tv']),
+        genreId: z.number(),
+        page: z.number().default(1),
+      }))
+      .query(async ({ input }) => {
+        if (input.mediaType === 'movie') {
+          return await tmdb.discoverMoviesByGenre(input.genreId, input.page);
+        } else {
+          return await tmdb.discoverTVShowsByGenre(input.genreId, input.page);
+        }
+      }),
   }),
 
   watchlist: router({
@@ -443,6 +469,59 @@ export const appRouter = router({
       }))
       .query(async ({ input }) => {
         return await db.getContentReviews(input.tmdbId, input.mediaType);
+      }),
+  }),
+
+  viewingHistory: router({
+    add: protectedProcedure
+      .input(z.object({
+        tmdbId: z.number(),
+        mediaType: z.enum(['movie', 'tv']),
+        title: z.string(),
+        posterPath: z.string().nullable(),
+        genreIds: z.array(z.number()).optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        await db.addToViewingHistory({
+          userId: ctx.user.id,
+          tmdbId: input.tmdbId,
+          mediaType: input.mediaType,
+          title: input.title,
+          posterPath: input.posterPath,
+          genreIds: input.genreIds ? JSON.stringify(input.genreIds) : undefined,
+        });
+        return { success: true };
+      }),
+
+    get: protectedProcedure.query(async ({ ctx }) => {
+      return await db.getUserViewingHistory(ctx.user.id);
+    }),
+
+    getRecommendations: protectedProcedure
+      .input(z.object({
+        mediaType: z.enum(['movie', 'tv']),
+        page: z.number().default(1),
+      }))
+      .query(async ({ input, ctx }) => {
+        // Get user's genre preferences from viewing history
+        const preferredGenres = await db.getUserGenrePreferences(ctx.user.id);
+        
+        if (preferredGenres.length === 0) {
+          // If no history, return popular content
+          if (input.mediaType === 'movie') {
+            return await tmdb.getPopularMovies(input.page);
+          } else {
+            return await tmdb.getPopularTVShows(input.page);
+          }
+        }
+
+        // Get content based on preferred genres
+        const genreId = preferredGenres[0]; // Use top genre
+        if (input.mediaType === 'movie') {
+          return await tmdb.discoverMoviesByGenre(genreId, input.page);
+        } else {
+          return await tmdb.discoverTVShowsByGenre(genreId, input.page);
+        }
       }),
   }),
 
