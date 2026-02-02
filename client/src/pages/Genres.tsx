@@ -17,7 +17,7 @@ function getImageUrl(path: string | null, size: string = "w500"): string {
 // Genre background images mapping (using representative movie posters)
 const GENRE_IMAGES: Record<string, string> = {
   // Movies
-  "28": "https://image.tmdb.org/t/p/w500/qmDpIHrmpJINaRKAfWQfftjCdyi.jpg", // Action - John Wick
+  "28": "https://image.tmdb.org/t/p/w500/pIkRyD18kl4FhoCNQuWxWu5cBLM.jpg", // Action - Mad Max
   "12": "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg", // Adventure - Indiana Jones
   "16": "https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg", // Animation - Toy Story
   "35": "https://image.tmdb.org/t/p/w500/iiXliCeykkzmJ0Eg9RYJ7F2CWSz.jpg", // Comedy - The Hangover
@@ -27,7 +27,7 @@ const GENRE_IMAGES: Record<string, string> = {
   "10751": "https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg", // Family
   "14": "https://image.tmdb.org/t/p/w500/wuMc08IPKEatf9rnMNXvIDxqP4W.jpg", // Fantasy - Harry Potter
   "36": "https://image.tmdb.org/t/p/w500/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg", // History
-  "27": "https://image.tmdb.org/t/p/w500/lifXEMX4l4PLborYcd6Ow4VYdXy.jpg", // Horror - The Conjuring
+  "27": "https://image.tmdb.org/t/p/w500/db32LaOibwEliAmSL2jjDF6oDdj.jpg", // Horror - It
   "10402": "https://image.tmdb.org/t/p/w500/qNBAXBIQlnOThrVvA6mA2B5ggV6.jpg", // Music - La La Land
   "9648": "https://image.tmdb.org/t/p/w500/iuFNMS8U5cb6xfzi51Dbkovj7vM.jpg", // Mystery - Knives Out
   "10749": "https://image.tmdb.org/t/p/w500/kEl2t3OhXc3Zb9FBh1AuYzRTgZp.jpg", // Romance - The Notebook
@@ -37,7 +37,7 @@ const GENRE_IMAGES: Record<string, string> = {
   "10752": "https://image.tmdb.org/t/p/w500/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg", // War
   "37": "https://image.tmdb.org/t/p/w500/vfrQk5IPloGg1v9Rzbh2Eg3VGyM.jpg", // Western
   // TV
-  "10759": "https://image.tmdb.org/t/p/w500/qmDpIHrmpJINaRKAfWQfftjCdyi.jpg", // Action & Adventure
+  "10759": "https://image.tmdb.org/t/p/w500/pIkRyD18kl4FhoCNQuWxWu5cBLM.jpg", // Action & Adventure - Mad Max
   "10762": "https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg", // Kids
   "10763": "https://image.tmdb.org/t/p/w500/yDHYTfA3R0jFYba16jBB1ef8oIt.jpg", // News
   "10764": "https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg", // Reality

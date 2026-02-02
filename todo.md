@@ -93,3 +93,9 @@
 ## New Feature Requests (Round 3)
 - [x] Add "Mark as Watched" button to movie and TV show detail pages
 - [x] Add genre images/backgrounds to genres page for better visual appeal
+
+## New Feature Requests (Round 4)
+- [x] Remove "Made with Manus" button from the website
+
+## Bug Fixes (Round 5)
+- [x] Fix broken genre images for Action (28), Horror (27), and Action & Adventure (10759)
