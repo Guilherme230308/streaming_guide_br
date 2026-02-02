@@ -366,3 +366,10 @@
 - [x] Remove "Minha Lista" from desktop navigation
 - [x] Remove "Minha Lista" from mobile menu
 - [x] Test navigation after removal (clean header, only Listas, Alertas, Preços, Instalar App visible)
+
+## Filter UI Enhancements (Round 36)
+- [x] Change filter button to icon-only (remove "Filtros" text)
+- [x] Position filter button side-by-side with search button (already positioned)
+- [x] Add active filters display below search bar (badges with X to remove)
+- [x] Update trending content immediately when "Aplicar Filtros" is clicked (already implemented)
+- [x] Test filter application and content updates (icon-only button visible with badge)

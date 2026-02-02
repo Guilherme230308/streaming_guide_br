@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { ContentCard } from "@/components/ContentCard";
 import { Badge } from "@/components/ui/badge";
-import { Search, Film, Tv, Bookmark, Bell, Calendar, Grid3x3, Clock, Check, List, DollarSign } from "lucide-react";
+import { Search, Film, Tv, Bookmark, Bell, Calendar, Grid3x3, Clock, Check, List, DollarSign, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -299,6 +299,93 @@ export default function Home() {
                   onFiltersChange={setSearchFilters}
                 />
               </form>
+
+              {/* Active Filters Display */}
+              {(searchFilters.genres.length > 0 || 
+                searchFilters.providers.length > 0 || 
+                searchFilters.yearMin || 
+                searchFilters.yearMax || 
+                searchFilters.ratingMin !== undefined ||
+                searchFilters.streamingOnly) && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {searchFilters.genres.map((genreId) => {
+                    const genreName = {
+                      "28": "Ação", "12": "Aventura", "16": "Animação", "35": "Comédia",
+                      "80": "Crime", "99": "Documentário", "18": "Drama", "10751": "Família",
+                      "14": "Fantasia", "36": "História", "27": "Terror", "10402": "Música",
+                      "9648": "Mistério", "10749": "Romance", "878": "Ficção Científica",
+                      "10770": "Cinema TV", "53": "Thriller", "10752": "Guerra", "37": "Faroeste"
+                    }[genreId] || genreId;
+                    return (
+                      <Badge key={genreId} variant="secondary" className="gap-1">
+                        {genreName}
+                        <X 
+                          className="h-3 w-3 cursor-pointer" 
+                          onClick={() => setSearchFilters({
+                            ...searchFilters,
+                            genres: searchFilters.genres.filter(g => g !== genreId)
+                          })}
+                        />
+                      </Badge>
+                    );
+                  })}
+                  {searchFilters.providers.map((providerId) => {
+                    const providerName = {
+                      "8": "Netflix", "119": "Prime Video", "337": "Disney+",
+                      "384": "HBO Max", "350": "Apple TV+", "531": "Paramount+",
+                      "1899": "Max", "619": "Star+"
+                    }[providerId] || providerId;
+                    return (
+                      <Badge key={providerId} variant="secondary" className="gap-1">
+                        {providerName}
+                        <X 
+                          className="h-3 w-3 cursor-pointer" 
+                          onClick={() => setSearchFilters({
+                            ...searchFilters,
+                            providers: searchFilters.providers.filter(p => p !== providerId)
+                          })}
+                        />
+                      </Badge>
+                    );
+                  })}
+                  {searchFilters.yearMin && (
+                    <Badge variant="secondary" className="gap-1">
+                      Ano: {searchFilters.yearMin}+
+                      <X 
+                        className="h-3 w-3 cursor-pointer" 
+                        onClick={() => setSearchFilters({ ...searchFilters, yearMin: undefined })}
+                      />
+                    </Badge>
+                  )}
+                  {searchFilters.yearMax && (
+                    <Badge variant="secondary" className="gap-1">
+                      Até: {searchFilters.yearMax}
+                      <X 
+                        className="h-3 w-3 cursor-pointer" 
+                        onClick={() => setSearchFilters({ ...searchFilters, yearMax: undefined })}
+                      />
+                    </Badge>
+                  )}
+                  {searchFilters.ratingMin !== undefined && searchFilters.ratingMin > 0 && (
+                    <Badge variant="secondary" className="gap-1">
+                      Nota: {searchFilters.ratingMin}+
+                      <X 
+                        className="h-3 w-3 cursor-pointer" 
+                        onClick={() => setSearchFilters({ ...searchFilters, ratingMin: undefined })}
+                      />
+                    </Badge>
+                  )}
+                  {searchFilters.streamingOnly && (
+                    <Badge variant="secondary" className="gap-1">
+                      Streaming Now
+                      <X 
+                        className="h-3 w-3 cursor-pointer" 
+                        onClick={() => setSearchFilters({ ...searchFilters, streamingOnly: false })}
+                      />
+                    </Badge>
+                  )}
+                </div>
+              )}
 
               {/* Recent Searches */}
               {showRecentSearches && (
