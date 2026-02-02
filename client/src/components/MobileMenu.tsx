@@ -30,12 +30,19 @@ export function MobileMenu() {
   const { user } = useAuth();
   const logoutMutation = trpc.auth.logout.useMutation();
 
-  // Swipe gesture detection
+  // Swipe gesture detection with haptic feedback and reverse swipe
   useEffect(() => {
     let touchStartX = 0;
     let touchStartY = 0;
     let touchEndX = 0;
     let touchEndY = 0;
+
+    const triggerHapticFeedback = () => {
+      // Vibration API for haptic feedback (if supported)
+      if ('vibrate' in navigator) {
+        navigator.vibrate(10); // Short 10ms vibration
+      }
+    };
 
     const handleTouchStart = (e: TouchEvent) => {
       touchStartX = e.changedTouches[0].screenX;
@@ -53,14 +60,28 @@ export function MobileMenu() {
       const swipeDistanceY = Math.abs(touchEndY - touchStartY);
       const minSwipeDistance = 50; // Minimum distance for swipe
       const edgeThreshold = 50; // Distance from left edge to trigger
+      const screenWidth = window.innerWidth;
 
-      // Check if swipe started from left edge and moved right
+      // Swipe from left edge to open menu
       if (
+        !open && // Only when menu is closed
         touchStartX <= edgeThreshold && // Started from left edge
         swipeDistanceX > minSwipeDistance && // Swiped right enough
         swipeDistanceY < 100 // Mostly horizontal swipe
       ) {
         setOpen(true);
+        triggerHapticFeedback();
+      }
+
+      // Reverse swipe (right to left) to close menu
+      if (
+        open && // Only when menu is open
+        touchStartX > screenWidth - 320 && // Started from menu area (menu width is 280-320px)
+        swipeDistanceX < -minSwipeDistance && // Swiped left enough (negative distance)
+        swipeDistanceY < 100 // Mostly horizontal swipe
+      ) {
+        setOpen(false);
+        triggerHapticFeedback();
       }
     };
 
@@ -71,7 +92,7 @@ export function MobileMenu() {
       document.removeEventListener('touchstart', handleTouchStart);
       document.removeEventListener('touchend', handleTouchEnd);
     };
-  }, []);
+  }, [open]);
 
   const handleLogout = async () => {
     await logoutMutation.mutateAsync();

@@ -13,6 +13,7 @@ import LandingPage from "./LandingPage";
 import { useOnboardingTour } from "@/components/OnboardingTour";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { MobileMenu } from "@/components/MobileMenu";
+import { SwipeEdgeIndicator } from "@/components/SwipeEdgeIndicator";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { PWAWelcome } from "@/components/PWAWelcome";
 import { SearchFilters, type SearchFiltersType } from "@/components/SearchFilters";
@@ -194,6 +195,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
+      <SwipeEdgeIndicator />
       {/* Header */}
       <header className="border-b border-border/40 backdrop-blur-sm sticky top-0 z-50 bg-background/95">
         <div className="container py-4">

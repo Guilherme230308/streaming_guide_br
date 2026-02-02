@@ -326,3 +326,9 @@
 - [x] Set swipe threshold (50px from edge, 50px minimum swipe distance)
 - [x] Add horizontal swipe validation (max 100px vertical movement)
 - [x] Test on mobile devices (implemented, ready for real device testing)
+
+## Swipe Gesture Enhancements (Round 30)
+- [x] Add haptic feedback (vibration) when swipe opens/closes menu
+- [x] Implement reverse swipe (right to left) to close menu
+- [x] Add visual edge indicator showing swipe area (1px gradient line, fades in/out)
+- [x] Test all enhancements on mobile (implemented, ready for real device validation)
