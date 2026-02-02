@@ -135,3 +135,10 @@
 - [x] Add benefits/social proof section
 - [x] Add final CTA section for registration
 - [x] Update routing to show landing page for non-authenticated users
+
+## Content Pages (Round 10)
+- [x] Create About page explaining data sources (TMDB) and methodology
+- [x] Add disclaimer about data accuracy on About page
+- [x] Create streaming prices comparison page
+- [x] Add comparative chart showing monthly subscription prices for main Brazilian streaming services
+- [x] Update navigation to include About and Prices pages

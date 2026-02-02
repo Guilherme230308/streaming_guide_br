@@ -11,9 +11,23 @@ export default function LandingPage() {
       <header className="border-b border-border/40 backdrop-blur-sm sticky top-0 z-50 bg-background/95">
         <div className="container py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Film className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold text-foreground">Onde Assistir</span>
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <Film className="h-8 w-8 text-primary" />
+                <span className="text-2xl font-bold text-foreground">Onde Assistir</span>
+              </div>
+              <nav className="hidden md:flex items-center gap-6">
+                <Link href="/about">
+                  <a className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    Sobre
+                  </a>
+                </Link>
+                <Link href="/prices">
+                  <a className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    Preços
+                  </a>
+                </Link>
+              </nav>
             </div>
             <Button onClick={() => (window.location.href = getLoginUrl())}>
               Entrar
