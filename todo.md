@@ -354,3 +354,10 @@
 - [x] Add "Adicionar à Lista" option
 - [x] Add "Marcar como Assistido" option (shows status if already watched)
 - [x] Test on mobile and desktop (implemented, ready for real device testing)
+
+## Filter UI Improvements (Round 34)
+- [x] Move filter icon next to search button
+- [x] Replace "Buscar" text with search icon (lupa)
+- [x] Add "Streaming Now" filter option (toggle in filters popover)
+- [x] Apply filters to "Em Alta" trending section (filters content with providers)
+- [x] Test all filter combinations (implemented, ready for real device testing)

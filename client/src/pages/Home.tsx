@@ -284,13 +284,7 @@ export default function Home() {
             </p>
 
             <div ref={searchRef} className="relative max-w-2xl mx-auto" data-tour="search">
-              <div className="flex gap-2 mb-3 justify-center">
-                <SearchFilters
-                  filters={searchFilters}
-                  onFiltersChange={setSearchFilters}
-                />
-              </div>
-              <form onSubmit={handleSearch} className="relative">
+              <form onSubmit={handleSearch} className="relative flex gap-2">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
                   type="text"
@@ -309,8 +303,12 @@ export default function Home() {
                   className="absolute right-2 top-1/2 -translate-y-1/2"
                   size="sm"
                 >
-                  Buscar
+                  <Search className="h-4 w-4" />
                 </Button>
+                <SearchFilters
+                  filters={searchFilters}
+                  onFiltersChange={setSearchFilters}
+                />
               </form>
 
               {/* Recent Searches */}
@@ -396,7 +394,16 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {trendingMovies?.results.slice(0, 12).map((movie: any) => (
+            {trendingMovies?.results
+              .filter((movie: any) => {
+                // Apply streaming filter if enabled
+                if (searchFilters.streamingOnly) {
+                  return movie.providers && movie.providers.length > 0;
+                }
+                return true;
+              })
+              .slice(0, 12)
+              .map((movie: any) => (
               <ContentCard
                 key={movie.id}
                 id={movie.id}
@@ -421,7 +428,16 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {trendingTV?.results.slice(0, 12).map((show: any) => (
+            {trendingTV?.results
+              .filter((show: any) => {
+                // Apply streaming filter if enabled
+                if (searchFilters.streamingOnly) {
+                  return show.providers && show.providers.length > 0;
+                }
+                return true;
+              })
+              .slice(0, 12)
+              .map((show: any) => (
               <ContentCard
                 key={show.id}
                 id={show.id}

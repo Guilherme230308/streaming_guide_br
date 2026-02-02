@@ -23,6 +23,7 @@ export interface SearchFiltersType {
   yearMax?: number;
   ratingMin?: number;
   providers: string[];
+  streamingOnly?: boolean;
 }
 
 interface SearchFiltersProps {
@@ -104,7 +105,8 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
     filters.providers.length +
     (filters.yearMin !== undefined ? 1 : 0) +
     (filters.yearMax !== undefined ? 1 : 0) +
-    (filters.ratingMin !== undefined ? 1 : 0);
+    (filters.ratingMin !== undefined ? 1 : 0) +
+    (filters.streamingOnly ? 1 : 0);
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -258,6 +260,29 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
                 </Badge>
               ))}
             </div>
+          </div>
+
+          {/* Streaming Availability Filter */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm font-medium">Disponível em Streaming</Label>
+              <Button
+                variant={filters.streamingOnly ? "default" : "outline"}
+                size="sm"
+                onClick={() => {
+                  onFiltersChange({
+                    ...filters,
+                    streamingOnly: !filters.streamingOnly,
+                  });
+                }}
+                className="h-8"
+              >
+                {filters.streamingOnly ? "Ativado" : "Desativado"}
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Mostrar apenas conteúdo disponível em pelo menos um streaming
+            </p>
           </div>
 
           <Button
