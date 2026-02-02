@@ -205,7 +205,8 @@
 
 
 ## Bug Fixes (Round 16)
-- [ ] Fix 404 error during login process
+- [x] Investigated 404 error - OAuth callback route not working in production
+- [x] Fix OAuth callback route configuration for production environment (exclude /api/ from catch-all)
 
 
 ## PWA Installation UX Flow (Round 17)
