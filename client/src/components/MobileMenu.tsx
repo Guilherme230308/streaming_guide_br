@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -29,6 +29,49 @@ export function MobileMenu() {
   const [location] = useLocation();
   const { user } = useAuth();
   const logoutMutation = trpc.auth.logout.useMutation();
+
+  // Swipe gesture detection
+  useEffect(() => {
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchEndX = 0;
+    let touchEndY = 0;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      touchEndX = e.changedTouches[0].screenX;
+      touchEndY = e.changedTouches[0].screenY;
+      handleSwipe();
+    };
+
+    const handleSwipe = () => {
+      const swipeDistanceX = touchEndX - touchStartX;
+      const swipeDistanceY = Math.abs(touchEndY - touchStartY);
+      const minSwipeDistance = 50; // Minimum distance for swipe
+      const edgeThreshold = 50; // Distance from left edge to trigger
+
+      // Check if swipe started from left edge and moved right
+      if (
+        touchStartX <= edgeThreshold && // Started from left edge
+        swipeDistanceX > minSwipeDistance && // Swiped right enough
+        swipeDistanceY < 100 // Mostly horizontal swipe
+      ) {
+        setOpen(true);
+      }
+    };
+
+    document.addEventListener('touchstart', handleTouchStart);
+    document.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, []);
 
   const handleLogout = async () => {
     await logoutMutation.mutateAsync();

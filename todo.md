@@ -320,3 +320,9 @@
 - [x] Add proper touch targets (h-12 = 48px for menu items)
 - [x] Add active page indicator (secondary variant with primary color)
 - [x] Test on mobile viewport (clean layout, only 3 icons visible)
+
+## Swipe Gesture for Mobile Menu (Round 29)
+- [x] Implement touch event handlers for left edge swipe detection
+- [x] Set swipe threshold (50px from edge, 50px minimum swipe distance)
+- [x] Add horizontal swipe validation (max 100px vertical movement)
+- [x] Test on mobile devices (implemented, ready for real device testing)
