@@ -457,3 +457,11 @@
 
 ## Bug Fixes (Round 42)
 - [x] Fix Em Alta section to show action sheet menu when clicking on cards (now uses ContentCard component)
+
+## UI Simplification (Round 43)
+- [ ] Remove rating badges from movie/TV posters, keep only the three-dot menu button
+- [ ] Apply change to all screens that display posters (Home, Watchlist, Lists, History, etc.)
+
+## UI Changes (Round 43)
+- [x] Remove action sheet modal from ContentCard - clicking card now navigates directly to details page
+- [x] Keep three-dot menu button with "Adicionar à lista" and "Marcar como assistido" options

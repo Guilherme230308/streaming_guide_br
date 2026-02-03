@@ -138,11 +138,7 @@ export default function History() {
                               alt={movie.title}
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                             />
-                            {movie.vote_average > 0 && (
-                              <Badge className="absolute top-2 right-2 bg-primary/90">
-                                ⭐ {movie.vote_average.toFixed(1)}
-                              </Badge>
-                            )}
+
                           </div>
                         </Link>
                         <CardContent className="p-3">
@@ -184,11 +180,7 @@ export default function History() {
                               alt={show.name}
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                             />
-                            {show.vote_average > 0 && (
-                              <Badge className="absolute top-2 right-2 bg-primary/90">
-                                ⭐ {show.vote_average.toFixed(1)}
-                              </Badge>
-                            )}
+
                           </div>
                         </Link>
                         <CardContent className="p-3">

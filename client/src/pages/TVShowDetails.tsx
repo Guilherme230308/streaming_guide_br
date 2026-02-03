@@ -458,14 +458,7 @@ export default function TVShowDetails() {
                       alt={similarShow.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     />
-                    {similarShow.vote_average > 0 && (
-                      <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1">
-                        <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
-                        <span className="text-xs font-semibold text-white">
-                          {similarShow.vote_average.toFixed(1)}
-                        </span>
-                      </div>
-                    )}
+
                   </div>
                   <h3 className="text-sm font-medium text-foreground line-clamp-2 group-hover:text-primary transition-colors">
                     {similarShow.name}
