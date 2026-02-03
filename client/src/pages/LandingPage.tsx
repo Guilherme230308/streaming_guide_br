@@ -18,15 +18,11 @@ export default function LandingPage() {
                 <span className="text-2xl font-bold text-foreground">Onde Assistir</span>
               </div>
               <nav className="hidden md:flex items-center gap-6">
-                <Link href="/about">
-                  <a className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    Sobre
-                  </a>
+                <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Sobre
                 </Link>
-                <Link href="/prices">
-                  <a className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    Preços
-                  </a>
+                <Link href="/prices" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Preços
                 </Link>
               </nav>
             </div>
