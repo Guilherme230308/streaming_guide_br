@@ -122,7 +122,7 @@ export function MobileMenu() {
           className="px-2 sm:px-3"
           aria-label="Menu"
         >
-          <Menu className="h-5 w-5" />
+          <Menu className="h-7 w-7" />
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-[280px] sm:w-[320px]">
