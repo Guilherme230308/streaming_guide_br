@@ -450,3 +450,5 @@
 - [x] Integrate with availability check system (availabilityChecker.ts)
 - [x] Add push notification toggle to Alerts page
 - [x] Test the complete notification flow
+
+- [x] Reduce streaming provider logo sizes on movie/TV details page (currently too large)

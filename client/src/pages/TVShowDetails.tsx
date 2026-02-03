@@ -322,7 +322,7 @@ export default function TVShowDetails() {
               <Card>
                 <CardContent className="p-6">
                   <h3 className="text-lg font-semibold text-foreground mb-4">Streaming</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                  <div className="flex flex-wrap gap-4">
                     {deduplicateProviders(providers.flatrate).map((provider: any) => (
                       <a
                         key={provider.provider_id}
@@ -332,7 +332,7 @@ export default function TVShowDetails() {
                         onClick={(e) => handleProviderClick(provider, 'stream', e)}
                         className="group"
                       >
-                        <div className="relative overflow-hidden rounded-lg hover:ring-2 hover:ring-primary transition-all">
+                        <div className="relative overflow-hidden rounded-lg hover:ring-2 hover:ring-primary transition-all w-16 h-16">
                           <img
                             src={getImageUrl(provider.logo_path, "w92")}
                             alt={provider.provider_name}
@@ -357,7 +357,7 @@ export default function TVShowDetails() {
               <Card>
                 <CardContent className="p-6">
                   <h3 className="text-lg font-semibold text-foreground mb-4">Alugar</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                  <div className="flex flex-wrap gap-4">
                     {deduplicateProviders(providers.rent).map((provider: any) => (
                       <a
                         key={provider.provider_id}
@@ -367,7 +367,7 @@ export default function TVShowDetails() {
                         onClick={(e) => handleProviderClick(provider, 'rent', e)}
                         className="group"
                       >
-                        <div className="relative overflow-hidden rounded-lg hover:ring-2 hover:ring-primary transition-all">
+                        <div className="relative overflow-hidden rounded-lg hover:ring-2 hover:ring-primary transition-all w-16 h-16">
                           <img
                             src={getImageUrl(provider.logo_path, "w92")}
                             alt={provider.provider_name}
@@ -391,7 +391,7 @@ export default function TVShowDetails() {
               <Card>
                 <CardContent className="p-6">
                   <h3 className="text-lg font-semibold text-foreground mb-4">Comprar</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                  <div className="flex flex-wrap gap-4">
                     {deduplicateProviders(providers.buy).map((provider: any) => (
                       <a
                         key={provider.provider_id}
@@ -401,7 +401,7 @@ export default function TVShowDetails() {
                         onClick={(e) => handleProviderClick(provider, 'buy', e)}
                         className="group"
                       >
-                        <div className="relative overflow-hidden rounded-lg hover:ring-2 hover:ring-primary transition-all">
+                        <div className="relative overflow-hidden rounded-lg hover:ring-2 hover:ring-primary transition-all w-16 h-16">
                           <img
                             src={getImageUrl(provider.logo_path, "w92")}
                             alt={provider.provider_name}
