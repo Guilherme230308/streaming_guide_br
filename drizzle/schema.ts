@@ -223,3 +223,23 @@ export const customListItems = mysqlTable("custom_list_items", {
 
 export type CustomListItem = typeof customListItems.$inferSelect;
 export type InsertCustomListItem = typeof customListItems.$inferInsert;
+
+
+/**
+ * Push subscriptions - stores Web Push subscription data for notifications
+ */
+export const pushSubscriptions = mysqlTable("push_subscriptions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  endpoint: text("endpoint").notNull(),
+  p256dh: varchar("p256dh", { length: 255 }).notNull(), // Public key
+  auth: varchar("auth", { length: 255 }).notNull(), // Auth secret
+  userAgent: text("userAgent"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("userIdIdx").on(table.userId),
+}));
+
+export type PushSubscription = typeof pushSubscriptions.$inferSelect;
+export type InsertPushSubscription = typeof pushSubscriptions.$inferInsert;

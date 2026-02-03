@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Film, Bell, BellOff, Trash2, CheckCircle, Clock, Sparkles, AlertCircle, Play } from "lucide-react";
+import { PushNotificationManager } from "@/components/PushNotificationManager";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
@@ -136,11 +137,14 @@ export default function Alerts() {
 
       {/* Content */}
       <div className="container py-8 max-w-6xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Alertas e Disponibilidade</h1>
-          <p className="text-muted-foreground">
-            Veja o que está disponível nos seus streamings e configure alertas
-          </p>
+        <div className="mb-8 flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground mb-2">Alertas e Disponibilidade</h1>
+            <p className="text-muted-foreground">
+              Veja o que está disponível nos seus streamings e configure alertas
+            </p>
+          </div>
+          <PushNotificationManager />
         </div>
 
         {!hasActiveSubscriptions && (

@@ -1,6 +1,70 @@
 import * as db from "./db";
 import * as tmdb from "./tmdb";
 import { notifyOwner } from "./_core/notification";
+import webpush from "web-push";
+
+// Configure VAPID keys for push notifications
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+  webpush.setVapidDetails(
+    'mailto:admin@ondeassistir.com',
+    process.env.VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
+  );
+}
+
+/**
+ * Send push notification to a user
+ */
+async function sendPushNotification(userId: number, payload: {
+  title: string;
+  body: string;
+  icon?: string;
+  data?: { url?: string; tmdbId?: number; mediaType?: string };
+}): Promise<boolean> {
+  try {
+    const subscriptions = await db.getUserPushSubscriptions(userId);
+    
+    if (subscriptions.length === 0) {
+      console.log(`[PushNotification] No subscriptions found for user ${userId}`);
+      return false;
+    }
+
+    const notificationPayload = JSON.stringify({
+      title: payload.title,
+      body: payload.body,
+      icon: payload.icon || '/icon-192.png',
+      badge: '/icon-192.png',
+      data: payload.data || {},
+    });
+
+    let sent = false;
+    for (const sub of subscriptions) {
+      try {
+        await webpush.sendNotification(
+          {
+            endpoint: sub.endpoint,
+            keys: { p256dh: sub.p256dh, auth: sub.auth },
+          },
+          notificationPayload
+        );
+        sent = true;
+        console.log(`[PushNotification] Sent to user ${userId}`);
+      } catch (error: any) {
+        console.error(`[PushNotification] Error sending to user ${userId}:`, error.message);
+        // Remove invalid subscriptions (410 = subscription expired)
+        if (error.statusCode === 410 || error.statusCode === 404) {
+          await db.deleteInvalidPushSubscription(sub.endpoint);
+          console.log(`[PushNotification] Removed invalid subscription for user ${userId}`);
+        }
+      }
+    }
+
+    return sent;
+  } catch (error) {
+    console.error(`[PushNotification] Error:`, error);
+    return false;
+  }
+}
 
 /**
  * Background job to check for content availability changes
@@ -9,12 +73,14 @@ import { notifyOwner } from "./_core/notification";
 export async function checkAvailabilityChanges(): Promise<{
   checked: number;
   notified: number;
+  pushSent: number;
   errors: number;
 }> {
   console.log("[AvailabilityChecker] Starting availability check...");
   
   let checked = 0;
   let notified = 0;
+  let pushSent = 0;
   let errors = 0;
 
   try {
@@ -72,7 +138,22 @@ export async function checkAvailabilityChanges(): Promise<{
           // Mark alert as notified
           await db.markAlertAsNotified(alert.id);
           
-          // Send notification to project owner (user will see in Manus notifications)
+          // Send push notification to user
+          const pushResult = await sendPushNotification(alert.userId, {
+            title: "🎬 Novo conteúdo disponível!",
+            body: message,
+            data: {
+              url: `/${alert.mediaType === 'movie' ? 'movie' : 'tv'}/${alert.tmdbId}`,
+              tmdbId: alert.tmdbId,
+              mediaType: alert.mediaType,
+            },
+          });
+          
+          if (pushResult) {
+            pushSent++;
+          }
+          
+          // Also send notification to project owner (as backup)
           await notifyOwner({
             title: "Novo conteúdo disponível!",
             content: message
@@ -87,9 +168,9 @@ export async function checkAvailabilityChanges(): Promise<{
       }
     }
 
-    console.log(`[AvailabilityChecker] Check complete. Checked: ${checked}, Notified: ${notified}, Errors: ${errors}`);
+    console.log(`[AvailabilityChecker] Check complete. Checked: ${checked}, Notified: ${notified}, Push sent: ${pushSent}, Errors: ${errors}`);
     
-    return { checked, notified, errors };
+    return { checked, notified, pushSent, errors };
   } catch (error) {
     console.error("[AvailabilityChecker] Fatal error:", error);
     throw error;

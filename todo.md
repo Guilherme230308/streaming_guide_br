@@ -431,3 +431,22 @@
 - [x] Show which watchlist items are available on user's subscribed streaming services
 - [x] Allow creating alerts for unavailable items
 - [x] Test deep links opening Prime Video with movie search query
+
+## Web Push Notifications (Round 41)
+- [ ] Generate VAPID keys for Web Push authentication
+- [ ] Create push_subscriptions table in database schema
+- [ ] Add service worker push event handler
+- [ ] Build notification permission request UI component
+- [ ] Create backend procedures for managing push subscriptions
+- [ ] Create backend procedure to send push notifications
+- [ ] Integrate with availability check to trigger notifications
+- [ ] Test complete notification flow
+
+## Web Push Notifications Implementation (Round 41)
+- [x] Set up VAPID keys and push subscription storage in database
+- [x] Create service worker push event handler (sw-push.js)
+- [x] Build notification permission request UI (PushNotificationManager component)
+- [x] Create backend procedure to send push notifications
+- [x] Integrate with availability check system (availabilityChecker.ts)
+- [x] Add push notification toggle to Alerts page
+- [x] Test the complete notification flow

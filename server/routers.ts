@@ -1036,6 +1036,83 @@ export const appRouter = router({
       }),
   }),
 
+  push: router({
+    subscribe: protectedProcedure
+      .input(z.object({
+        endpoint: z.string(),
+        p256dh: z.string(),
+        auth: z.string(),
+        userAgent: z.string().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        await db.savePushSubscription({
+          userId: ctx.user.id,
+          endpoint: input.endpoint,
+          p256dh: input.p256dh,
+          auth: input.auth,
+          userAgent: input.userAgent,
+        });
+        return { success: true };
+      }),
+
+    unsubscribe: protectedProcedure
+      .input(z.object({
+        endpoint: z.string(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        await db.deletePushSubscription(ctx.user.id, input.endpoint);
+        return { success: true };
+      }),
+
+    checkSubscription: protectedProcedure
+      .query(async ({ ctx }) => {
+        const subscriptions = await db.getUserPushSubscriptions(ctx.user.id);
+        return { isSubscribed: subscriptions.length > 0 };
+      }),
+
+    sendTestNotification: protectedProcedure
+      .mutation(async ({ ctx }) => {
+        const subscriptions = await db.getUserPushSubscriptions(ctx.user.id);
+        if (subscriptions.length === 0) {
+          return { success: false, message: 'No push subscriptions found' };
+        }
+        
+        const webpush = await import('web-push');
+        webpush.setVapidDetails(
+          'mailto:admin@ondeassistir.com',
+          process.env.VAPID_PUBLIC_KEY!,
+          process.env.VAPID_PRIVATE_KEY!
+        );
+        
+        const payload = JSON.stringify({
+          title: 'Teste de Notificação',
+          body: 'As notificações estão funcionando corretamente!',
+          icon: '/icon-192.png',
+          data: { url: '/' },
+        });
+        
+        for (const sub of subscriptions) {
+          try {
+            await webpush.sendNotification(
+              {
+                endpoint: sub.endpoint,
+                keys: { p256dh: sub.p256dh, auth: sub.auth },
+              },
+              payload
+            );
+          } catch (error) {
+            console.error('Push notification error:', error);
+            // Remove invalid subscriptions
+            if ((error as any).statusCode === 410) {
+              await db.deletePushSubscription(ctx.user.id, sub.endpoint);
+            }
+          }
+        }
+        
+        return { success: true };
+      }),
+  }),
+
   ai: router({
     identifyContent: publicProcedure
       .input(z.object({

@@ -31,7 +31,10 @@ import {
   CustomList,
   customListItems,
   InsertCustomListItem,
-  CustomListItem
+  CustomListItem,
+  pushSubscriptions,
+  InsertPushSubscription,
+  PushSubscription
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -833,4 +836,69 @@ export async function getAffiliateStats(startDate?: Date, endDate?: Date) {
     clicksByType: clicksByType.sort((a, b) => b.count - a.count),
     clicksByDate: clicksByDate.sort((a, b) => a.date.localeCompare(b.date)),
   };
+}
+
+
+// ============================================================================
+// Push Subscriptions
+// ============================================================================
+
+export async function savePushSubscription(data: Omit<InsertPushSubscription, 'id' | 'createdAt' | 'updatedAt'>): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Check if subscription already exists
+  const existing = await db.select().from(pushSubscriptions)
+    .where(and(
+      eq(pushSubscriptions.userId, data.userId),
+      eq(pushSubscriptions.endpoint, data.endpoint)
+    ))
+    .limit(1);
+
+  if (existing.length > 0) {
+    // Update existing subscription
+    await db.update(pushSubscriptions)
+      .set({ 
+        p256dh: data.p256dh, 
+        auth: data.auth, 
+        userAgent: data.userAgent,
+        updatedAt: new Date() 
+      })
+      .where(eq(pushSubscriptions.id, existing[0].id));
+  } else {
+    // Insert new subscription
+    await db.insert(pushSubscriptions).values(data);
+  }
+}
+
+export async function deletePushSubscription(userId: number, endpoint: string): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.delete(pushSubscriptions).where(and(
+    eq(pushSubscriptions.userId, userId),
+    eq(pushSubscriptions.endpoint, endpoint)
+  ));
+}
+
+export async function getUserPushSubscriptions(userId: number): Promise<PushSubscription[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db.select().from(pushSubscriptions)
+    .where(eq(pushSubscriptions.userId, userId));
+}
+
+export async function getAllPushSubscriptions(): Promise<PushSubscription[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db.select().from(pushSubscriptions);
+}
+
+export async function deleteInvalidPushSubscription(endpoint: string): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.delete(pushSubscriptions).where(eq(pushSubscriptions.endpoint, endpoint));
 }
