@@ -210,39 +210,39 @@ export function ContentCard({
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
           </DialogHeader>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3 py-2">
             <Button
-              variant="outline"
-              className="w-full justify-start"
+              variant="ghost"
+              className="w-full justify-start py-5 px-4 text-base rounded-xl hover:bg-accent/80 active:scale-[0.98] active:bg-accent transition-all duration-150"
               onClick={() => {
                 setShowActionSheet(false);
                 window.location.href = detailPath;
               }}
             >
-              <span className="mr-2">📖</span>
+              <span className="mr-3 text-lg">📖</span>
               Ver Detalhes
             </Button>
             <Button
-              variant="outline"
-              className="w-full justify-start"
+              variant="ghost"
+              className="w-full justify-start py-5 px-4 text-base rounded-xl hover:bg-accent/80 active:scale-[0.98] active:bg-accent transition-all duration-150"
               onClick={(e) => {
                 handleAddToList(e);
                 setShowActionSheet(false);
               }}
             >
-              <span className="mr-2">📋</span>
+              <span className="mr-3 text-lg">📋</span>
               Adicionar à Lista
             </Button>
             <Button
-              variant="outline"
-              className="w-full justify-start"
+              variant="ghost"
+              className="w-full justify-start py-5 px-4 text-base rounded-xl hover:bg-accent/80 active:scale-[0.98] active:bg-accent transition-all duration-150 disabled:opacity-50"
               onClick={(e) => {
                 handleMarkAsWatched(e);
                 setShowActionSheet(false);
               }}
               disabled={isWatched}
             >
-              <span className="mr-2">{isWatched ? '✅' : '✓'}</span>
+              <span className="mr-3 text-lg">{isWatched ? '✅' : '✓'}</span>
               {isWatched ? 'Já Assistido' : 'Marcar como Assistido'}
             </Button>
           </div>
