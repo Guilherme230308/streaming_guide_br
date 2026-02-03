@@ -1,16 +1,60 @@
 import { trpc } from "@/lib/trpc";
-import { MessageSquare, Star, Calendar } from "lucide-react";
+import { MessageSquare, Star, Calendar, Loader2 } from "lucide-react";
 import { Link } from "wouter";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+
+const REVIEWS_PER_PAGE = 10;
+
+interface ReviewData {
+  id: number;
+  userId: number;
+  tmdbId: number;
+  mediaType: "movie" | "tv";
+  title: string;
+  content: string;
+  createdAt: Date;
+  updatedAt: Date;
+  userName: string;
+  posterPath?: string;
+}
 
 export function CommunityFeed() {
-  const { data: reviews, isLoading } = trpc.reviews.getAllRecentReviews.useQuery(
-    { limit: 10 },
+  const [page, setPage] = useState(1);
+  const [allReviews, setAllReviews] = useState<ReviewData[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+
+  const { data: reviews, isLoading, isFetching } = trpc.reviews.getAllRecentReviews.useQuery(
+    { limit: REVIEWS_PER_PAGE, offset: (page - 1) * REVIEWS_PER_PAGE },
     {
       refetchOnWindowFocus: false,
     }
   );
+
+  // Handle pagination data accumulation
+  useEffect(() => {
+    if (reviews) {
+      if (page === 1) {
+        setAllReviews(reviews);
+      } else {
+        setAllReviews(prev => {
+          // Avoid duplicates
+          const existingIds = new Set(prev.map(r => r.id));
+          const newReviews = reviews.filter(r => !existingIds.has(r.id));
+          return [...prev, ...newReviews];
+        });
+      }
+      setHasMore(reviews.length === REVIEWS_PER_PAGE);
+    }
+  }, [reviews, page]);
+
+  const displayReviews = allReviews.length > 0 ? allReviews : reviews;
+
+  const loadMore = () => {
+    setPage(prev => prev + 1);
+  };
 
   if (isLoading) {
     return (
@@ -58,7 +102,7 @@ export function CommunityFeed() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        {reviews.map((review) => {
+        {(displayReviews || []).map((review) => {
           const linkPath =
             review.mediaType === "movie"
               ? `/movie/${review.tmdbId}`
@@ -101,7 +145,24 @@ export function CommunityFeed() {
         })}
       </div>
 
-      <div className="mt-6 text-center">
+      <div className="mt-6 flex flex-col items-center gap-4">
+        {hasMore && (displayReviews?.length || 0) >= REVIEWS_PER_PAGE && (
+          <Button
+            variant="outline"
+            onClick={loadMore}
+            disabled={isFetching}
+            className="gap-2"
+          >
+            {isFetching ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Carregando...
+              </>
+            ) : (
+              "Carregar mais avaliações"
+            )}
+          </Button>
+        )}
         <Link href="/community">
           <button className="text-sm text-cyan-500 hover:text-cyan-400 transition-colors font-medium">
             Ver todas as avaliações →

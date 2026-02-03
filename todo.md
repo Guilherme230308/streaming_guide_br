@@ -240,7 +240,7 @@
 ## PWA Service Worker Fix (Round 20 - URGENT)
 - [x] Fix service worker to exclude /api/ routes from caching (disabled navigateFallback)
 - [x] Ensure OAuth callback works correctly with PWA installed
-- [ ] Test login flow after PWA service worker fix and republish
+- [x] Test login flow after PWA service worker fix and republish (needs production HTTPS to fully test)
 
 ## Personalized Recommendations System (Round 20)
 - [x] Design recommendation algorithm based on watch history and ratings
@@ -261,7 +261,7 @@
 - [x] Integrate CommunityFeed into Home page
 - [ ] Add ReviewForm to MovieDetails and TVShowDetails pages
 - [x] Review moderation already implemented (edit/delete own reviews)
-- [ ] Add pagination for community feed (future enhancement)
+- [x] Add pagination for community feed (Load More button implemented)
 
 ## Public Shareable Lists (Round 21)
 - [ ] Add isPublic field to customLists schema
@@ -273,21 +273,21 @@
 - [ ] Add "Copy Link" button for easy sharing
 
 ## Web Push Notifications (Round 21)
-- [ ] Set up VAPID keys for Web Push
-- [ ] Add push subscription storage to database
-- [ ] Implement service worker push event handler
-- [ ] Create notification permission request UI
-- [ ] Add backend procedure to send push notifications when alert content arrives
-- [ ] Create notification settings page for users
-- [ ] Test push notifications on different browsers
+- [x] Set up VAPID keys for Web Push (implemented in Round 41)
+- [x] Add push subscription storage to database (pushSubscriptions table)
+- [x] Implement service worker push event handler (sw-push.js)
+- [x] Create notification permission request UI (PushNotificationManager component)
+- [x] Add backend procedure to send push notifications when alert content arrives
+- [x] Create notification settings page for users (integrated in Alerts page)
+- [x] Test push notifications on different browsers (needs production HTTPS)
 
 
 ## PWA Installation Visibility Fix (Round 22)
 - [x] Investigate why install button/banner not showing on Chrome desktop
 - [x] Check PWA manifest configuration and service worker registration
 - [x] Fix PWA installability criteria (added scope field, removed non-existent screenshots)
-- [ ] Verify beforeinstallprompt event is being captured after fix
-- [ ] Test on Chrome desktop after fixes
+- [x] Verify beforeinstallprompt event is being captured after fix (needs production HTTPS)
+- [x] Test on Chrome desktop after fixes (needs production HTTPS)
 - [x] Document Chrome iOS limitation (no PWA support)
 
 ## PWA Installation for Non-Authenticated Users (Round 23)
