@@ -454,3 +454,6 @@
 - [x] Reduce streaming provider logo sizes on movie/TV details page (currently too large)
 
 - [x] Increase spacing between menu options and add click effect
+
+## Bug Fixes (Round 42)
+- [x] Fix Em Alta section to show action sheet menu when clicking on cards (now uses ContentCard component)

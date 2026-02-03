@@ -1,7 +1,7 @@
 import { trpc } from "@/lib/trpc";
 import { Sparkles, TrendingUp } from "lucide-react";
-import { Link } from "wouter";
 import { type SearchFiltersType } from "@/components/SearchFilters";
+import { ContentCard } from "@/components/ContentCard";
 
 const GENRE_NAMES: Record<number, string> = {
   28: "Ação",
@@ -143,32 +143,19 @@ export function PersonalizedRecommendations({ filters }: PersonalizedRecommendat
         {filteredResults.map((item: any) => {
           const isMovie = item.media_type === "movie";
           const title = isMovie ? item.title : item.name;
-          const posterPath = item.poster_path
-            ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
-            : "/placeholder-poster.png";
-          const linkPath = isMovie ? `/movie/${item.id}` : `/tv/${item.id}`;
+          const dateField = isMovie ? item.release_date : item.first_air_date;
 
           return (
-            <Link key={`${item.media_type}-${item.id}`} href={linkPath}>
-              <div className="group cursor-pointer">
-                <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-muted">
-                  <img
-                    src={posterPath}
-                    alt={title}
-                    className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                    loading="lazy"
-                  />
-                  {item.vote_average && (
-                    <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-semibold">
-                      ⭐ {item.vote_average.toFixed(1)}
-                    </div>
-                  )}
-                </div>
-                <h3 className="mt-2 text-sm font-medium line-clamp-2 group-hover:text-cyan-500 transition-colors">
-                  {title}
-                </h3>
-              </div>
-            </Link>
+            <ContentCard
+              key={`${item.media_type}-${item.id}`}
+              id={item.id}
+              title={title}
+              posterPath={item.poster_path}
+              mediaType={isMovie ? "movie" : "tv"}
+              releaseDate={dateField}
+              voteAverage={item.vote_average}
+              providers={item.providers}
+            />
           );
         })}
       </div>
