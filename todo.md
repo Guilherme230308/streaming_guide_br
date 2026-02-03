@@ -415,3 +415,5 @@
 - [x] Adjust filter button size to match other buttons in search bar
 
 - [x] Make streaming provider icons clickable to open movie/series directly on that streaming service
+
+- [x] Remove clickable streaming icons from home page cards (keep only on details page)
