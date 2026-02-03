@@ -413,3 +413,5 @@
 - [x] Add 'Ver filme' button to AI response - link directly to identified movie/series page
 
 - [x] Adjust filter button size to match other buttons in search bar
+
+- [x] Make streaming provider icons clickable to open movie/series directly on that streaming service

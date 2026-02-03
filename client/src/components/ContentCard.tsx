@@ -19,6 +19,7 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { SwipeableCard } from "@/components/SwipeableCard";
 import { deduplicateProviders } from "@/lib/providerUtils";
+import { handleProviderClick as handleDeepLink } from "@/lib/deepLinks";
 
 interface ContentCardProps {
   id: number;
@@ -62,6 +63,8 @@ export function ContentCard({
     },
   });
 
+  const trackClick = trpc.affiliate.trackClick.useMutation();
+
   const handleMarkAsWatched = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -78,6 +81,26 @@ export function ContentCard({
     e.preventDefault();
     e.stopPropagation();
     setShowListDialog(true);
+  };
+
+  const handleProviderClick = async (
+    e: React.MouseEvent,
+    provider: { provider_id: number; provider_name: string }
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Track affiliate click
+    trackClick.mutate({
+      tmdbId: id,
+      mediaType,
+      providerId: provider.provider_id,
+      providerName: provider.provider_name,
+      clickType: 'stream',
+    });
+    
+    // Handle deep linking
+    await handleDeepLink(provider.provider_id, provider.provider_name, mediaType, id);
   };
 
   const detailPath = mediaType === "movie" ? `/movie/${id}` : `/tv/${id}`;
@@ -181,18 +204,23 @@ export function ContentCard({
                 <p className="text-sm text-muted-foreground">{year}</p>
               )}
               
-              {/* Streaming Provider Icons */}
+              {/* Streaming Provider Icons - Now Clickable */}
               {providers && providers.length > 0 && (
                 <div className="flex items-center gap-1 mt-1 flex-wrap">
                   {deduplicateProviders(providers).slice(0, 4).map((provider) => (
-                    <img
+                    <button
                       key={provider.provider_id}
-                      src={`https://image.tmdb.org/t/p/w92${provider.logo_path}`}
-                      alt={provider.provider_name}
-                      title={provider.provider_name}
-                      className="h-6 w-6 rounded-md object-cover border border-border/50"
-                      loading="lazy"
-                    />
+                      onClick={(e) => handleProviderClick(e, provider)}
+                      className="hover:scale-110 transition-transform hover:ring-2 hover:ring-primary rounded-md"
+                      title={`Assistir em ${provider.provider_name}`}
+                    >
+                      <img
+                        src={`https://image.tmdb.org/t/p/w92${provider.logo_path}`}
+                        alt={provider.provider_name}
+                        className="h-6 w-6 rounded-md object-cover border border-border/50"
+                        loading="lazy"
+                      />
+                    </button>
                   ))}
                   {deduplicateProviders(providers).length > 4 && (
                     <span className="text-xs text-muted-foreground font-medium">+{deduplicateProviders(providers).length - 4}</span>
