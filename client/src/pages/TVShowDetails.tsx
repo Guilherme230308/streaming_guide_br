@@ -127,8 +127,8 @@ export default function TVShowDetails() {
       clickType,
     });
     
-    // Handle deep linking
-    await handleDeepLink(provider.provider_id, provider.provider_name, "tv", tvId);
+    // Handle deep linking with TV show title for search
+    await handleDeepLink(provider.provider_id, provider.provider_name, "tv", tvId, show?.name);
   };
 
   const getImageUrl = (path: string | null, size: string = "w500") => {

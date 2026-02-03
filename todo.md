@@ -417,3 +417,17 @@
 - [x] Make streaming provider icons clickable to open movie/series directly on that streaming service
 
 - [x] Remove clickable streaming icons from home page cards (keep only on details page)
+
+## Deep Links and Notification System
+- [ ] Improve deep links to open specific movie/series page on streaming services (Netflix, Prime Video, HBO Max, Disney+, etc.)
+- [ ] Create user streaming subscriptions management (let users select which services they subscribe to)
+- [ ] Implement notification system for watchlist availability alerts
+- [ ] Test both features end-to-end
+
+## Deep Links and Notification System (Round 40)
+- [x] Improve deep links to open specific movie/series page on streaming services (search query with movie title)
+- [x] Create watchlist availability check system
+- [x] Build alerts page with "Disponível Agora" and "Não Disponível" tabs
+- [x] Show which watchlist items are available on user's subscribed streaming services
+- [x] Allow creating alerts for unavailable items
+- [x] Test deep links opening Prime Video with movie search query

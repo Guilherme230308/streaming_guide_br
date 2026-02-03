@@ -169,8 +169,8 @@ export default function MovieDetails() {
       clickType,
     });
     
-    // Handle deep linking
-    await handleDeepLink(provider.provider_id, provider.provider_name, "movie", movieId);
+    // Handle deep linking with movie title for search
+    await handleDeepLink(provider.provider_id, provider.provider_name, "movie", movieId, movie?.title);
   };
 
   const getImageUrl = (path: string | null, size: string = "w500") => {

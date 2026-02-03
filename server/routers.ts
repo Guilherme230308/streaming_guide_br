@@ -613,6 +613,93 @@ export const appRouter = router({
         await db.toggleAlert(input.alertId, ctx.user.id, input.isActive);
         return { success: true };
       }),
+
+    // Check watchlist items for availability on user's subscribed streaming services
+    checkWatchlistAvailability: protectedProcedure
+      .query(async ({ ctx }) => {
+        // Get user's watchlist
+        const watchlistItems = await db.getUserWatchlist(ctx.user.id);
+        
+        // Get user's active subscriptions
+        const subscriptions = await db.getUserSubscriptions(ctx.user.id);
+        const activeProviderIds = subscriptions
+          .filter(sub => sub.isActive)
+          .map(sub => sub.providerId);
+        
+        if (activeProviderIds.length === 0 || watchlistItems.length === 0) {
+          return { availableItems: [], unavailableItems: watchlistItems };
+        }
+        
+        const availableItems: Array<{
+          item: typeof watchlistItems[0];
+          providers: Array<{ id: number; name: string; logo: string }>;
+        }> = [];
+        const unavailableItems: typeof watchlistItems = [];
+        
+        // Check each watchlist item for availability
+        for (const item of watchlistItems) {
+          try {
+            const brProviders = item.mediaType === 'movie' 
+              ? await tmdb.getMovieWatchProviders(item.tmdbId)
+              : await tmdb.getTVShowWatchProviders(item.tmdbId);
+            
+            if (brProviders?.flatrate) {
+              const matchingProviders = brProviders.flatrate.filter(
+                (p: any) => activeProviderIds.includes(p.provider_id)
+              );
+              
+              if (matchingProviders.length > 0) {
+                availableItems.push({
+                  item,
+                  providers: matchingProviders.map((p: any) => ({
+                    id: p.provider_id,
+                    name: p.provider_name,
+                    logo: p.logo_path,
+                  })),
+                });
+              } else {
+                unavailableItems.push(item);
+              }
+            } else {
+              unavailableItems.push(item);
+            }
+          } catch (error) {
+            unavailableItems.push(item);
+          }
+        }
+        
+        return { availableItems, unavailableItems };
+      }),
+
+    // Create alert for watchlist item when it becomes available
+    createFromWatchlist: protectedProcedure
+      .input(z.object({
+        tmdbId: z.number(),
+        mediaType: z.enum(['movie', 'tv']),
+        title: z.string(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        // Check if alert already exists
+        const existingAlerts = await db.getUserAlerts(ctx.user.id);
+        const exists = existingAlerts.some(
+          (a) => a.tmdbId === input.tmdbId && a.mediaType === input.mediaType
+        );
+        
+        if (exists) {
+          return { success: true, message: 'Alerta já existe' };
+        }
+        
+        await db.createAlert({
+          userId: ctx.user.id,
+          tmdbId: input.tmdbId,
+          mediaType: input.mediaType,
+          title: input.title,
+          isActive: true,
+          notified: false,
+        });
+        
+        return { success: true, message: 'Alerta criado com sucesso' };
+      }),
   }),
 
   ratings: router({
