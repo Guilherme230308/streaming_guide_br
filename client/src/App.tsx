@@ -19,6 +19,7 @@ import ListDetails from "./pages/ListDetails";
 import About from "./pages/About";
 import StreamingPrices from "./pages/StreamingPrices";
 import AffiliateAnalytics from "./pages/AffiliateAnalytics";
+import StreamingAnalysis from "./pages/StreamingAnalysis";
 
 function Router() {
   return (
@@ -38,6 +39,7 @@ function Router() {
       <Route path={"/about"} component={About} />
       <Route path={"/streaming-prices"} component={StreamingPrices} />
       <Route path={"/affiliate-analytics"} component={AffiliateAnalytics} />
+      <Route path={"/streaming-analysis"} component={StreamingAnalysis} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

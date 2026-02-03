@@ -18,6 +18,7 @@ import {
   DollarSign,
   User,
   LogOut,
+  Sparkles,
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -107,6 +108,7 @@ export function MobileMenu() {
     { href: "/genres", icon: Grid3x3, label: "Gêneros", tour: "genres" },
     { href: "/history", icon: Clock, label: "Histórico", tour: "history" },
     { href: "/streaming-prices", icon: DollarSign, label: "Preços", tour: "" },
+    { href: "/streaming-analysis", icon: Sparkles, label: "Análise", tour: "" },
   ];
 
   const isActive = (href: string) => location === href;

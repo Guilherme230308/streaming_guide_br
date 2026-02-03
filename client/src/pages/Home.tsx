@@ -241,6 +241,12 @@ export default function Home() {
                         <span className="text-sm">Preços</span>
                       </Button>
                     </Link>
+                    <Link href="/streaming-analysis">
+                      <Button variant="ghost" size="sm" className="gap-2 px-3">
+                        <Sparkles className="h-4 w-4" />
+                        <span className="text-sm">Análise</span>
+                      </Button>
+                    </Link>
                   </div>
 
                   {/* Mobile: Essential icons only */}

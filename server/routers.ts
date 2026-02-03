@@ -1249,6 +1249,207 @@ IMPORTANTE: Quando identificar filmes ou séries, SEMPRE inclua o título origin
         }
       }),
   }),
+
+  // Streaming Analysis
+  streamingAnalysis: router({
+    getAnalysis: protectedProcedure.query(async ({ ctx }) => {
+      // Get all user's content (watchlist, watched, lists)
+      const userContent = await db.getAllUserContentIds(ctx.user.id);
+      const userSubscriptions = await db.getUserSubscriptions(ctx.user.id);
+      const activeProviderIds = userSubscriptions
+        .filter(sub => sub.isActive)
+        .map(sub => sub.providerId);
+
+      // Provider info with prices (in BRL)
+      const providerInfo: Record<number, { name: string; price: number; logo: string }> = {
+        8: { name: 'Netflix', price: 44.90, logo: '/providers/netflix.svg' },
+        119: { name: 'Amazon Prime Video', price: 14.90, logo: '/providers/prime.svg' },
+        337: { name: 'Disney+', price: 33.90, logo: '/providers/disney.svg' },
+        384: { name: 'HBO Max', price: 34.90, logo: '/providers/hbomax.svg' },
+        531: { name: 'Paramount+', price: 19.90, logo: '/providers/paramount.svg' },
+        350: { name: 'Apple TV+', price: 21.90, logo: '/providers/appletv.svg' },
+        307: { name: 'Globoplay', price: 27.90, logo: '/providers/globoplay.svg' },
+        619: { name: 'Star+', price: 32.90, logo: '/providers/starplus.svg' },
+        283: { name: 'Crunchyroll', price: 14.99, logo: '/providers/crunchyroll.svg' },
+        167: { name: 'Claro Video', price: 19.90, logo: '/providers/clarovideo.svg' },
+      };
+
+      // Count content available on each provider
+      const providerContentCount: Record<number, {
+        total: number;
+        watchlist: number;
+        watched: number;
+        lists: number;
+        titles: string[];
+      }> = {};
+
+      // Initialize all providers
+      for (const providerId of Object.keys(providerInfo)) {
+        providerContentCount[parseInt(providerId)] = {
+          total: 0,
+          watchlist: 0,
+          watched: 0,
+          lists: 0,
+          titles: [],
+        };
+      }
+
+      // Get watchlist for categorization
+      const watchlistItems = await db.getUserWatchlist(ctx.user.id);
+      const watchlistIds = new Set(watchlistItems.map(w => `${w.tmdbId}-${w.mediaType}`));
+
+      // Get watched items for categorization
+      const watchedItems = await db.getUserViewingHistory(ctx.user.id);
+      const watchedIds = new Set(watchedItems.map(w => `${w.tmdbId}-${w.mediaType}`));
+
+      // Check each content item for provider availability
+      for (const content of userContent) {
+        try {
+          // Check cache first
+          const cached = await db.getCachedProviders(content.tmdbId, content.mediaType);
+          let providers = null;
+
+          if (cached) {
+            providers = JSON.parse(cached.providersData);
+          } else {
+            // Fetch from TMDB
+            const watchProviders = content.mediaType === 'movie'
+              ? await tmdb.getMovieWatchProviders(content.tmdbId)
+              : await tmdb.getTVShowWatchProviders(content.tmdbId);
+            providers = watchProviders;
+
+            if (providers) {
+              const expiresAt = new Date();
+              expiresAt.setHours(expiresAt.getHours() + 24);
+              await db.setCachedProviders({
+                tmdbId: content.tmdbId,
+                mediaType: content.mediaType,
+                countryCode: 'BR',
+                providersData: JSON.stringify(providers),
+                cachedAt: new Date(),
+                expiresAt,
+              });
+            }
+          }
+
+          if (providers && providers.flatrate) {
+            const contentKey = `${content.tmdbId}-${content.mediaType}`;
+            const isWatchlist = watchlistIds.has(contentKey);
+            const isWatched = watchedIds.has(contentKey);
+
+            for (const provider of providers.flatrate) {
+              const providerId = provider.provider_id;
+              if (providerContentCount[providerId]) {
+                providerContentCount[providerId].total++;
+                if (isWatchlist) providerContentCount[providerId].watchlist++;
+                if (isWatched) providerContentCount[providerId].watched++;
+                if (!isWatchlist && !isWatched) providerContentCount[providerId].lists++;
+                
+                // Store title for display (limit to 10)
+                if (providerContentCount[providerId].titles.length < 10) {
+                  // Get title from watchlist, watched items, or fetch from TMDB
+                  const watchlistItem = watchlistItems.find(w => w.tmdbId === content.tmdbId && w.mediaType === content.mediaType);
+                  const watchedItem = watchedItems.find(w => w.tmdbId === content.tmdbId && w.mediaType === content.mediaType);
+                  let title = watchlistItem?.title || watchedItem?.title;
+                  
+                  // If no title found, fetch from TMDB
+                  if (!title) {
+                    try {
+                      const detailsUrl = content.mediaType === 'movie'
+                        ? `https://api.themoviedb.org/3/movie/${content.tmdbId}?api_key=${process.env.TMDB_API_KEY}&language=pt-BR`
+                        : `https://api.themoviedb.org/3/tv/${content.tmdbId}?api_key=${process.env.TMDB_API_KEY}&language=pt-BR`;
+                      const detailsResponse = await fetch(detailsUrl);
+                      const details = await detailsResponse.json();
+                      title = details.title || details.name || `ID: ${content.tmdbId}`;
+                    } catch (e) {
+                      title = `ID: ${content.tmdbId}`;
+                    }
+                  }
+                  
+                  if (title && !providerContentCount[providerId].titles.includes(title)) {
+                    providerContentCount[providerId].titles.push(title);
+                  }
+                }
+              }
+            }
+          }
+        } catch (error) {
+          console.error(`Error fetching providers for ${content.tmdbId}:`, error);
+        }
+      }
+
+      // Calculate analysis results
+      const analysisResults = Object.entries(providerInfo).map(([providerIdStr, info]) => {
+        const providerId = parseInt(providerIdStr);
+        const contentData = providerContentCount[providerId] || { total: 0, watchlist: 0, watched: 0, lists: 0, titles: [] };
+        const isSubscribed = activeProviderIds.includes(providerId);
+        const matchPercentage = userContent.length > 0 
+          ? Math.round((contentData.total / userContent.length) * 100) 
+          : 0;
+        const costPerTitle = contentData.total > 0 
+          ? info.price / contentData.total 
+          : info.price;
+
+        return {
+          providerId,
+          providerName: info.name,
+          providerLogo: info.logo,
+          monthlyPrice: info.price,
+          totalContent: contentData.total,
+          watchlistContent: contentData.watchlist,
+          watchedContent: contentData.watched,
+          listContent: contentData.lists,
+          matchPercentage,
+          costPerTitle: Math.round(costPerTitle * 100) / 100,
+          isSubscribed,
+          sampleTitles: contentData.titles,
+        };
+      });
+
+      // Sort by total content (most valuable first)
+      analysisResults.sort((a, b) => b.totalContent - a.totalContent);
+
+      // Generate recommendations
+      const recommendations: Array<{
+        type: 'subscribe' | 'cancel' | 'keep';
+        providerId: number;
+        providerName: string;
+        reason: string;
+      }> = [];
+
+      for (const result of analysisResults) {
+        if (!result.isSubscribed && result.totalContent >= 5) {
+          recommendations.push({
+            type: 'subscribe',
+            providerId: result.providerId,
+            providerName: result.providerName,
+            reason: `Tem ${result.totalContent} títulos do seu interesse por R$ ${result.monthlyPrice.toFixed(2)}/mês`,
+          });
+        } else if (result.isSubscribed && result.totalContent <= 2) {
+          recommendations.push({
+            type: 'cancel',
+            providerId: result.providerId,
+            providerName: result.providerName,
+            reason: `Apenas ${result.totalContent} títulos do seu interesse - considere cancelar`,
+          });
+        } else if (result.isSubscribed && result.totalContent >= 5) {
+          recommendations.push({
+            type: 'keep',
+            providerId: result.providerId,
+            providerName: result.providerName,
+            reason: `${result.totalContent} títulos do seu interesse - bom custo-benefício`,
+          });
+        }
+      }
+
+      return {
+        totalUserContent: userContent.length,
+        userSubscriptionsCount: activeProviderIds.length,
+        providers: analysisResults,
+        recommendations: recommendations.slice(0, 5),
+      };
+    }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;
