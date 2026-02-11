@@ -25,6 +25,7 @@ import { deduplicateProviders } from "@/lib/providerUtils";
 import { RatingStars } from "@/components/RatingStars";
 import { ReviewDialog } from "@/components/ReviewDialog";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { ReportAvailabilityDialog } from "@/components/ReportAvailabilityDialog";
 
 export default function MovieDetails() {
   const { id } = useParams();
@@ -476,17 +477,31 @@ export default function MovieDetails() {
           </Card>
         )}
 
-        <p className="text-xs text-muted-foreground mt-6 text-center">
-          Dados de disponibilidade fornecidos por{" "}
-          <a
-            href="https://www.justwatch.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary hover:underline"
-          >
-            JustWatch
-          </a>
-        </p>
+        <div className="flex items-center justify-between mt-6">
+          <p className="text-xs text-muted-foreground">
+            Dados de disponibilidade fornecidos por{" "}
+            <a
+              href="https://www.justwatch.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              JustWatch
+            </a>
+          </p>
+          {movie && (
+            <ReportAvailabilityDialog
+              tmdbId={movie.id}
+              mediaType="movie"
+              title={movie.title}
+              providers={[
+                ...(providers?.flatrate || []),
+                ...(providers?.rent || []),
+                ...(providers?.buy || []),
+              ]}
+            />
+          )}
+        </div>
       </div>
 
       {/* Ratings and Reviews */}

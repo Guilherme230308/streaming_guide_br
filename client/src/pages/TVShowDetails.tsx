@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { AddToListDialog } from "@/components/AddToListDialog";
 import { handleProviderClick as handleDeepLink } from "@/lib/deepLinks";
 import { deduplicateProviders } from "@/lib/providerUtils";
+import { ReportAvailabilityDialog } from "@/components/ReportAvailabilityDialog";
 
 export default function TVShowDetails() {
   const { id } = useParams();
@@ -432,17 +433,31 @@ export default function TVShowDetails() {
           </Card>
         )}
 
-        <p className="text-xs text-muted-foreground mt-6 text-center">
-          Dados de disponibilidade fornecidos por{" "}
-          <a
-            href="https://www.justwatch.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary hover:underline"
-          >
-            JustWatch
-          </a>
-        </p>
+        <div className="flex items-center justify-between mt-6">
+          <p className="text-xs text-muted-foreground">
+            Dados de disponibilidade fornecidos por{" "}
+            <a
+              href="https://www.justwatch.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              JustWatch
+            </a>
+          </p>
+          {show && (
+            <ReportAvailabilityDialog
+              tmdbId={show.id}
+              mediaType="tv"
+              title={show.name}
+              providers={[
+                ...(providers?.flatrate || []),
+                ...(providers?.rent || []),
+                ...(providers?.buy || []),
+              ]}
+            />
+          )}
+        </div>
       </div>
 
       {/* Similar TV Shows */}

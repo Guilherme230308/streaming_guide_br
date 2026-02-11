@@ -514,3 +514,27 @@
 - [x] Fix: Use navigator.sendBeacon for fire-and-forget affiliate tracking
 - [x] Verified: Netflix, Amazon Prime Video, Google Play, Apple TV all redirect correctly
 - [x] Verified: TV shows (Stranger Things → Netflix) redirect correctly
+
+## Hybrid Streaming Availability System (Round 49)
+- [x] Research Streaming Availability API (RapidAPI) and Watchmode API pricing and endpoints
+- [x] Analyzed feasibility: NOT worth implementing now (TMDb is sufficient, cost doesn't justify)
+- [ ] Implement paid API integration on backend (deferred - not cost-effective yet)
+- [ ] Add smart fallback heuristics (deferred)
+- [x] Implement smart caching layer with TTL (6h for new releases, 48h for older content)
+- [ ] Normalize provider names across sources (deferred)
+- [ ] Use "detail-only" strategy (deferred)
+- [ ] Add "updated at" timestamp to availability data (deferred)
+- [ ] Test hybrid system accuracy vs TMDb-only (deferred)
+
+## Smart Cache & Report Error (Round 50)
+- [x] Create smart provider cache utility (server/providerCache.ts) with intelligent TTL
+- [x] Implement cache layer with getProvidersWithCache() replacing duplicated code
+- [x] Set TTL: 6h for content released in last 30 days, 24h for 1-6 months, 48h for older content
+- [x] Add cache hit/miss logging for monitoring
+- [x] Create availability_reports table for user error reports
+- [x] Build backend procedure for submitting availability error reports
+- [x] Build "Reportar erro" button UI on MovieDetails and TVShowDetails pages
+- [x] Create report dialog with 5 report types, provider selection, and optional comment
+- [x] Send notification to owner when 3+ reports accumulate for same content
+- [x] Auto-invalidate cache on report submission for fresh data
+- [x] Write tests: 7 cache tests + 5 report tests (all passing)

@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE `availability_reports` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`userId` int,\n\t`tmdbId` int NOT NULL,\n\t`mediaType` enum('movie','tv') NOT NULL,\n\t`title` varchar(500) NOT NULL,\n\t`reportType` enum('wrong_provider','missing_provider','wrong_price','broken_link','other') NOT NULL,\n\t`providerName` varchar(255),\n\t`comment` text,\n\t`status` enum('pending','reviewed','resolved') NOT NULL DEFAULT 'pending',\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\t`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n\tCONSTRAINT `availability_reports_id` PRIMARY KEY(`id`)\n);\nCREATE INDEX `tmdbIdIdx` ON `availability_reports` (`tmdbId`);\nCREATE INDEX `statusIdx` ON `availability_reports` (`status`);\nCREATE INDEX `createdAtIdx` ON `availability_reports` (`createdAt`);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2ZhujiYnxXczSgu.root --database Cvg8278ofufQzThj4s4h83 --execute CREATE TABLE `availability_reports` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`userId` int,\n\t`tmdbId` int NOT NULL,\n\t`mediaType` enum('movie','tv') NOT NULL,\n\t`title` varchar(500) NOT NULL,\n\t`reportType` enum('wrong_provider','missing_provider','wrong_price','broken_link','other') NOT NULL,\n\t`providerName` varchar(255),\n\t`comment` text,\n\t`status` enum('pending','reviewed','resolved') NOT NULL DEFAULT 'pending',\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\t`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n\tCONSTRAINT `availability_reports_id` PRIMARY KEY(`id`)\n);\nCREATE INDEX `tmdbIdIdx` ON `availability_reports` (`tmdbId`);\nCREATE INDEX `statusIdx` ON `availability_reports` (`status`);\nCREATE INDEX `createdAtIdx` ON `availability_reports` (`createdAt`);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 2151
+}

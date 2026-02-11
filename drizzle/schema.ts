@@ -243,3 +243,33 @@ export const pushSubscriptions = mysqlTable("push_subscriptions", {
 
 export type PushSubscription = typeof pushSubscriptions.$inferSelect;
 export type InsertPushSubscription = typeof pushSubscriptions.$inferInsert;
+
+/**
+ * Availability reports - user-submitted error reports for streaming availability
+ */
+export const availabilityReports = mysqlTable("availability_reports", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId"),
+  tmdbId: int("tmdbId").notNull(),
+  mediaType: mysqlEnum("mediaType", ["movie", "tv"]).notNull(),
+  title: varchar("title", { length: 500 }).notNull(),
+  reportType: mysqlEnum("reportType", [
+    "wrong_provider",      // Listed on a provider but not actually available
+    "missing_provider",    // Available on a provider but not listed
+    "wrong_price",         // Rent/buy price is incorrect
+    "broken_link",         // Deep link doesn't work
+    "other"                // Other issue
+  ]).notNull(),
+  providerName: varchar("providerName", { length: 255 }),
+  comment: text("comment"),
+  status: mysqlEnum("status", ["pending", "reviewed", "resolved"]).default("pending").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  tmdbIdIdx: index("tmdbIdIdx").on(table.tmdbId),
+  statusIdx: index("statusIdx").on(table.status),
+  createdAtIdx: index("createdAtIdx").on(table.createdAt),
+}));
+
+export type AvailabilityReport = typeof availabilityReports.$inferSelect;
+export type InsertAvailabilityReport = typeof availabilityReports.$inferInsert;

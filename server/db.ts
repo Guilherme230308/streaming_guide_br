@@ -34,7 +34,10 @@ import {
   CustomListItem,
   pushSubscriptions,
   InsertPushSubscription,
-  PushSubscription
+  PushSubscription,
+  availabilityReports,
+  InsertAvailabilityReport,
+  AvailabilityReport
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -1028,4 +1031,44 @@ export async function getAllUserContentIds(userId: number): Promise<Array<{ tmdb
   }
 
   return Array.from(contentSet.values());
+}
+
+// Availability report functions
+export async function createAvailabilityReport(data: InsertAvailabilityReport): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.insert(availabilityReports).values(data);
+}
+
+export async function getAvailabilityReports(status?: 'pending' | 'reviewed' | 'resolved'): Promise<AvailabilityReport[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  if (status) {
+    return await db.select().from(availabilityReports)
+      .where(eq(availabilityReports.status, status))
+      .orderBy(desc(availabilityReports.createdAt))
+      .limit(100);
+  }
+  
+  return await db.select().from(availabilityReports)
+    .orderBy(desc(availabilityReports.createdAt))
+    .limit(100);
+}
+
+export async function getReportCountForContent(tmdbId: number, mediaType: 'movie' | 'tv'): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+  
+  const result = await db.select().from(availabilityReports)
+    .where(
+      and(
+        eq(availabilityReports.tmdbId, tmdbId),
+        eq(availabilityReports.mediaType, mediaType),
+        eq(availabilityReports.status, 'pending')
+      )
+    );
+  
+  return result.length;
 }

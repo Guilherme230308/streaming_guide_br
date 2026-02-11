@@ -5,8 +5,10 @@ import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as tmdb from "./tmdb";
 import * as db from "./db";
+import { getProvidersWithCache, invalidateProviderCache } from "./providerCache";
 import { runAvailabilityCheckJob, runAllJobs } from "./backgroundJobs";
 import { invokeLLM } from "./_core/llm";
+import { notifyOwner } from "./_core/notification";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -204,58 +206,16 @@ export const appRouter = router({
     getMovieDetails: publicProcedure
       .input(z.object({ movieId: z.number() }))
       .query(async ({ input }) => {
-        const cached = await db.getCachedProviders(input.movieId, 'movie');
-        let providers = null;
-        
-        if (cached) {
-          providers = JSON.parse(cached.providersData);
-        } else {
-          const watchProviders = await tmdb.getMovieWatchProviders(input.movieId);
-          providers = watchProviders;
-          
-          if (providers) {
-            const expiresAt = new Date();
-            expiresAt.setHours(expiresAt.getHours() + 24);
-            await db.setCachedProviders({
-              tmdbId: input.movieId,
-              mediaType: 'movie',
-              countryCode: 'BR',
-              providersData: JSON.stringify(providers),
-              expiresAt,
-            });
-          }
-        }
-        
         const details = await tmdb.getMovieDetails(input.movieId);
+        const providers = await getProvidersWithCache(input.movieId, 'movie', details.release_date);
         return { ...details, watchProviders: providers };
       }),
 
     getTVShowDetails: publicProcedure
       .input(z.object({ tvId: z.number() }))
       .query(async ({ input }) => {
-        const cached = await db.getCachedProviders(input.tvId, 'tv');
-        let providers = null;
-        
-        if (cached) {
-          providers = JSON.parse(cached.providersData);
-        } else {
-          const watchProviders = await tmdb.getTVShowWatchProviders(input.tvId);
-          providers = watchProviders;
-          
-          if (providers) {
-            const expiresAt = new Date();
-            expiresAt.setHours(expiresAt.getHours() + 24);
-            await db.setCachedProviders({
-              tmdbId: input.tvId,
-              mediaType: 'tv',
-              countryCode: 'BR',
-              providersData: JSON.stringify(providers),
-              expiresAt,
-            });
-          }
-        }
-        
         const details = await tmdb.getTVShowDetails(input.tvId);
+        const providers = await getProvidersWithCache(input.tvId, 'tv', details.first_air_date);
         return { ...details, watchProviders: providers };
       }),
 
@@ -1449,6 +1409,58 @@ IMPORTANTE: Quando identificar filmes ou séries, SEMPRE inclua o título origin
         recommendations: recommendations.slice(0, 5),
       };
     }),
+  }),
+
+  // Availability error reports
+  reports: router({
+    submit: publicProcedure
+      .input(z.object({
+        tmdbId: z.number(),
+        mediaType: z.enum(['movie', 'tv']),
+        title: z.string(),
+        reportType: z.enum(['wrong_provider', 'missing_provider', 'wrong_price', 'broken_link', 'other']),
+        providerName: z.string().optional(),
+        comment: z.string().max(500).optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const userId = ctx.user?.id || null;
+        
+        await db.createAvailabilityReport({
+          userId,
+          tmdbId: input.tmdbId,
+          mediaType: input.mediaType,
+          title: input.title,
+          reportType: input.reportType,
+          providerName: input.providerName || null,
+          comment: input.comment || null,
+        });
+
+        // Invalidate cache for this content so next request fetches fresh data
+        await invalidateProviderCache(input.tmdbId, input.mediaType);
+
+        // Check if there are multiple reports for this content - notify owner
+        const reportCount = await db.getReportCountForContent(input.tmdbId, input.mediaType);
+        if (reportCount >= 3) {
+          try {
+            await notifyOwner({
+              title: `Múltiplos reports: ${input.title}`,
+              content: `${reportCount} reports pendentes para "${input.title}" (${input.mediaType}). Último tipo: ${input.reportType}. Verifique a disponibilidade.`,
+            });
+          } catch {
+            // Non-critical, don't fail the report
+          }
+        }
+
+        return { success: true };
+      }),
+
+    getReports: protectedProcedure
+      .input(z.object({
+        status: z.enum(['pending', 'reviewed', 'resolved']).optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        return await db.getAvailabilityReports(input?.status);
+      }),
   }),
 });
 
