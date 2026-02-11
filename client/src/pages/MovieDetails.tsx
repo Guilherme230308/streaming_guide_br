@@ -157,10 +157,10 @@ export default function MovieDetails() {
     });
   };
 
-  const handleProviderClick = async (provider: any, clickType: 'stream' | 'rent' | 'buy', event: React.MouseEvent) => {
+  const handleProviderClick = (provider: any, clickType: 'stream' | 'rent' | 'buy', event: React.MouseEvent) => {
     event.preventDefault();
     
-    // Track affiliate click
+    // Track affiliate click via tRPC mutation
     trackClick.mutate({
       tmdbId: movieId,
       mediaType: "movie",
@@ -169,8 +169,9 @@ export default function MovieDetails() {
       clickType,
     });
     
-    // Handle deep linking with movie title for search
-    await handleDeepLink(provider.provider_id, provider.provider_name, "movie", movieId, movie?.title);
+    // Handle deep linking with both localized and original title
+    // Opens URL synchronously to avoid mobile popup blocking
+    handleDeepLink(provider.provider_id, provider.provider_name, "movie", movieId, movie?.title, movie?.original_title);
   };
 
   const getImageUrl = (path: string | null, size: string = "w500") => {

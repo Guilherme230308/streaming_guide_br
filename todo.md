@@ -504,3 +504,13 @@
 - [x] Add data-tour='trending-movies' to Filmes em Alta section
 - [x] Add data-tour='menu' to MobileMenu trigger button
 - [x] Update tour steps from 6 to 8 with better content
+
+## Streaming Deep Link Verification (Round 48)
+- [x] Test streaming deep links on desktop (click through to streaming services)
+- [x] Test streaming deep links on mobile viewport
+- [x] Review deep linking code for correctness
+- [x] Fix: Use original_title (English) for Apple TV and Google Play deep links
+- [x] Fix: Make handleProviderClick synchronous to prevent mobile popup blocking
+- [x] Fix: Use navigator.sendBeacon for fire-and-forget affiliate tracking
+- [x] Verified: Netflix, Amazon Prime Video, Google Play, Apple TV all redirect correctly
+- [x] Verified: TV shows (Stranger Things → Netflix) redirect correctly

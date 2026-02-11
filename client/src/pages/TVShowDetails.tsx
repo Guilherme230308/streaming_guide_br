@@ -115,10 +115,10 @@ export default function TVShowDetails() {
     });
   };
 
-  const handleProviderClick = async (provider: any, clickType: 'stream' | 'rent' | 'buy', event: React.MouseEvent) => {
+  const handleProviderClick = (provider: any, clickType: 'stream' | 'rent' | 'buy', event: React.MouseEvent) => {
     event.preventDefault();
     
-    // Track affiliate click
+    // Track affiliate click via tRPC mutation
     trackClick.mutate({
       tmdbId: tvId,
       mediaType: "tv",
@@ -127,8 +127,9 @@ export default function TVShowDetails() {
       clickType,
     });
     
-    // Handle deep linking with TV show title for search
-    await handleDeepLink(provider.provider_id, provider.provider_name, "tv", tvId, show?.name);
+    // Handle deep linking with both localized and original title
+    // Opens URL synchronously to avoid mobile popup blocking
+    handleDeepLink(provider.provider_id, provider.provider_name, "tv", tvId, show?.name, show?.original_name);
   };
 
   const getImageUrl = (path: string | null, size: string = "w500") => {

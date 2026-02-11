@@ -9,7 +9,24 @@ export interface DeepLinkConfig {
   appScheme?: string; // Mobile app deep link scheme
   webUrlTemplate?: string; // Web URL template with placeholders
   searchUrlTemplate?: string; // Search URL template as fallback
+  usesLocalTitle?: boolean; // Whether this provider works better with localized titles
 }
+
+// Providers that work well with Portuguese/localized titles
+const PROVIDERS_USING_LOCAL_TITLE = new Set([
+  8,    // Netflix
+  1796, // Netflix basic with Ads
+  119,  // Amazon Prime Video
+  10,   // Amazon Video (Buy/Rent)
+  307,  // Globoplay
+  384,  // Claro video
+  1853, // Claro tv+
+  283,  // Crunchyroll
+  1899, // HBO Max / Max
+  337,  // Disney Plus
+  619,  // Star Plus
+  531,  // Paramount Plus
+]);
 
 // Deep link configurations for popular Brazilian streaming services
 // Using {tmdbId}, {contentType}, and {title} as placeholders
@@ -18,87 +35,97 @@ const DEEP_LINK_CONFIG: Record<number, DeepLinkConfig> = {
     providerId: 8,
     providerName: "Netflix",
     appScheme: "nflx://www.netflix.com/title/{netflixId}",
-    // Netflix uses its own IDs, so we search by title
     searchUrlTemplate: "https://www.netflix.com/search?q={title}",
+    usesLocalTitle: true,
   },
   119: { // Amazon Prime Video
     providerId: 119,
     providerName: "Amazon Prime Video",
     appScheme: "aiv://aiv/watch?gti={amazonId}",
-    // Amazon Prime Video search
     searchUrlTemplate: "https://www.primevideo.com/search/ref=atv_nb_sr?phrase={title}",
+    usesLocalTitle: true,
   },
   1899: { // HBO Max (now Max)
     providerId: 1899,
     providerName: "HBO Max",
     appScheme: "hbomax://",
-    // Max search URL
     searchUrlTemplate: "https://www.max.com/br/pt/search?q={title}",
+    usesLocalTitle: true,
   },
   337: { // Disney Plus
     providerId: 337,
     providerName: "Disney Plus",
     appScheme: "disneyplus://",
-    // Disney+ search
     searchUrlTemplate: "https://www.disneyplus.com/pt-br/search?q={title}",
+    usesLocalTitle: true,
   },
   619: { // Star Plus (merged with Disney+)
     providerId: 619,
     providerName: "Star Plus",
     appScheme: "starplus://",
     searchUrlTemplate: "https://www.disneyplus.com/pt-br/search?q={title}",
+    usesLocalTitle: true,
   },
   531: { // Paramount Plus
     providerId: 531,
     providerName: "Paramount Plus",
     appScheme: "paramountplus://",
     searchUrlTemplate: "https://www.paramountplus.com/br/search/?q={title}",
+    usesLocalTitle: true,
   },
   2: { // Apple TV
     providerId: 2,
     providerName: "Apple TV",
-    // Apple TV uses its own IDs, search by title
     searchUrlTemplate: "https://tv.apple.com/br/search?term={title}",
+    usesLocalTitle: false, // Apple TV works better with original (English) titles
   },
   350: { // Apple TV Plus
     providerId: 350,
     providerName: "Apple TV Plus",
     searchUrlTemplate: "https://tv.apple.com/br/search?term={title}",
+    usesLocalTitle: false,
   },
   3: { // Google Play Movies
     providerId: 3,
     providerName: "Google Play Movies",
     searchUrlTemplate: "https://play.google.com/store/search?q={title}&c=movies",
+    usesLocalTitle: false, // Google Play works better with original titles
   },
   10: { // Amazon Video (Buy/Rent)
     providerId: 10,
     providerName: "Amazon Video",
     searchUrlTemplate: "https://www.amazon.com.br/s?k={title}&i=instant-video",
+    usesLocalTitle: true,
   },
   307: { // Globoplay
     providerId: 307,
     providerName: "Globoplay",
     searchUrlTemplate: "https://globoplay.globo.com/busca/?q={title}",
+    usesLocalTitle: true,
   },
   384: { // Claro video
     providerId: 384,
     providerName: "Claro video",
     searchUrlTemplate: "https://www.clarovideo.com/brasil/buscar?q={title}",
+    usesLocalTitle: true,
   },
   283: { // Crunchyroll
     providerId: 283,
     providerName: "Crunchyroll",
     searchUrlTemplate: "https://www.crunchyroll.com/pt-br/search?q={title}",
+    usesLocalTitle: true,
   },
   1796: { // Netflix basic with Ads
     providerId: 1796,
     providerName: "Netflix",
     searchUrlTemplate: "https://www.netflix.com/search?q={title}",
+    usesLocalTitle: true,
   },
   1853: { // Claro tv+
     providerId: 1853,
     providerName: "Claro tv+",
     searchUrlTemplate: "https://www.clarotvmais.com.br/busca?q={title}",
+    usesLocalTitle: true,
   },
 };
 
@@ -107,21 +134,28 @@ const DEEP_LINK_CONFIG: Record<number, DeepLinkConfig> = {
  * @param providerId - TMDB provider ID
  * @param contentType - Type of content (movie or tv)
  * @param tmdbId - TMDB content ID
- * @param title - Content title for search-based URLs
+ * @param title - Content title (localized) for search-based URLs
+ * @param originalTitle - Original title (usually English) for providers that need it
  * @returns Deep link URL or search URL
  */
 export function getProviderDeepLink(
   providerId: number,
   contentType: 'movie' | 'tv',
   tmdbId: number,
-  title?: string
+  title?: string,
+  originalTitle?: string
 ): string {
   const config = DEEP_LINK_CONFIG[providerId];
-  const encodedTitle = encodeURIComponent(title || '');
+  
+  // Choose the best title for this provider
+  // Use original title for providers that don't work well with Portuguese titles
+  const useOriginal = config && !config.usesLocalTitle && originalTitle;
+  const bestTitle = useOriginal ? originalTitle : (title || originalTitle || '');
+  const encodedTitle = encodeURIComponent(bestTitle);
   
   if (!config) {
     // Fallback to Google search with title if provider not configured
-    if (title) {
+    if (bestTitle) {
       return `https://www.google.com/search?q=${encodedTitle}+assistir+online`;
     }
     return `https://www.google.com/search?q=${contentType}+${tmdbId}+streaming+brasil`;
@@ -137,7 +171,7 @@ export function getProviderDeepLink(
   }
 
   // Use search URL template with title
-  if (config.searchUrlTemplate && title) {
+  if (config.searchUrlTemplate && bestTitle) {
     return config.searchUrlTemplate.replace('{title}', encodedTitle);
   }
 
@@ -156,29 +190,33 @@ function isMobileDevice(): boolean {
 }
 
 /**
- * Track affiliate click
+ * Track affiliate click (fire-and-forget, non-blocking)
  * @param providerId - TMDB provider ID
  * @param contentType - Type of content
  * @param tmdbId - TMDB content ID
  */
-export async function trackAffiliateClick(
+export function trackAffiliateClick(
   providerId: number,
   contentType: 'movie' | 'tv',
   tmdbId: number
-): Promise<void> {
+): void {
   try {
-    // Send tracking request to backend
-    await fetch('/api/trpc/affiliate.trackClick', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        providerId,
-        contentType,
-        tmdbId,
-      }),
-    });
+    // Use navigator.sendBeacon for fire-and-forget tracking that doesn't block navigation
+    const data = JSON.stringify({ providerId, contentType, tmdbId });
+    const blob = new Blob([data], { type: 'application/json' });
+    
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/trpc/affiliate.trackClick', blob);
+    } else {
+      // Fallback: fire-and-forget fetch (no await)
+      fetch('/api/trpc/affiliate.trackClick', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: data,
+      }).catch(() => {
+        // Silently ignore tracking errors
+      });
+    }
   } catch (error) {
     console.error('Failed to track affiliate click:', error);
   }
@@ -186,25 +224,31 @@ export async function trackAffiliateClick(
 
 /**
  * Handle provider click with tracking and deep linking
+ * Opens the streaming service URL synchronously (within user gesture) to avoid popup blocking.
+ * Tracking is fire-and-forget and does not block the navigation.
+ * 
  * @param providerId - TMDB provider ID
  * @param providerName - Provider display name
  * @param contentType - Type of content (movie or tv)
  * @param tmdbId - TMDB content ID
- * @param title - Content title for search-based URLs
+ * @param title - Content title (localized) for search-based URLs
+ * @param originalTitle - Original title (usually English) for providers that need it
  */
-export async function handleProviderClick(
+export function handleProviderClick(
   providerId: number,
   providerName: string,
   contentType: 'movie' | 'tv',
   tmdbId: number,
-  title?: string
-): Promise<void> {
-  // Track the click for affiliate purposes
-  await trackAffiliateClick(providerId, contentType, tmdbId);
+  title?: string,
+  originalTitle?: string
+): void {
+  // Get the appropriate deep link URL FIRST (synchronous, within user gesture)
+  const url = getProviderDeepLink(providerId, contentType, tmdbId, title, originalTitle);
 
-  // Get the appropriate deep link with title for search
-  const url = getProviderDeepLink(providerId, contentType, tmdbId, title);
-
-  // Open the link
+  // Open the link IMMEDIATELY (synchronous, within user gesture context)
+  // This prevents popup blocking on mobile browsers
   window.open(url, '_blank');
+
+  // Track the click AFTER opening (fire-and-forget, non-blocking)
+  trackAffiliateClick(providerId, contentType, tmdbId);
 }
