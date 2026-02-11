@@ -121,6 +121,7 @@ export function MobileMenu() {
           size="sm"
           className="px-2 sm:px-3"
           aria-label="Menu"
+          data-tour="menu"
         >
           <Menu className="h-7 w-7" />
         </Button>

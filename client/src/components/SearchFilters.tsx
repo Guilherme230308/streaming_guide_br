@@ -115,6 +115,7 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
           variant="outline"
           className="relative h-14 w-14 flex-shrink-0"
           size="icon"
+          data-tour="filters"
         >
           <SlidersHorizontal className="h-5 w-5" />
           {activeFiltersCount > 0 && (

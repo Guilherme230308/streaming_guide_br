@@ -491,3 +491,16 @@
 - [x] Add "Como funciona?" section with 3 steps
 - [x] Add "Por que usar o Onde Assistir?" section with benefits
 - [x] Add final CTA section
+
+## Onboarding Tour Redesign (Round 47)
+- [x] Redesign tour popover with custom dark theme matching app style
+- [x] Add attractive typography, icons, and gradient accents
+- [x] Improve step content with better descriptions
+- [x] Add progress indicator with visual dots
+- [x] Style buttons with app's teal/cyan accent colors
+- [x] Test the new tour on desktop and mobile
+- [x] Fix data-tour attributes to match actual visible page elements
+- [x] Add data-tour='filters' to SearchFilters button
+- [x] Add data-tour='trending-movies' to Filmes em Alta section
+- [x] Add data-tour='menu' to MobileMenu trigger button
+- [x] Update tour steps from 6 to 8 with better content

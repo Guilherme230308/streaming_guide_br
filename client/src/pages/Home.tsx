@@ -43,7 +43,7 @@ export default function Home() {
   const [showAIAssistant, setShowAIAssistant] = useState(false);
 
   // Initialize onboarding tour for new users
-  useOnboardingTour();
+  const { TourComponent } = useOnboardingTour();
 
   // Load recent searches from localStorage
   useEffect(() => {
@@ -206,6 +206,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
+      {TourComponent}
       <SwipeEdgeIndicator />
       {/* Header */}
       <header className="border-b border-border/40 backdrop-blur-sm sticky top-0 z-50 bg-background/95">
@@ -481,7 +482,7 @@ export default function Home() {
       <CommunityFeed />
 
       {/* Trending Movies */}
-      <section className="py-12">
+      <section className="py-12" data-tour="trending-movies">
         <div className="container px-4">
           <div className="flex items-center gap-2 mb-6">
             <Film className="h-6 w-6 text-primary" />
