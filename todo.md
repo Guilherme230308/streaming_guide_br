@@ -481,3 +481,13 @@
 - [x] Highlight streamings user doesn't subscribe but has relevant content
 - [x] Add recommendations section (subscribe/cancel suggestions)
 - [x] Add navigation link to the new page (desktop nav + mobile menu)
+
+## Landing Page Improvement (Round 46)
+- [x] Add hero section with background image (family watching movie)
+- [x] Add streaming logos collage image
+- [x] Add smartphone streaming app image in features section
+- [x] Add home theater image in "Por que usar" section
+- [x] Improve visual design with gradient overlays and better typography
+- [x] Add "Como funciona?" section with 3 steps
+- [x] Add "Por que usar o Onde Assistir?" section with benefits
+- [x] Add final CTA section
