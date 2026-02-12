@@ -1,6 +1,7 @@
 /**
  * Deep linking utility for streaming services
  * Provides direct links to specific movies/series on streaming platforms
+ * PWA-aware: handles standalone mode where window.open() may not work
  */
 
 export interface DeepLinkConfig {
@@ -130,6 +131,36 @@ const DEEP_LINK_CONFIG: Record<number, DeepLinkConfig> = {
 };
 
 /**
+ * Check if running as installed PWA (standalone mode)
+ */
+export function isPWAStandalone(): boolean {
+  if (typeof window === 'undefined') return false;
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    (window.navigator as any).standalone === true // iOS Safari
+  );
+}
+
+/**
+ * Check if the current device is iOS
+ */
+function isIOSDevice(): boolean {
+  if (typeof window === 'undefined') return false;
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+/**
+ * Check if the current device is mobile
+ */
+function isMobileDevice(): boolean {
+  if (typeof window === 'undefined') return false;
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
+}
+
+/**
  * Get deep link URL for a streaming provider with specific content
  * @param providerId - TMDB provider ID
  * @param contentType - Type of content (movie or tv)
@@ -161,9 +192,9 @@ export function getProviderDeepLink(
     return `https://www.google.com/search?q=${contentType}+${tmdbId}+streaming+brasil`;
   }
 
-  // For mobile devices, try app scheme first
-  if (isMobileDevice() && config.appScheme) {
-    // Replace placeholders in app scheme
+  // For mobile devices (NOT in PWA mode), try app scheme first
+  // In PWA mode, app schemes can cause issues, so use web URLs
+  if (isMobileDevice() && !isPWAStandalone() && config.appScheme) {
     return config.appScheme
       .replace('{tmdbId}', String(tmdbId))
       .replace('{contentType}', contentType)
@@ -177,16 +208,6 @@ export function getProviderDeepLink(
 
   // Fallback to Google search
   return `https://www.google.com/search?q=${encodedTitle}+${config.providerName}`;
-}
-
-/**
- * Check if the current device is mobile
- */
-function isMobileDevice(): boolean {
-  if (typeof window === 'undefined') return false;
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    navigator.userAgent
-  );
 }
 
 /**
@@ -223,9 +244,57 @@ export function trackAffiliateClick(
 }
 
 /**
- * Handle provider click with tracking and deep linking
- * Opens the streaming service URL synchronously (within user gesture) to avoid popup blocking.
- * Tracking is fire-and-forget and does not block the navigation.
+ * Open a URL that works correctly in both browser and PWA standalone mode.
+ * 
+ * In PWA standalone mode:
+ * - iOS: Uses x-safari- scheme (iOS 17+) to open in Safari, falls back to window.open
+ * - Android: Uses window.open with _blank which opens in Chrome
+ * - Desktop: Uses window.open normally
+ * 
+ * In regular browser mode:
+ * - Uses window.open with _blank
+ */
+function openExternalUrl(url: string): void {
+  if (isPWAStandalone()) {
+    if (isIOSDevice()) {
+      // iOS PWA: Use x-safari- scheme to force opening in Safari (iOS 17+)
+      // This is the most reliable way to open external links from iOS PWA
+      try {
+        const safariUrl = `x-safari-${url}`;
+        window.location.href = safariUrl;
+        return;
+      } catch {
+        // Fall through to window.open
+      }
+    }
+    
+    // Android PWA or fallback: Create a temporary <a> tag and click it
+    // This is more reliable than window.open() in PWA standalone mode
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    // Some Android browsers need the link to be in the DOM
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    // Clean up after a short delay
+    setTimeout(() => {
+      document.body.removeChild(link);
+    }, 100);
+    return;
+  }
+
+  // Regular browser: window.open works fine
+  window.open(url, '_blank');
+}
+
+/**
+ * Handle provider click with tracking and deep linking.
+ * Works in both regular browser and PWA standalone mode.
+ * 
+ * In PWA mode, uses platform-specific methods to open external URLs.
+ * Tracking is always fire-and-forget and does not block navigation.
  * 
  * @param providerId - TMDB provider ID
  * @param providerName - Provider display name
@@ -245,9 +314,8 @@ export function handleProviderClick(
   // Get the appropriate deep link URL FIRST (synchronous, within user gesture)
   const url = getProviderDeepLink(providerId, contentType, tmdbId, title, originalTitle);
 
-  // Open the link IMMEDIATELY (synchronous, within user gesture context)
-  // This prevents popup blocking on mobile browsers
-  window.open(url, '_blank');
+  // Open the link using PWA-aware method
+  openExternalUrl(url);
 
   // Track the click AFTER opening (fire-and-forget, non-blocking)
   trackAffiliateClick(providerId, contentType, tmdbId);

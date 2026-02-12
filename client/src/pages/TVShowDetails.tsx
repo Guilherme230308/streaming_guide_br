@@ -18,7 +18,7 @@ import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
 import { AddToListDialog } from "@/components/AddToListDialog";
-import { handleProviderClick as handleDeepLink } from "@/lib/deepLinks";
+import { handleProviderClick as handleDeepLink, getProviderDeepLink, isPWAStandalone } from "@/lib/deepLinks";
 import { deduplicateProviders } from "@/lib/providerUtils";
 import { ReportAvailabilityDialog } from "@/components/ReportAvailabilityDialog";
 
@@ -129,7 +129,7 @@ export default function TVShowDetails() {
     });
     
     // Handle deep linking with both localized and original title
-    // Opens URL synchronously to avoid mobile popup blocking
+    // Uses PWA-aware method that works in standalone mode
     handleDeepLink(provider.provider_id, provider.provider_name, "tv", tvId, show?.name, show?.original_name);
   };
 
@@ -139,8 +139,8 @@ export default function TVShowDetails() {
   };
 
   const getProviderUrl = (provider: any) => {
-    // Return # to prevent default navigation, actual navigation handled by onClick
-    return "#";
+    // Provide real URL in href for PWA compatibility and accessibility
+    return getProviderDeepLink(provider.provider_id, "tv", tvId, show?.name, show?.original_name);
   };
 
   if (isLoading) {

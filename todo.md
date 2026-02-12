@@ -538,3 +538,10 @@
 - [x] Send notification to owner when 3+ reports accumulate for same content
 - [x] Auto-invalidate cache on report submission for fresh data
 - [x] Write tests: 7 cache tests + 5 report tests (all passing)
+
+## PWA Deep Link Bug Fix (Round 51)
+- [x] Fix streaming deep links not working in PWA standalone mode
+- [x] Ensure links open in external browser from PWA (iOS: x-safari- scheme, Android: programmatic <a> click)
+- [x] Set real URLs in href attributes instead of '#' for better PWA compatibility
+- [x] Skip app scheme deep links in PWA mode to avoid issues
+- [x] All tests passing (14/15, 1 TMDB timeout unrelated)
