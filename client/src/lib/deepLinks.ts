@@ -2,6 +2,7 @@
  * Deep linking utility for streaming services
  * Provides direct links to specific movies/series on streaming platforms
  * PWA-aware: handles standalone mode where window.open() may not work
+ * Supports Amazon Associates affiliate link injection
  */
 
 export interface DeepLinkConfig {
@@ -11,6 +12,52 @@ export interface DeepLinkConfig {
   webUrlTemplate?: string; // Web URL template with placeholders
   searchUrlTemplate?: string; // Search URL template as fallback
   usesLocalTitle?: boolean; // Whether this provider works better with localized titles
+}
+
+/**
+ * Affiliate tag configuration
+ * These are injected into URLs for providers with affiliate programs
+ * The Amazon tag is loaded from VITE_AMAZON_AFFILIATE_TAG env var
+ */
+interface AffiliateTagConfig {
+  paramName: string;
+  paramValue: string;
+}
+
+const AFFILIATE_TAGS: Record<number, AffiliateTagConfig> = {};
+
+// Amazon provider IDs that should get the affiliate tag
+const AMAZON_PROVIDER_IDS = [119, 10]; // Prime Video (119), Amazon Video Buy/Rent (10)
+
+// Initialize affiliate tags from environment
+function getAmazonTag(): string {
+  // In Vite, env vars prefixed with VITE_ are available on the client
+  return (import.meta as any).env?.VITE_AMAZON_AFFILIATE_TAG || 'guilherme2303-20';
+}
+
+/**
+ * Inject affiliate parameters into a URL
+ */
+function injectAffiliateParams(url: string, providerId: number): string {
+  // Check if this is an Amazon provider
+  if (AMAZON_PROVIDER_IDS.includes(providerId)) {
+    try {
+      const urlObj = new URL(url);
+      const tag = getAmazonTag();
+      if (tag) {
+        urlObj.searchParams.set('tag', tag);
+      }
+      return urlObj.toString();
+    } catch {
+      // If URL parsing fails, try appending as query string
+      const tag = getAmazonTag();
+      if (tag) {
+        const separator = url.includes('?') ? '&' : '?';
+        return `${url}${separator}tag=${encodeURIComponent(tag)}`;
+      }
+    }
+  }
+  return url;
 }
 
 // Providers that work well with Portuguese/localized titles
@@ -194,7 +241,9 @@ export function getProviderDeepLink(
 
   // For mobile devices (NOT in PWA mode), try app scheme first
   // In PWA mode, app schemes can cause issues, so use web URLs
-  if (isMobileDevice() && !isPWAStandalone() && config.appScheme) {
+  // Note: App scheme deep links don't support affiliate tags, so we skip them for Amazon
+  // to ensure the affiliate tag is always present in the URL
+  if (isMobileDevice() && !isPWAStandalone() && config.appScheme && !AMAZON_PROVIDER_IDS.includes(providerId)) {
     return config.appScheme
       .replace('{tmdbId}', String(tmdbId))
       .replace('{contentType}', contentType)
@@ -203,7 +252,8 @@ export function getProviderDeepLink(
 
   // Use search URL template with title
   if (config.searchUrlTemplate && bestTitle) {
-    return config.searchUrlTemplate.replace('{title}', encodedTitle);
+    const searchUrl = config.searchUrlTemplate.replace('{title}', encodedTitle);
+    return injectAffiliateParams(searchUrl, providerId);
   }
 
   // Fallback to Google search

@@ -545,3 +545,17 @@
 - [x] Set real URLs in href attributes instead of '#' for better PWA compatibility
 - [x] Skip app scheme deep links in PWA mode to avoid issues
 - [x] All tests passing (14/15, 1 TMDB timeout unrelated)
+
+## Amazon Affiliate Links Implementation (Round 52)
+- [x] Add AMAZON_AFFILIATE_TAG and VITE_AMAZON_AFFILIATE_TAG environment variables (guilherme2303-20)
+- [x] Update deepLinks.ts to inject affiliate tag into Amazon links (client-side)
+- [x] Support affiliate links for: Prime Video streaming (119), Amazon Store buy/rent (10)
+- [x] Affiliate click tracking already existed in database (affiliateClicks table)
+- [x] Backend tracking procedure already existed (affiliate.trackClick)
+- [x] MovieDetails and TVShowDetails automatically use affiliate links via getProviderDeepLink()
+- [x] Affiliate stats admin endpoint already existed (affiliate.getStats)
+- [x] Write 16 tests for affiliate link generation (all passing)
+- [x] Verified: Amazon Prime Video links include tag=guilherme2303-20
+- [x] Verified: Amazon Video buy/rent links include tag=guilherme2303-20
+- [x] Skip app scheme deep links for Amazon to ensure affiliate tag is always present
+- [x] Updated affiliateConfig.ts to use env vars instead of hardcoded tags
