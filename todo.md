@@ -596,3 +596,14 @@
 - [x] Added "Receita" link to mobile menu with admin-only visibility and amber styling
 - [x] Link points to /affiliate-analytics (revenue dashboard)
 - [x] 0 TypeScript errors, all tests passing
+
+## Amazon Affiliate Clicks Not Registering (Round 56)
+- [x] Debug why Amazon Associates portal shows 0 clicks
+- [x] ROOT CAUSE 1: Prime Video links used primevideo.com domain (not tracked by Associates)
+- [x] ROOT CAUSE 2: sendBeacon used wrong tRPC payload format (raw JSON instead of batch format)
+- [x] FIX: Changed all Amazon links to use amazon.com.br/s?i=instant-video format
+- [x] FIX: Updated sendBeacon to use tRPC batch mutation format
+- [x] FIX: /gp/video/search returns 404 on amazon.com.br, switched to /s format
+- [x] Verified: All Amazon links now show amazon.com.br/s?k={title}&i=instant-video&tag=guilherme2303-20
+- [x] Verified: URL opens correctly on Amazon showing search results with prices
+- [x] All 51 tests passing

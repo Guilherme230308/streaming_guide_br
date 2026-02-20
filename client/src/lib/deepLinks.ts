@@ -89,8 +89,10 @@ const DEEP_LINK_CONFIG: Record<number, DeepLinkConfig> = {
   119: { // Amazon Prime Video
     providerId: 119,
     providerName: "Amazon Prime Video",
-    appScheme: "aiv://aiv/watch?gti={amazonId}",
-    searchUrlTemplate: "https://www.primevideo.com/search/ref=atv_nb_sr?phrase={title}",
+    // Use amazon.com.br/s?i=instant-video so Amazon Associates tracks the click
+    // primevideo.com does NOT register affiliate clicks
+    // /gp/video/search returns 404 on amazon.com.br
+    searchUrlTemplate: "https://www.amazon.com.br/s?k={title}&i=instant-video",
     usesLocalTitle: true,
   },
   1899: { // HBO Max (now Max)
@@ -142,6 +144,7 @@ const DEEP_LINK_CONFIG: Record<number, DeepLinkConfig> = {
   10: { // Amazon Video (Buy/Rent)
     providerId: 10,
     providerName: "Amazon Video",
+    // Use amazon.com.br domain so Amazon Associates tracks the click
     searchUrlTemplate: "https://www.amazon.com.br/s?k={title}&i=instant-video",
     usesLocalTitle: true,
   },
@@ -272,18 +275,23 @@ export function trackAffiliateClick(
   tmdbId: number
 ): void {
   try {
-    // Use navigator.sendBeacon for fire-and-forget tracking that doesn't block navigation
-    const data = JSON.stringify({ providerId, contentType, tmdbId });
-    const blob = new Blob([data], { type: 'application/json' });
+    // tRPC mutations expect a specific JSON-RPC format
+    // We must wrap the input in the correct structure for tRPC to process it
+    const tRPCPayload = JSON.stringify({
+      "0": {
+        json: { providerId, contentType, tmdbId }
+      }
+    });
+    const blob = new Blob([tRPCPayload], { type: 'application/json' });
     
     if (navigator.sendBeacon) {
-      navigator.sendBeacon('/api/trpc/affiliate.trackClick', blob);
+      navigator.sendBeacon('/api/trpc/affiliate.trackClick?batch=1', blob);
     } else {
       // Fallback: fire-and-forget fetch (no await)
-      fetch('/api/trpc/affiliate.trackClick', {
+      fetch('/api/trpc/affiliate.trackClick?batch=1', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: data,
+        body: tRPCPayload,
       }).catch(() => {
         // Silently ignore tracking errors
       });
