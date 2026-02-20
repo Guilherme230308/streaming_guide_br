@@ -21,6 +21,7 @@ import { AddToListDialog } from "@/components/AddToListDialog";
 import { handleProviderClick as handleDeepLink, getProviderDeepLink, isPWAStandalone } from "@/lib/deepLinks";
 import { deduplicateProviders } from "@/lib/providerUtils";
 import { ReportAvailabilityDialog } from "@/components/ReportAvailabilityDialog";
+import { InArticleAd } from "@/components/AdBanner";
 
 export default function TVShowDetails() {
   const { id } = useParams();
@@ -490,6 +491,11 @@ export default function TVShowDetails() {
           </div>
         </div>
       )}
+
+      {/* Ad placement before footer */}
+      <div className="container">
+        <InArticleAd />
+      </div>
 
       {/* Footer */}
       <footer className="border-t border-border/40 py-8 mt-12">

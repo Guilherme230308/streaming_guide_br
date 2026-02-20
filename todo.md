@@ -559,3 +559,18 @@
 - [x] Verified: Amazon Video buy/rent links include tag=guilherme2303-20
 - [x] Skip app scheme deep links for Amazon to ensure affiliate tag is always present
 - [x] Updated affiliateConfig.ts to use env vars instead of hardcoded tags
+
+## Google AdSense Integration (Round 53)
+- [x] Create VITE_ADSENSE_PUBLISHER_ID environment variable (configurable)
+- [x] Create reusable AdBanner component with 4 formats (horizontal, rectangle, in-feed, in-article)
+- [x] AdSense script loaded dynamically on-demand (not in index.html, better performance)
+- [x] Add ad placements in search results (InFeedAd after every 6 results)
+- [x] Add ad placement in MovieDetails (InArticleAd between streaming and reviews)
+- [x] Add ad placement in TVShowDetails (InArticleAd before footer)
+- [x] Add ad placement on Home page (SectionAd between trending movies and TV sections)
+- [x] Ads are non-intrusive with "PUBLICIDADE" label, dark theme compatible
+- [x] Handle ad blockers gracefully (component returns null, no broken layout)
+- [x] Lazy loading with IntersectionObserver (200px rootMargin)
+- [x] Placeholder shown when AdSense not configured (development mode)
+- [x] Write 5 tests for AdSense configuration (all passing)
+- [x] Verified: all 36 tests passing

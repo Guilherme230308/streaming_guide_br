@@ -26,6 +26,7 @@ import { RatingStars } from "@/components/RatingStars";
 import { ReviewDialog } from "@/components/ReviewDialog";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { ReportAvailabilityDialog } from "@/components/ReportAvailabilityDialog";
+import { InArticleAd } from "@/components/AdBanner";
 
 export default function MovieDetails() {
   const { id } = useParams();
@@ -503,6 +504,11 @@ export default function MovieDetails() {
             />
           )}
         </div>
+      </div>
+
+      {/* Ad placement between streaming and reviews */}
+      <div className="container">
+        <InArticleAd />
       </div>
 
       {/* Ratings and Reviews */}

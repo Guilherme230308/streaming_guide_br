@@ -15,6 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Checkbox } from "@/components/ui/checkbox";
 import { SlidersHorizontal } from "lucide-react";
 import { ALL_GENRES } from "@/lib/genres";
+import { InFeedAd } from "@/components/AdBanner";
 
 export default function Search() {
   const searchParams = useSearch();
@@ -267,21 +268,27 @@ export default function Search() {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
               {displayResults.results
                 .filter((item: any) => item.media_type === "movie" || item.media_type === "tv")
-                .map((item: any) => {
+                .map((item: any, index: number) => {
                   const isMovie = item.media_type === "movie";
                   const title = isMovie ? item.title : item.name;
                   const releaseDate = isMovie ? item.release_date : item.first_air_date;
 
                   return (
-                    <ContentCard
-                      key={`${item.media_type}-${item.id}`}
-                      id={item.id}
-                      title={title}
-                      posterPath={item.poster_path}
-                      mediaType={item.media_type}
-                      releaseDate={releaseDate}
-                      voteAverage={item.vote_average}
-                    />
+                    <>
+                      {/* Insert ad after every 6 results */}
+                      {index > 0 && index % 6 === 0 && (
+                        <InFeedAd key={`ad-${index}`} />
+                      )}
+                      <ContentCard
+                        key={`${item.media_type}-${item.id}`}
+                        id={item.id}
+                        title={title}
+                        posterPath={item.poster_path}
+                        mediaType={item.media_type}
+                        releaseDate={releaseDate}
+                        voteAverage={item.vote_average}
+                      />
+                    </>
                   );
                 })}
             </div>

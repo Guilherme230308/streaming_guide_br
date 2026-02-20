@@ -21,6 +21,7 @@ import { SearchFilters, type SearchFiltersType } from "@/components/SearchFilter
 import { PersonalizedRecommendations } from "@/components/PersonalizedRecommendations";
 import { CommunityFeed } from "@/components/CommunityFeed";
 import { AIAssistantDialog } from "@/components/AIAssistantDialog";
+import { SectionAd } from "@/components/AdBanner";
 
 const RECENT_SEARCHES_KEY = "recentSearches";
 const MAX_RECENT_SEARCHES = 5;
@@ -543,6 +544,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Ad between sections */}
+      <SectionAd />
 
       {/* Trending TV Shows */}
       <section className="py-12">
