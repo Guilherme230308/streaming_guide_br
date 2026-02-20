@@ -574,3 +574,19 @@
 - [x] Placeholder shown when AdSense not configured (development mode)
 - [x] Write 5 tests for AdSense configuration (all passing)
 - [x] Verified: all 36 tests passing
+
+## Admin Revenue Dashboard (Round 54)
+- [x] Review existing affiliate tracking endpoints and data schema
+- [x] Create getRevenueDashboardStats() in db.ts with comprehensive analytics
+- [x] Add getRevenueDashboard procedure to affiliate router with period filter
+- [x] Build unified admin revenue dashboard page with 4 Chart.js charts
+- [x] Add 4 KPI cards: total clicks, estimated revenue, Amazon clicks, weekly clicks
+- [x] Add time-range filters (7d, 30d, 90d, all time) with period selector
+- [x] Add charts: clicks+revenue over time (line), providers (horizontal bar), click type (donut), hourly distribution (bar)
+- [x] Add top content table with click counts and estimated revenue
+- [x] Add platform stats (desktop/mobile/PWA) with progress bars
+- [x] Add AdSense status card with configuration guide
+- [x] Add revenue calculation explanation card
+- [x] Protected with admin-only access (role check)
+- [x] Write 13 tests for revenue estimation, period calc, platform detection, KPIs
+- [x] All 51 tests passing (7 cache + 5 reports + 16 affiliate + 13 dashboard + 2 TMDB + 1 auth + 5 adsense + 2 extra)

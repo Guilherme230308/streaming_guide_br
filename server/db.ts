@@ -1072,3 +1072,231 @@ export async function getReportCountForContent(tmdbId: number, mediaType: 'movie
   
   return result.length;
 }
+
+// ============================================================================
+// Revenue Dashboard - Enhanced Analytics
+// ============================================================================
+
+export interface RevenueDashboardStats {
+  // Summary KPIs
+  totalClicks: number;
+  totalClicksToday: number;
+  totalClicksThisWeek: number;
+  totalClicksThisMonth: number;
+  estimatedRevenue: number;
+  
+  // Clicks over time (daily)
+  clicksByDate: Array<{ date: string; count: number; estimatedRevenue: number }>;
+  
+  // By provider with revenue estimates
+  clicksByProvider: Array<{
+    providerId: number;
+    providerName: string;
+    count: number;
+    estimatedRevenue: number;
+    isAmazon: boolean;
+  }>;
+  
+  // By click type
+  clicksByType: Array<{ clickType: string; count: number; estimatedRevenue: number }>;
+  
+  // Top content driving clicks
+  topContent: Array<{
+    tmdbId: number;
+    mediaType: string;
+    title: string;
+    clicks: number;
+    estimatedRevenue: number;
+  }>;
+  
+  // Hourly distribution
+  clicksByHour: Array<{ hour: number; count: number }>;
+  
+  // Platform stats (user agent analysis)
+  platformStats: { mobile: number; desktop: number; pwa: number; other: number };
+}
+
+// Estimated commission rates per provider
+const COMMISSION_RATES: Record<string, number> = {
+  // Amazon Associates: ~4% average on subscriptions, ~2.5% on digital
+  'Amazon Prime Video': 0.04 * 14.90, // 4% of R$14.90/month subscription
+  'Amazon Video': 0.025 * 19.90, // 2.5% of avg R$19.90 rental/purchase
+  // Other providers: estimated CPA (cost per action) in BRL
+  'Netflix': 0, // No affiliate program
+  'Disney Plus': 0.10, // Estimated future CPA
+  'HBO Max': 0.10,
+  'Paramount Plus': 0.10,
+  'Globoplay': 0.05,
+  'Apple TV Plus': 0.15,
+  'Crunchyroll': 0.08,
+  'Star Plus': 0.10,
+};
+
+function getEstimatedRevenue(providerName: string, clickType: string, count: number): number {
+  // Amazon is the main revenue source
+  const isAmazon = providerName.toLowerCase().includes('amazon') || providerName.toLowerCase().includes('prime video');
+  
+  if (isAmazon) {
+    if (clickType === 'stream') {
+      // 4% commission on Prime Video subscription (R$14.90) * estimated 3% conversion
+      return count * 0.04 * 14.90 * 0.03;
+    } else if (clickType === 'rent') {
+      // 2.5% commission on avg R$14.90 rental * estimated 5% conversion
+      return count * 0.025 * 14.90 * 0.05;
+    } else if (clickType === 'buy') {
+      // 2.5% commission on avg R$29.90 purchase * estimated 2% conversion
+      return count * 0.025 * 29.90 * 0.02;
+    }
+  }
+  
+  // Non-Amazon: no direct revenue yet, but track for future
+  return 0;
+}
+
+export async function getRevenueDashboardStats(
+  startDate?: Date,
+  endDate?: Date
+): Promise<RevenueDashboardStats> {
+  const db = await getDb();
+  if (!db) return {
+    totalClicks: 0,
+    totalClicksToday: 0,
+    totalClicksThisWeek: 0,
+    totalClicksThisMonth: 0,
+    estimatedRevenue: 0,
+    clicksByDate: [],
+    clicksByProvider: [],
+    clicksByType: [],
+    topContent: [],
+    clicksByHour: [],
+    platformStats: { mobile: 0, desktop: 0, pwa: 0, other: 0 },
+  };
+
+  // Build query with date filter
+  let clicks;
+  if (startDate && endDate) {
+    clicks = await db.select().from(affiliateClicks)
+      .where(and(
+        gte(affiliateClicks.clickedAt, startDate),
+        lte(affiliateClicks.clickedAt, endDate)
+      ));
+  } else {
+    clicks = await db.select().from(affiliateClicks);
+  }
+
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const weekStart = new Date(todayStart);
+  weekStart.setDate(weekStart.getDate() - 7);
+  const monthStart = new Date(todayStart);
+  monthStart.setDate(monthStart.getDate() - 30);
+
+  // Time-based KPIs
+  const totalClicksToday = clicks.filter(c => new Date(c.clickedAt) >= todayStart).length;
+  const totalClicksThisWeek = clicks.filter(c => new Date(c.clickedAt) >= weekStart).length;
+  const totalClicksThisMonth = clicks.filter(c => new Date(c.clickedAt) >= monthStart).length;
+
+  // Clicks by date with revenue
+  const dateMap = new Map<string, { count: number; revenue: number }>();
+  for (const click of clicks) {
+    const date = new Date(click.clickedAt).toISOString().split('T')[0];
+    const existing = dateMap.get(date) || { count: 0, revenue: 0 };
+    existing.count++;
+    existing.revenue += getEstimatedRevenue(click.providerName, click.clickType, 1);
+    dateMap.set(date, existing);
+  }
+  const clicksByDate = Array.from(dateMap.entries())
+    .map(([date, data]) => ({ date, count: data.count, estimatedRevenue: Math.round(data.revenue * 100) / 100 }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  // Clicks by provider with revenue
+  const providerMap = new Map<number, { providerName: string; count: number; revenue: number }>();
+  for (const click of clicks) {
+    const existing = providerMap.get(click.providerId) || { providerName: click.providerName, count: 0, revenue: 0 };
+    existing.count++;
+    existing.revenue += getEstimatedRevenue(click.providerName, click.clickType, 1);
+    providerMap.set(click.providerId, existing);
+  }
+  const clicksByProvider = Array.from(providerMap.entries())
+    .map(([providerId, data]) => ({
+      providerId,
+      providerName: data.providerName,
+      count: data.count,
+      estimatedRevenue: Math.round(data.revenue * 100) / 100,
+      isAmazon: data.providerName.toLowerCase().includes('amazon') || data.providerName.toLowerCase().includes('prime video'),
+    }))
+    .sort((a, b) => b.count - a.count);
+
+  // Clicks by type with revenue
+  const typeMap = new Map<string, { count: number; revenue: number }>();
+  for (const click of clicks) {
+    const existing = typeMap.get(click.clickType) || { count: 0, revenue: 0 };
+    existing.count++;
+    existing.revenue += getEstimatedRevenue(click.providerName, click.clickType, 1);
+    typeMap.set(click.clickType, existing);
+  }
+  const clicksByType = Array.from(typeMap.entries())
+    .map(([clickType, data]) => ({
+      clickType,
+      count: data.count,
+      estimatedRevenue: Math.round(data.revenue * 100) / 100,
+    }))
+    .sort((a, b) => b.count - a.count);
+
+  // Top content
+  const contentMap = new Map<string, { tmdbId: number; mediaType: string; title: string; clicks: number; revenue: number }>();
+  for (const click of clicks) {
+    const key = `${click.tmdbId}-${click.mediaType}`;
+    const existing = contentMap.get(key) || { tmdbId: click.tmdbId, mediaType: click.mediaType, title: `${click.mediaType === 'movie' ? 'Filme' : 'Série'} #${click.tmdbId}`, clicks: 0, revenue: 0 };
+    existing.clicks++;
+    existing.revenue += getEstimatedRevenue(click.providerName, click.clickType, 1);
+    contentMap.set(key, existing);
+  }
+  const topContent = Array.from(contentMap.values())
+    .sort((a, b) => b.clicks - a.clicks)
+    .slice(0, 20)
+    .map(item => ({ ...item, estimatedRevenue: Math.round(item.revenue * 100) / 100 }));
+
+  // Hourly distribution
+  const hourMap = new Map<number, number>();
+  for (let i = 0; i < 24; i++) hourMap.set(i, 0);
+  for (const click of clicks) {
+    const hour = new Date(click.clickedAt).getHours();
+    hourMap.set(hour, (hourMap.get(hour) || 0) + 1);
+  }
+  const clicksByHour = Array.from(hourMap.entries())
+    .map(([hour, count]) => ({ hour, count }))
+    .sort((a, b) => a.hour - b.hour);
+
+  // Platform stats from user agent
+  const platformStats = { mobile: 0, desktop: 0, pwa: 0, other: 0 };
+  for (const click of clicks) {
+    const ua = (click.userAgent || '').toLowerCase();
+    if (ua.includes('pwa') || ua.includes('standalone')) {
+      platformStats.pwa++;
+    } else if (ua.includes('mobile') || ua.includes('android') || ua.includes('iphone')) {
+      platformStats.mobile++;
+    } else if (ua.includes('mozilla') || ua.includes('chrome') || ua.includes('safari') || ua.includes('firefox')) {
+      platformStats.desktop++;
+    } else {
+      platformStats.other++;
+    }
+  }
+
+  // Total estimated revenue
+  const estimatedRevenue = Math.round(clicksByProvider.reduce((sum, p) => sum + p.estimatedRevenue, 0) * 100) / 100;
+
+  return {
+    totalClicks: clicks.length,
+    totalClicksToday,
+    totalClicksThisWeek,
+    totalClicksThisMonth,
+    estimatedRevenue,
+    clicksByDate,
+    clicksByProvider,
+    clicksByType,
+    topContent,
+    clicksByHour,
+    platformStats,
+  };
+}

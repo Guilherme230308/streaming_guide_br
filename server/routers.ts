@@ -970,6 +970,28 @@ export const appRouter = router({
 
         return await db.getAffiliateStats(startDate, endDate);
       }),
+
+    getRevenueDashboard: protectedProcedure
+      .input(z.object({
+        period: z.enum(['7d', '30d', '90d', 'all']).default('30d'),
+      }).optional())
+      .query(async ({ input, ctx }) => {
+        if (ctx.user.role !== 'admin') {
+          throw new Error('Unauthorized: Admin access required');
+        }
+
+        const period = input?.period || '30d';
+        let startDate: Date | undefined;
+        const endDate = new Date();
+
+        if (period !== 'all') {
+          const days = period === '7d' ? 7 : period === '30d' ? 30 : 90;
+          startDate = new Date();
+          startDate.setDate(startDate.getDate() - days);
+        }
+
+        return await db.getRevenueDashboardStats(startDate, endDate);
+      }),
   }),
 
   backgroundJobs: router({
