@@ -19,6 +19,7 @@ import {
   User,
   LogOut,
   Sparkles,
+  BarChart3,
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -109,6 +110,7 @@ export function MobileMenu() {
     { href: "/history", icon: Clock, label: "Histórico", tour: "history" },
     { href: "/streaming-prices", icon: DollarSign, label: "Preços", tour: "" },
     { href: "/streaming-analysis", icon: Sparkles, label: "Análise", tour: "" },
+    ...(user?.role === 'admin' ? [{ href: "/affiliate-analytics", icon: BarChart3, label: "Receita", tour: "", isAdmin: true }] : []),
   ];
 
   const isActive = (href: string) => location === href;
@@ -145,7 +147,7 @@ export function MobileMenu() {
                   variant={active ? "secondary" : "ghost"}
                   className={`w-full justify-start gap-3 h-12 ${
                     active ? "bg-primary/10 text-primary" : ""
-                  }`}
+                  } ${'isAdmin' in item && (item as any).isAdmin ? 'text-amber-400 hover:text-amber-300' : ''}`}
                   onClick={() => setOpen(false)}
                   data-tour={item.tour}
                 >

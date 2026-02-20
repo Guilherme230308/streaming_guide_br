@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { ContentCard } from "@/components/ContentCard";
 import { Badge } from "@/components/ui/badge";
-import { Search, Film, Tv, Bookmark, Bell, Calendar, Grid3x3, Clock, Check, List, DollarSign, X, Sparkles } from "lucide-react";
+import { Search, Film, Tv, Bookmark, Bell, Calendar, Grid3x3, Clock, Check, List, DollarSign, X, Sparkles, BarChart3 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -249,6 +249,14 @@ export default function Home() {
                         <span className="text-sm">Análise</span>
                       </Button>
                     </Link>
+                    {user?.role === 'admin' && (
+                      <Link href="/affiliate-analytics">
+                        <Button variant="ghost" size="sm" className="gap-2 px-3 text-amber-400 hover:text-amber-300">
+                          <BarChart3 className="h-4 w-4" />
+                          <span className="text-sm">Receita</span>
+                        </Button>
+                      </Link>
+                    )}
                   </div>
 
                   {/* Mobile: Essential icons only */}

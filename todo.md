@@ -590,3 +590,9 @@
 - [x] Protected with admin-only access (role check)
 - [x] Write 13 tests for revenue estimation, period calc, platform detection, KPIs
 - [x] All 51 tests passing (7 cache + 5 reports + 16 affiliate + 13 dashboard + 2 TMDB + 1 auth + 5 adsense + 2 extra)
+
+## Navigation Fix - Revenue Dashboard (Round 55)
+- [x] Added "Receita" link (amber/gold color) to desktop header nav, visible only for admin users
+- [x] Added "Receita" link to mobile menu with admin-only visibility and amber styling
+- [x] Link points to /affiliate-analytics (revenue dashboard)
+- [x] 0 TypeScript errors, all tests passing
