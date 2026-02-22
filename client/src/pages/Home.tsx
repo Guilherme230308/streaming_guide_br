@@ -17,7 +17,7 @@ import { SwipeEdgeIndicator } from "@/components/SwipeEdgeIndicator";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { PWAWelcome } from "@/components/PWAWelcome";
-import { SearchFilters, type SearchFiltersType } from "@/components/SearchFilters";
+import { SearchFilters, type SearchFiltersType, loadSavedFilters } from "@/components/SearchFilters";
 import { PersonalizedRecommendations } from "@/components/PersonalizedRecommendations";
 import { CommunityFeed } from "@/components/CommunityFeed";
 import { AIAssistantDialog } from "@/components/AIAssistantDialog";
@@ -33,12 +33,15 @@ export default function Home() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
-  const [searchFilters, setSearchFilters] = useState<SearchFiltersType>({
-    genres: [],
-    yearMin: undefined,
-    yearMax: undefined,
-    ratingMin: undefined,
-    providers: [],
+  const [searchFilters, setSearchFilters] = useState<SearchFiltersType>(() => {
+    return loadSavedFilters() || {
+      genres: [],
+      yearMin: undefined,
+      yearMax: undefined,
+      ratingMin: undefined,
+      providers: [],
+      streamingOnly: false,
+    };
   });
   const searchRef = useRef<HTMLDivElement>(null);
   const [showAIAssistant, setShowAIAssistant] = useState(false);

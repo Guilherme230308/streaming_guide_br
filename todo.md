@@ -607,3 +607,11 @@
 - [x] Verified: All Amazon links now show amazon.com.br/s?k={title}&i=instant-video&tag=guilherme2303-20
 - [x] Verified: URL opens correctly on Amazon showing search results with prices
 - [x] All 51 tests passing
+
+## Filter Fixes (Round 57)
+- [x] Persist filter state in localStorage when navigating away and back
+- [x] Load saved filters from localStorage on page mount (Home.tsx uses loadSavedFilters())
+- [x] Reorder filters: "Disponível em Streaming" is now the first filter
+- [x] Reduce filter panel height (max-height 420px, compact badges, tighter spacing)
+- [x] Verified: Netflix filter persists after navigating to movie page and back
+- [x] 0 TypeScript errors
