@@ -625,3 +625,13 @@
 - [x] Removed duplicate headers from all 15+ page components
 - [x] Cleaned up unused imports across all pages
 - [x] All 51 tests passing, 0 TypeScript errors
+
+## PWA Install Popup with Visual Instructions (Round 59)
+- [x] Create visual popup/dialog when clicking "Instalar App" button
+- [x] Add step-by-step iOS installation instructions with icons
+- [x] Add step-by-step Android installation instructions with icons
+- [x] Add tab switching between iOS, Android, and Desktop (PC)
+- [x] Ensure popup is visually appealing and matches app design
+- [x] Auto-detect user's platform and show relevant tab first
+- [x] Show benefit badges (Acesso rápido, Tela cheia, 100% grátis)
+- [x] Include platform-specific tips (Safari required for iOS, etc.)
