@@ -94,7 +94,7 @@ export default function MyLists() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center pt-16">
         <Card className="max-w-md w-full">
           <CardContent className="pt-6 text-center">
             <h2 className="text-2xl font-bold mb-4">Login Necessário</h2>
@@ -112,29 +112,14 @@ export default function MyLists() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center pt-16">
         <p className="text-muted-foreground">Carregando suas listas...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/">
-            <div className="flex items-center gap-2 cursor-pointer">
-              <Film className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl">Onde Assistir</span>
-            </div>
-          </Link>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">Olá, {user?.name}</span>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-background pt-16">
       {/* Content */}
       <div className="container py-8">
         <div className="flex items-center justify-between mb-8">

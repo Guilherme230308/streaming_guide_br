@@ -11,8 +11,7 @@ import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
 import LandingPage from "./LandingPage";
 import { useOnboardingTour } from "@/components/OnboardingTour";
-import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
-import { MobileMenu } from "@/components/MobileMenu";
+
 import { SwipeEdgeIndicator } from "@/components/SwipeEdgeIndicator";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
@@ -209,77 +208,9 @@ export default function Home() {
   const showAutocomplete = showSuggestions && searchQuery.length >= 2 && suggestions?.results && suggestions.results.length > 0;
 
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden">
+    <div className="min-h-screen bg-background overflow-x-hidden pt-16">
       {TourComponent}
       <SwipeEdgeIndicator />
-      {/* Header */}
-      <header className="border-b border-border/40 backdrop-blur-sm sticky top-0 z-50 bg-background/95">
-        <div className="container py-4">
-          <div className="flex items-center justify-between gap-2">
-            <Link href="/">
-              <div className="flex items-center gap-2 cursor-pointer flex-shrink-0">
-                <Film className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-                <span className="text-lg sm:text-2xl font-bold text-foreground whitespace-nowrap">Onde Assistir</span>
-              </div>
-            </Link>
-
-            <nav className="flex items-center gap-2 sm:gap-3">
-              {isAuthenticated ? (
-                <>
-                  {/* Desktop Navigation - Hidden on mobile */}
-                  <div className="hidden lg:flex items-center gap-2">
-                    <Link href="/lists">
-                      <Button variant="ghost" size="sm" className="gap-2 px-3" data-tour="lists">
-                        <List className="h-4 w-4" />
-                        <span className="text-sm">Listas</span>
-                      </Button>
-                    </Link>
-                    <Link href="/alerts">
-                      <Button variant="ghost" size="sm" className="gap-2 px-3" data-tour="alerts">
-                        <Bell className="h-4 w-4" />
-                        <span className="text-sm">Alertas</span>
-                      </Button>
-                    </Link>
-                    <Link href="/streaming-prices">
-                      <Button variant="ghost" size="sm" className="gap-2 px-3">
-                        <DollarSign className="h-4 w-4" />
-                        <span className="text-sm">Preços</span>
-                      </Button>
-                    </Link>
-                    <Link href="/streaming-analysis">
-                      <Button variant="ghost" size="sm" className="gap-2 px-3">
-                        <Sparkles className="h-4 w-4" />
-                        <span className="text-sm">Análise</span>
-                      </Button>
-                    </Link>
-                    {user?.role === 'admin' && (
-                      <Link href="/affiliate-analytics">
-                        <Button variant="ghost" size="sm" className="gap-2 px-3 text-amber-400 hover:text-amber-300">
-                          <BarChart3 className="h-4 w-4" />
-                          <span className="text-sm">Receita</span>
-                        </Button>
-                      </Link>
-                    )}
-                  </div>
-
-                  {/* Mobile: Essential icons only */}
-                  <div className="flex items-center gap-2">
-                    <PWAInstallPrompt />
-                    <MobileMenu />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <PWAInstallPrompt />
-                  <Button asChild variant="default" size="sm">
-                    <a href={getLoginUrl()}>Entrar</a>
-                  </Button>
-                </>
-              )}
-            </nav>
-          </div>
-        </div>
-      </header>
 
       <PullToRefresh onRefresh={handleRefresh}>
         {/* Hero Section with Search */}

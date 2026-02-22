@@ -195,7 +195,7 @@ export default function MovieDetails() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center pt-16">
         <div className="text-center">
           <Film className="h-12 w-12 text-primary animate-pulse mx-auto mb-4" />
           <p className="text-muted-foreground">Carregando...</p>
@@ -206,7 +206,7 @@ export default function MovieDetails() {
 
   if (!movie) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center pt-16">
         <div className="text-center">
           <p className="text-foreground text-xl mb-4">Filme não encontrado</p>
           <Button onClick={() => setLocation("/")}>Voltar para início</Button>
@@ -218,26 +218,7 @@ export default function MovieDetails() {
   const providers = movie.watchProviders;
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border/40 backdrop-blur-sm sticky top-0 z-50 bg-background/95">
-        <div className="container py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/">
-              <div className="flex items-center gap-2 cursor-pointer">
-                <Film className="h-8 w-8 text-primary" />
-                <span className="text-2xl font-bold text-foreground">Onde Assistir</span>
-              </div>
-            </Link>
-
-            <Button variant="ghost" size="sm" onClick={() => setLocation("/")}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Voltar
-            </Button>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-background pt-16">
       {/* Hero Section with Backdrop */}
       <div className="relative">
         <div className="absolute inset-0 overflow-hidden">

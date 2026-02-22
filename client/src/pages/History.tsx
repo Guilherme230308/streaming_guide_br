@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Film, Tv, ArrowLeft, Clock, Sparkles } from "lucide-react";
-import { Link, useLocation } from "wouter";
+import { Film, Tv, Clock, Sparkles } from "lucide-react";
+import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState } from "react";
 
@@ -15,7 +15,6 @@ function getImageUrl(path: string | null, size: string = "w500"): string {
 }
 
 export default function History() {
-  const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState<"history" | "recommendations">("history");
 
   const { data: history, isLoading: historyLoading } = trpc.viewingHistory.get.useQuery();
@@ -35,33 +34,18 @@ export default function History() {
   });
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card">
-        <div className="container py-4">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setLocation("/")}
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                <Clock className="h-6 w-6 text-primary" />
-                Histórico & Recomendações
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Veja o que você assistiu e descubra novo conteúdo
-              </p>
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-background pt-16">
       {/* Content */}
       <main className="container py-8">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+            <Clock className="h-6 w-6 text-primary" />
+            Histórico & Recomendações
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Veja o que você assistiu e descubra novo conteúdo
+          </p>
+        </div>
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "history" | "recommendations")}>
           <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
             <TabsTrigger value="history" className="flex items-center gap-2">

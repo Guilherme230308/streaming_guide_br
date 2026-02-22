@@ -104,34 +104,20 @@ export default function Search() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border/40 backdrop-blur-sm sticky top-0 z-50 bg-background/95">
+    <div className="min-h-screen bg-background pt-16">
+      {/* Search Bar & Filters */}
+      <div className="border-b border-border/40 bg-background">
         <div className="container py-4">
-          <div className="flex items-center justify-between gap-4">
-            <Link href="/">
-              <div className="flex items-center gap-2 cursor-pointer">
-                <Film className="h-8 w-8 text-primary" />
-                <span className="text-2xl font-bold text-foreground">Onde Assistir</span>
-              </div>
-            </Link>
-
-            <form onSubmit={handleSearch} className="flex-1 max-w-2xl relative">
-              <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Buscar filmes ou séries..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 h-12 bg-card border-border"
-              />
-            </form>
-
-            <Button variant="ghost" size="sm" onClick={() => setLocation("/")}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Voltar
-            </Button>
-          </div>
+          <form onSubmit={handleSearch} className="max-w-2xl mx-auto relative">
+            <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Buscar filmes ou séries..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-12 h-12 bg-card border-border"
+            />
+          </form>
 
           {/* Filters Row */}
           <div className="flex flex-wrap items-center gap-4 mt-4">
@@ -243,7 +229,7 @@ export default function Search() {
             </Popover>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Results */}
       <div className="container py-8">

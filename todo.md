@@ -615,3 +615,13 @@
 - [x] Reduce filter panel height (max-height 420px, compact badges, tighter spacing)
 - [x] Verified: Netflix filter persists after navigating to movie page and back
 - [x] 0 TypeScript errors
+
+## Sticky Header on All Pages (Round 58)
+- [x] Make header fixed/sticky at the top of the page
+- [x] Ensure header is visible on ALL pages (not just Home)
+- [x] Header should remain visible when scrolling down
+- [x] Add proper padding to page content so it doesn't hide behind the fixed header
+- [x] Created global AppHeader component with fixed positioning and backdrop blur
+- [x] Removed duplicate headers from all 15+ page components
+- [x] Cleaned up unused imports across all pages
+- [x] All 51 tests passing, 0 TypeScript errors

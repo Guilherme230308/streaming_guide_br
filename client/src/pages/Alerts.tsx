@@ -72,18 +72,7 @@ export default function Alerts() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background">
-        <header className="border-b border-border/40 backdrop-blur-sm sticky top-0 z-50 bg-background/95">
-          <div className="container py-4">
-            <Link href="/">
-              <div className="flex items-center gap-2 cursor-pointer">
-                <Film className="h-8 w-8 text-primary" />
-                <span className="text-2xl font-bold text-foreground">Onde Assistir</span>
-              </div>
-            </Link>
-          </div>
-        </header>
-
+      <div className="min-h-screen bg-background pt-16">
         <div className="container py-20 text-center">
           <Bell className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-foreground mb-2">Faça login para gerenciar alertas</h1>
@@ -99,42 +88,7 @@ export default function Alerts() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border/40 backdrop-blur-sm sticky top-0 z-50 bg-background/95">
-        <div className="container py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/">
-              <div className="flex items-center gap-2 cursor-pointer">
-                <Film className="h-8 w-8 text-primary" />
-                <span className="text-2xl font-bold text-foreground">Onde Assistir</span>
-              </div>
-            </Link>
-
-            <div className="flex items-center gap-1 sm:gap-2 md:gap-4 flex-shrink min-w-0">
-              <Link href="/watchlist">
-                <Button variant="ghost" size="sm" className="px-2 sm:px-3">
-                  <span className="text-sm">Minha Lista</span>
-                </Button>
-              </Link>
-              <Link href="/subscriptions">
-                <Button variant="ghost" size="sm" className="px-2 sm:px-3">
-                  <span className="text-sm">Assinaturas</span>
-                </Button>
-              </Link>
-              <Link href="/alerts">
-                <Button variant="ghost" size="sm" className="px-2 sm:px-3 bg-primary/10">
-                  <span className="text-sm">Alertas</span>
-                </Button>
-              </Link>
-              <span className="text-xs sm:text-sm text-muted-foreground hidden md:inline truncate max-w-[150px]">
-                Olá, {user?.name || "Usuário"}
-              </span>
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-background pt-16">
       {/* Content */}
       <div className="container py-8 max-w-6xl">
         <div className="mb-8 flex items-start justify-between">

@@ -5,18 +5,7 @@ import { Link } from "wouter";
 
 export default function About() {
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border/40 backdrop-blur-sm sticky top-0 z-50 bg-background/95">
-        <div className="container py-4">
-          <Link href="/">
-            <a className="text-2xl font-bold text-foreground hover:text-primary transition-colors">
-              ← Voltar
-            </a>
-          </Link>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-background pt-16">
       <div className="container py-12 max-w-4xl">
         {/* Hero Section */}
         <div className="mb-12">

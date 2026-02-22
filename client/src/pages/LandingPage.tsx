@@ -3,7 +3,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Film, Search, Bell, List, TrendingUp, CheckCircle, Sparkles, Clock, ChevronRight, BarChart3, Smartphone } from "lucide-react";
 import { Link } from "wouter";
 import { getLoginUrl } from "@/const";
-import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 
 const HERO_IMG = "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029229201/cgGBWpLKRuMgKbls.jpg";
 const PHONE_IMG = "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029229201/dVPxUTQUbCSVnCSG.webp";
@@ -12,35 +11,7 @@ const COZY_IMG = "https://files.manuscdn.com/user_upload_by_module/session_file/
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border/40 backdrop-blur-sm sticky top-0 z-50 bg-background/95">
-        <div className="container py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2">
-                <Film className="h-8 w-8 text-primary" />
-                <span className="text-2xl font-bold text-foreground">Onde Assistir</span>
-              </div>
-              <nav className="hidden md:flex items-center gap-6">
-                <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Sobre
-                </Link>
-                <Link href="/streaming-prices" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Preços
-                </Link>
-              </nav>
-            </div>
-            <div className="flex items-center gap-2">
-              <PWAInstallPrompt />
-              <Button onClick={() => (window.location.href = getLoginUrl())}>
-                Entrar
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-background pt-16">
       {/* Hero Section with Background Image */}
       <section className="relative overflow-hidden">
         {/* Background image with overlay */}

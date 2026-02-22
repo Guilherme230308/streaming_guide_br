@@ -39,17 +39,7 @@ export default function StreamingAnalysis() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <header className="border-b border-border/40 backdrop-blur-sm sticky top-0 z-50 bg-background/95">
-          <div className="container py-4">
-            <Link href="/">
-              <Button variant="ghost" className="gap-2">
-                <ArrowLeft className="h-4 w-4" />
-                Voltar
-              </Button>
-            </Link>
-          </div>
-        </header>
+      <div className="min-h-screen bg-background pt-16">
         <div className="container py-12">
           <Skeleton className="h-12 w-96 mb-4" />
           <Skeleton className="h-6 w-64 mb-8" />
@@ -70,7 +60,7 @@ export default function StreamingAnalysis() {
 
   if (error || !data) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center pt-16">
         <Card className="max-w-md">
           <CardContent className="pt-6 text-center">
             <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
@@ -93,19 +83,7 @@ export default function StreamingAnalysis() {
   const mostContent = data.providers.sort((a, b) => b.totalContent - a.totalContent)[0];
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border/40 backdrop-blur-sm sticky top-0 z-50 bg-background/95">
-        <div className="container py-4">
-          <Link href="/">
-            <Button variant="ghost" className="gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Voltar
-            </Button>
-          </Link>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-background pt-16">
       <div className="container py-12">
         {/* Hero Section */}
         <div className="mb-12 max-w-4xl">
