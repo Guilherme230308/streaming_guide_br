@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE reviews r SET r.contentTitle = COALESCE(\n  (SELECT vh.title FROM viewing_history vh WHERE vh.tmdbId = r.tmdbId AND vh.mediaType = r.mediaType LIMIT 1),\n  (SELECT w.title FROM watchlist w WHERE w.tmdbId = r.tmdbId AND w.mediaType = r.mediaType LIMIT 1),\n  (SELECT a.title FROM alerts a WHERE a.tmdbId = r.tmdbId AND a.mediaType = r.mediaType LIMIT 1),\n  (SELECT cli.title FROM custom_list_items cli WHERE cli.tmdbId = r.tmdbId AND cli.mediaType = r.mediaType LIMIT 1)\n) WHERE r.contentTitle IS NULL;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2ZhujiYnxXczSgu.root --database Cvg8278ofufQzThj4s4h83 --execute UPDATE reviews r SET r.contentTitle = COALESCE(\n  (SELECT vh.title FROM viewing_history vh WHERE vh.tmdbId = r.tmdbId AND vh.mediaType = r.mediaType LIMIT 1),\n  (SELECT w.title FROM watchlist w WHERE w.tmdbId = r.tmdbId AND w.mediaType = r.mediaType LIMIT 1),\n  (SELECT a.title FROM alerts a WHERE a.tmdbId = r.tmdbId AND a.mediaType = r.mediaType LIMIT 1),\n  (SELECT cli.title FROM custom_list_items cli WHERE cli.tmdbId = r.tmdbId AND cli.mediaType = r.mediaType LIMIT 1)\n) WHERE r.contentTitle IS NULL;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 413
+}

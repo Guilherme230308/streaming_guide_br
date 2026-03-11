@@ -522,6 +522,7 @@ export default function MovieDetails() {
                   <ReviewDialog
                     tmdbId={movieId}
                     mediaType="movie"
+                    contentTitle={movie.title}
                     existingReview={userReview}
                     onSuccess={() => {
                       utils.reviews.getUserReview.invalidate({ tmdbId: movieId, mediaType: "movie" });
@@ -575,6 +576,7 @@ export default function MovieDetails() {
                           <ReviewDialog
                             tmdbId={movieId}
                             mediaType="movie"
+                            contentTitle={movie.title}
                             existingReview={{
                               id: review.id,
                               title: review.title,

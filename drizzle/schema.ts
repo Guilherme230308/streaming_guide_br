@@ -151,6 +151,7 @@ export const reviews = mysqlTable("reviews", {
   tmdbId: int("tmdbId").notNull(),
   mediaType: mysqlEnum("mediaType", ["movie", "tv"]).notNull(),
   title: varchar("title", { length: 255 }).notNull(),
+  contentTitle: varchar("contentTitle", { length: 500 }),
   content: text("content").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

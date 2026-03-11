@@ -1,0 +1,80 @@
+{
+  "query": "SELECT id, tmdbId, mediaType, title, contentTitle FROM reviews ORDER BY createdAt DESC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2ZhujiYnxXczSgu.root --database Cvg8278ofufQzThj4s4h83 --execute SELECT id, tmdbId, mediaType, title, contentTitle FROM reviews ORDER BY createdAt DESC;",
+  "rows": [
+    {
+      "id": "30009",
+      "tmdbId": "1242898",
+      "mediaType": "movie",
+      "title": "A caçada começou!",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "30008",
+      "tmdbId": "1159559",
+      "mediaType": "movie",
+      "title": "Ghostface ataca novamente!",
+      "contentTitle": "Pânico 7"
+    },
+    {
+      "id": "30007",
+      "tmdbId": "1368166",
+      "mediaType": "movie",
+      "title": "Segredos e mentiras",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "30006",
+      "tmdbId": "1428862",
+      "mediaType": "movie",
+      "title": "Suspense na floresta",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "30005",
+      "tmdbId": "1316092",
+      "mediaType": "movie",
+      "title": "Um clássico sombrio e apaixonante",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "30004",
+      "tmdbId": "1317288",
+      "mediaType": "movie",
+      "title": "Uma jornada de superação!",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "30003",
+      "tmdbId": "858024",
+      "mediaType": "movie",
+      "title": "Uma história de amor e perda",
+      "contentTitle": "Hamnet: A Vida Antes de Hamlet"
+    },
+    {
+      "id": "30002",
+      "tmdbId": "1272837",
+      "mediaType": "movie",
+      "title": "Extermínio: O Templo dos Ossos",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "30001",
+      "tmdbId": "1236153",
+      "mediaType": "movie",
+      "title": "Justiça Artificial",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "1",
+      "tmdbId": "1084242",
+      "mediaType": "movie",
+      "title": "A dupla de detetives está de volta!",
+      "contentTitle": "Zootopia 2"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttmdbId\tmediaType\ttitle\tcontentTitle\n30009\t1242898\tmovie\tA caçada começou!\tNULL\n30008\t1159559\tmovie\tGhostface ataca novamente!\tPânico 7\n30007\t1368166\tmovie\tSegredos e mentiras\tNULL\n30006\t1428862\tmovie\tSuspense na floresta\tNULL\n30005\t1316092\tmovie\tUm clássico sombrio e apaixonante\tNULL\n30004\t1317288\tmovie\tUma jornada de superação!\tNULL\n30003\t858024\tmovie\tUma história de amor e perda\tHamnet: A Vida Antes de Hamlet\n30002\t1272837\tmovie\tExtermínio: O Templo dos Ossos\tNULL\n30001\t1236153\tmovie\tJustiça Artificial\tNULL\n1\t1084242\tmovie\tA dupla de detetives está de volta!\tZootopia 2\n",
+  "stderr": "",
+  "execution_time_ms": 347
+}

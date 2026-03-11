@@ -635,3 +635,12 @@
 - [x] Auto-detect user's platform and show relevant tab first
 - [x] Show benefit badges (Acesso rápido, Tela cheia, 100% grátis)
 - [x] Include platform-specific tips (Safari required for iOS, etc.)
+
+## Review Display Fix (Round 60)
+- [x] Show actual movie/series title in review cards instead of generic "Filme" tag
+- [x] Added contentTitle column to reviews table schema
+- [x] Backfilled existing reviews with titles from TMDB API
+- [x] Updated getAllRecentReviews query to use contentTitle from reviews table
+- [x] Updated review creation to store contentTitle when submitting new reviews
+- [x] Fixed TypeScript types across CommunityFeed, ReviewDialog, ReviewForm
+- [x] All 51 tests passing, 0 TypeScript errors

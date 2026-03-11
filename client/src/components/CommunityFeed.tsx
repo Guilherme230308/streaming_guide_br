@@ -19,7 +19,7 @@ interface ReviewData {
   updatedAt: Date;
   userName: string;
   posterPath?: string;
-  contentTitle?: string;
+  contentTitle?: string | null;
 }
 
 export function CommunityFeed() {

@@ -1,0 +1,52 @@
+{
+  "query": "SELECT id, tmdbId, mediaType, contentTitle FROM reviews WHERE contentTitle IS NULL;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2ZhujiYnxXczSgu.root --database Cvg8278ofufQzThj4s4h83 --execute SELECT id, tmdbId, mediaType, contentTitle FROM reviews WHERE contentTitle IS NULL;",
+  "rows": [
+    {
+      "id": "30001",
+      "tmdbId": "1236153",
+      "mediaType": "movie",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "30002",
+      "tmdbId": "1272837",
+      "mediaType": "movie",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "30004",
+      "tmdbId": "1317288",
+      "mediaType": "movie",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "30005",
+      "tmdbId": "1316092",
+      "mediaType": "movie",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "30006",
+      "tmdbId": "1428862",
+      "mediaType": "movie",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "30007",
+      "tmdbId": "1368166",
+      "mediaType": "movie",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "30009",
+      "tmdbId": "1242898",
+      "mediaType": "movie",
+      "contentTitle": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttmdbId\tmediaType\tcontentTitle\n30001\t1236153\tmovie\tNULL\n30002\t1272837\tmovie\tNULL\n30004\t1317288\tmovie\tNULL\n30005\t1316092\tmovie\tNULL\n30006\t1428862\tmovie\tNULL\n30007\t1368166\tmovie\tNULL\n30009\t1242898\tmovie\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 375
+}

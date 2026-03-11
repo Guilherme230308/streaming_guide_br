@@ -113,6 +113,7 @@ export function ReviewForm({
         mediaType,
         title: title.trim(),
         content: content.trim(),
+        contentTitle,
       });
     }
   };

@@ -1,0 +1,110 @@
+{
+  "query": "SELECT r.id, r.tmdbId, r.mediaType, r.title as reviewTitle, (SELECT vh.title FROM viewing_history vh WHERE vh.tmdbId = r.tmdbId AND vh.mediaType = r.mediaType LIMIT 1) as vhTitle, (SELECT w.title FROM watchlist w WHERE w.tmdbId = r.tmdbId AND w.mediaType = r.mediaType LIMIT 1) as wlTitle, (SELECT cli.title FROM custom_list_items cli WHERE cli.tmdbId = r.tmdbId AND cli.mediaType = r.mediaType LIMIT 1) as cliTitle, (SELECT a.title FROM alerts a WHERE a.tmdbId = r.tmdbId AND a.mediaType = r.mediaType LIMIT 1) as alertTitle FROM reviews r ORDER BY r.createdAt DESC LIMIT 15;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2ZhujiYnxXczSgu.root --database Cvg8278ofufQzThj4s4h83 --execute SELECT r.id, r.tmdbId, r.mediaType, r.title as reviewTitle, (SELECT vh.title FROM viewing_history vh WHERE vh.tmdbId = r.tmdbId AND vh.mediaType = r.mediaType LIMIT 1) as vhTitle, (SELECT w.title FROM watchlist w WHERE w.tmdbId = r.tmdbId AND w.mediaType = r.mediaType LIMIT 1) as wlTitle, (SELECT cli.title FROM custom_list_items cli WHERE cli.tmdbId = r.tmdbId AND cli.mediaType = r.mediaType LIMIT 1) as cliTitle, (SELECT a.title FROM alerts a WHERE a.tmdbId = r.tmdbId AND a.mediaType = r.mediaType LIMIT 1) as alertTitle FROM reviews r ORDER BY r.createdAt DESC LIMIT 15;",
+  "rows": [
+    {
+      "id": "30009",
+      "tmdbId": "1242898",
+      "mediaType": "movie",
+      "reviewTitle": "A caçada começou!",
+      "vhTitle": "NULL",
+      "wlTitle": "NULL",
+      "cliTitle": "NULL",
+      "alertTitle": "NULL"
+    },
+    {
+      "id": "30008",
+      "tmdbId": "1159559",
+      "mediaType": "movie",
+      "reviewTitle": "Ghostface ataca novamente!",
+      "vhTitle": "NULL",
+      "wlTitle": "NULL",
+      "cliTitle": "Pânico 7",
+      "alertTitle": "NULL"
+    },
+    {
+      "id": "30007",
+      "tmdbId": "1368166",
+      "mediaType": "movie",
+      "reviewTitle": "Segredos e mentiras",
+      "vhTitle": "NULL",
+      "wlTitle": "NULL",
+      "cliTitle": "NULL",
+      "alertTitle": "NULL"
+    },
+    {
+      "id": "30006",
+      "tmdbId": "1428862",
+      "mediaType": "movie",
+      "reviewTitle": "Suspense na floresta",
+      "vhTitle": "NULL",
+      "wlTitle": "NULL",
+      "cliTitle": "NULL",
+      "alertTitle": "NULL"
+    },
+    {
+      "id": "30005",
+      "tmdbId": "1316092",
+      "mediaType": "movie",
+      "reviewTitle": "Um clássico sombrio e apaixonante",
+      "vhTitle": "NULL",
+      "wlTitle": "NULL",
+      "cliTitle": "NULL",
+      "alertTitle": "NULL"
+    },
+    {
+      "id": "30004",
+      "tmdbId": "1317288",
+      "mediaType": "movie",
+      "reviewTitle": "Uma jornada de superação!",
+      "vhTitle": "NULL",
+      "wlTitle": "NULL",
+      "cliTitle": "NULL",
+      "alertTitle": "NULL"
+    },
+    {
+      "id": "30003",
+      "tmdbId": "858024",
+      "mediaType": "movie",
+      "reviewTitle": "Uma história de amor e perda",
+      "vhTitle": "Hamnet: A Vida Antes de Hamlet",
+      "wlTitle": "NULL",
+      "cliTitle": "Hamnet: A Vida Antes de Hamlet",
+      "alertTitle": "NULL"
+    },
+    {
+      "id": "30002",
+      "tmdbId": "1272837",
+      "mediaType": "movie",
+      "reviewTitle": "Extermínio: O Templo dos Ossos",
+      "vhTitle": "NULL",
+      "wlTitle": "NULL",
+      "cliTitle": "NULL",
+      "alertTitle": "NULL"
+    },
+    {
+      "id": "30001",
+      "tmdbId": "1236153",
+      "mediaType": "movie",
+      "reviewTitle": "Justiça Artificial",
+      "vhTitle": "NULL",
+      "wlTitle": "NULL",
+      "cliTitle": "NULL",
+      "alertTitle": "NULL"
+    },
+    {
+      "id": "1",
+      "tmdbId": "1084242",
+      "mediaType": "movie",
+      "reviewTitle": "A dupla de detetives está de volta!",
+      "vhTitle": "Zootopia 2",
+      "wlTitle": "NULL",
+      "cliTitle": "NULL",
+      "alertTitle": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttmdbId\tmediaType\treviewTitle\tvhTitle\twlTitle\tcliTitle\talertTitle\n30009\t1242898\tmovie\tA caçada começou!\tNULL\tNULL\tNULL\tNULL\n30008\t1159559\tmovie\tGhostface ataca novamente!\tNULL\tNULL\tPânico 7\tNULL\n30007\t1368166\tmovie\tSegredos e mentiras\tNULL\tNULL\tNULL\tNULL\n30006\t1428862\tmovie\tSuspense na floresta\tNULL\tNULL\tNULL\tNULL\n30005\t1316092\tmovie\tUm clássico sombrio e apaixonante\tNULL\tNULL\tNULL\tNULL\n30004\t1317288\tmovie\tUma jornada de superação!\tNULL\tNULL\tNULL\tNULL\n30003\t858024\tmovie\tUma história de amor e perda\tHamnet: A Vida Antes de Hamlet\tNULL\tHamnet: A Vida Antes de Hamlet\tNULL\n30002\t1272837\tmovie\tExtermínio: O Templo dos Ossos\tNULL\tNULL\tNULL\tNULL\n30001\t1236153\tmovie\tJustiça Artificial\tNULL\tNULL\tNULL\tNULL\n1\t1084242\tmovie\tA dupla de detetives está de volta!\tZootopia 2\tNULL\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 386
+}

@@ -11,6 +11,7 @@ import { toast } from "sonner";
 interface ReviewDialogProps {
   tmdbId: number;
   mediaType: "movie" | "tv";
+  contentTitle?: string;
   existingReview?: {
     id: number;
     title: string;
@@ -19,7 +20,7 @@ interface ReviewDialogProps {
   onSuccess?: () => void;
 }
 
-export function ReviewDialog({ tmdbId, mediaType, existingReview, onSuccess }: ReviewDialogProps) {
+export function ReviewDialog({ tmdbId, mediaType, contentTitle, existingReview, onSuccess }: ReviewDialogProps) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState(existingReview?.title || "");
   const [content, setContent] = useState(existingReview?.content || "");
@@ -79,6 +80,7 @@ export function ReviewDialog({ tmdbId, mediaType, existingReview, onSuccess }: R
         mediaType,
         title: title.trim(),
         content: content.trim(),
+        contentTitle,
       });
     }
   };

@@ -1,0 +1,52 @@
+{
+  "query": "SELECT id, tmdbId, mediaType, title as reviewTitle FROM reviews WHERE contentTitle IS NULL ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2ZhujiYnxXczSgu.root --database Cvg8278ofufQzThj4s4h83 --execute SELECT id, tmdbId, mediaType, title as reviewTitle FROM reviews WHERE contentTitle IS NULL ORDER BY id;",
+  "rows": [
+    {
+      "id": "30001",
+      "tmdbId": "1236153",
+      "mediaType": "movie",
+      "reviewTitle": "Justiça Artificial"
+    },
+    {
+      "id": "30002",
+      "tmdbId": "1272837",
+      "mediaType": "movie",
+      "reviewTitle": "Extermínio: O Templo dos Ossos"
+    },
+    {
+      "id": "30004",
+      "tmdbId": "1317288",
+      "mediaType": "movie",
+      "reviewTitle": "Uma jornada de superação!"
+    },
+    {
+      "id": "30005",
+      "tmdbId": "1316092",
+      "mediaType": "movie",
+      "reviewTitle": "Um clássico sombrio e apaixonante"
+    },
+    {
+      "id": "30006",
+      "tmdbId": "1428862",
+      "mediaType": "movie",
+      "reviewTitle": "Suspense na floresta"
+    },
+    {
+      "id": "30007",
+      "tmdbId": "1368166",
+      "mediaType": "movie",
+      "reviewTitle": "Segredos e mentiras"
+    },
+    {
+      "id": "30009",
+      "tmdbId": "1242898",
+      "mediaType": "movie",
+      "reviewTitle": "A caçada começou!"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttmdbId\tmediaType\treviewTitle\n30001\t1236153\tmovie\tJustiça Artificial\n30002\t1272837\tmovie\tExtermínio: O Templo dos Ossos\n30004\t1317288\tmovie\tUma jornada de superação!\n30005\t1316092\tmovie\tUm clássico sombrio e apaixonante\n30006\t1428862\tmovie\tSuspense na floresta\n30007\t1368166\tmovie\tSegredos e mentiras\n30009\t1242898\tmovie\tA caçada começou!\n",
+  "stderr": "",
+  "execution_time_ms": 367
+}

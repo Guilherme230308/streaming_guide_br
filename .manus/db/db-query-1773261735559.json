@@ -1,0 +1,90 @@
+{
+  "query": "SELECT r.id, r.tmdbId, r.mediaType, r.title as reviewTitle, u.name as userName, vh.title as contentTitle FROM reviews r LEFT JOIN users u ON r.userId = u.id LEFT JOIN viewing_history vh ON r.tmdbId = vh.tmdbId AND r.mediaType = vh.mediaType ORDER BY r.createdAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2ZhujiYnxXczSgu.root --database Cvg8278ofufQzThj4s4h83 --execute SELECT r.id, r.tmdbId, r.mediaType, r.title as reviewTitle, u.name as userName, vh.title as contentTitle FROM reviews r LEFT JOIN users u ON r.userId = u.id LEFT JOIN viewing_history vh ON r.tmdbId = vh.tmdbId AND r.mediaType = vh.mediaType ORDER BY r.createdAt DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "30009",
+      "tmdbId": "1242898",
+      "mediaType": "movie",
+      "reviewTitle": "A caçada começou!",
+      "userName": "Guilherme Carvalho",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "30008",
+      "tmdbId": "1159559",
+      "mediaType": "movie",
+      "reviewTitle": "Ghostface ataca novamente!",
+      "userName": "Guilherme Carvalho",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "30007",
+      "tmdbId": "1368166",
+      "mediaType": "movie",
+      "reviewTitle": "Segredos e mentiras",
+      "userName": "Guilherme Carvalho",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "30006",
+      "tmdbId": "1428862",
+      "mediaType": "movie",
+      "reviewTitle": "Suspense na floresta",
+      "userName": "Guilherme Carvalho",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "30005",
+      "tmdbId": "1316092",
+      "mediaType": "movie",
+      "reviewTitle": "Um clássico sombrio e apaixonante",
+      "userName": "Guilherme Carvalho",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "30004",
+      "tmdbId": "1317288",
+      "mediaType": "movie",
+      "reviewTitle": "Uma jornada de superação!",
+      "userName": "Guilherme Carvalho",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "30003",
+      "tmdbId": "858024",
+      "mediaType": "movie",
+      "reviewTitle": "Uma história de amor e perda",
+      "userName": "Guilherme Carvalho",
+      "contentTitle": "Hamnet: A Vida Antes de Hamlet"
+    },
+    {
+      "id": "30002",
+      "tmdbId": "1272837",
+      "mediaType": "movie",
+      "reviewTitle": "Extermínio: O Templo dos Ossos",
+      "userName": "Guilherme Carvalho",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "30001",
+      "tmdbId": "1236153",
+      "mediaType": "movie",
+      "reviewTitle": "Justiça Artificial",
+      "userName": "Guilherme Carvalho",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "1",
+      "tmdbId": "1084242",
+      "mediaType": "movie",
+      "reviewTitle": "A dupla de detetives está de volta!",
+      "userName": "Guilherme Carvalho",
+      "contentTitle": "Zootopia 2"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttmdbId\tmediaType\treviewTitle\tuserName\tcontentTitle\n30009\t1242898\tmovie\tA caçada começou!\tGuilherme Carvalho\tNULL\n30008\t1159559\tmovie\tGhostface ataca novamente!\tGuilherme Carvalho\tNULL\n30007\t1368166\tmovie\tSegredos e mentiras\tGuilherme Carvalho\tNULL\n30006\t1428862\tmovie\tSuspense na floresta\tGuilherme Carvalho\tNULL\n30005\t1316092\tmovie\tUm clássico sombrio e apaixonante\tGuilherme Carvalho\tNULL\n30004\t1317288\tmovie\tUma jornada de superação!\tGuilherme Carvalho\tNULL\n30003\t858024\tmovie\tUma história de amor e perda\tGuilherme Carvalho\tHamnet: A Vida Antes de Hamlet\n30002\t1272837\tmovie\tExtermínio: O Templo dos Ossos\tGuilherme Carvalho\tNULL\n30001\t1236153\tmovie\tJustiça Artificial\tGuilherme Carvalho\tNULL\n1\t1084242\tmovie\tA dupla de detetives está de volta!\tGuilherme Carvalho\tZootopia 2\n",
+  "stderr": "",
+  "execution_time_ms": 348
+}

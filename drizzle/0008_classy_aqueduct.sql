@@ -1,0 +1,1 @@
+ALTER TABLE `reviews` ADD `contentTitle` varchar(500);

@@ -705,6 +705,7 @@ export const appRouter = router({
         mediaType: z.enum(['movie', 'tv']),
         title: z.string().min(1).max(255),
         content: z.string().min(10),
+        contentTitle: z.string().max(500).optional(),
       }))
       .mutation(async ({ input, ctx }) => {
         await db.createReview({
@@ -713,6 +714,7 @@ export const appRouter = router({
           mediaType: input.mediaType,
           title: input.title,
           content: input.content,
+          contentTitle: input.contentTitle ?? null,
         });
         return { success: true };
       }),

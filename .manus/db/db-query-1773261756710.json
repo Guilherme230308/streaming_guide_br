@@ -1,0 +1,45 @@
+{
+  "query": "SELECT r.id, r.tmdbId, r.mediaType, r.title as reviewTitle, (SELECT vh.title FROM viewing_history vh WHERE vh.tmdbId = r.tmdbId AND vh.mediaType = r.mediaType LIMIT 1) as contentTitle FROM reviews r ORDER BY r.createdAt DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2ZhujiYnxXczSgu.root --database Cvg8278ofufQzThj4s4h83 --execute SELECT r.id, r.tmdbId, r.mediaType, r.title as reviewTitle, (SELECT vh.title FROM viewing_history vh WHERE vh.tmdbId = r.tmdbId AND vh.mediaType = r.mediaType LIMIT 1) as contentTitle FROM reviews r ORDER BY r.createdAt DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "30009",
+      "tmdbId": "1242898",
+      "mediaType": "movie",
+      "reviewTitle": "A caçada começou!",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "30008",
+      "tmdbId": "1159559",
+      "mediaType": "movie",
+      "reviewTitle": "Ghostface ataca novamente!",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "30007",
+      "tmdbId": "1368166",
+      "mediaType": "movie",
+      "reviewTitle": "Segredos e mentiras",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "30006",
+      "tmdbId": "1428862",
+      "mediaType": "movie",
+      "reviewTitle": "Suspense na floresta",
+      "contentTitle": "NULL"
+    },
+    {
+      "id": "30005",
+      "tmdbId": "1316092",
+      "mediaType": "movie",
+      "reviewTitle": "Um clássico sombrio e apaixonante",
+      "contentTitle": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttmdbId\tmediaType\treviewTitle\tcontentTitle\n30009\t1242898\tmovie\tA caçada começou!\tNULL\n30008\t1159559\tmovie\tGhostface ataca novamente!\tNULL\n30007\t1368166\tmovie\tSegredos e mentiras\tNULL\n30006\t1428862\tmovie\tSuspense na floresta\tNULL\n30005\t1316092\tmovie\tUm clássico sombrio e apaixonante\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 363
+}
