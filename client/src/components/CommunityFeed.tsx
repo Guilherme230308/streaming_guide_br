@@ -19,6 +19,7 @@ interface ReviewData {
   updatedAt: Date;
   userName: string;
   posterPath?: string;
+  contentTitle?: string;
 }
 
 export function CommunityFeed() {
@@ -135,8 +136,8 @@ export function CommunityFeed() {
                 </p>
 
                 <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
-                  <span className="px-2 py-1 bg-muted rounded-md">
-                    {review.mediaType === "movie" ? "Filme" : "Série"}
+                  <span className="px-2 py-1 bg-cyan-500/10 text-cyan-500 rounded-md font-bold border border-cyan-500/20">
+                    {review.contentTitle || (review.mediaType === "movie" ? "Filme" : "Série")}
                   </span>
                 </div>
               </div>

@@ -45,7 +45,7 @@ let _db: ReturnType<typeof drizzle> | null = null;
 
 // Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
-  if (!_db && process.env.DATABASE_URL) {
+  if (!_db && process.env.DATABASE_URL && process.env.DATABASE_URL !== 'mysql://root:root@localhost:3306/streaming_guide') {
     try {
       _db = drizzle(process.env.DATABASE_URL);
     } catch (error) {
@@ -473,9 +473,37 @@ export async function getContentReviews(tmdbId: number, mediaType: 'movie' | 'tv
   }));
 }
 
-export async function getAllRecentReviews(limit: number = 20, offset: number = 0): Promise<Array<Review & { userName: string; posterPath?: string }>> {
+export async function getAllRecentReviews(limit: number = 20, offset: number = 0): Promise<Array<Review & { userName: string; contentTitle?: string; posterPath?: string }>> {
   const db = await getDb();
-  if (!db) return [];
+  if (!db) {
+    // Return mock data for demonstration
+    return [
+      {
+        id: 1,
+        userId: 1,
+        tmdbId: 123,
+        mediaType: 'movie',
+        title: 'Filme Sensacional!',
+        content: 'Este é um dos melhores filmes que já assisti. Recomendo muito!',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        userName: 'Guilherme',
+        contentTitle: 'O Poderoso Chefão'
+      },
+      {
+        id: 2,
+        userId: 2,
+        tmdbId: 456,
+        mediaType: 'tv',
+        title: 'Série viciante',
+        content: 'Não consigo parar de assistir, a trama é muito envolvente.',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        userName: 'Maria',
+        contentTitle: 'Breaking Bad'
+      }
+    ] as any;
+  }
   
   const result = await db.select({
     id: reviews.id,
@@ -486,17 +514,25 @@ export async function getAllRecentReviews(limit: number = 20, offset: number = 0
     content: reviews.content,
     createdAt: reviews.createdAt,
     updatedAt: reviews.updatedAt,
-    userName: users.name
+    userName: users.name,
+    contentTitle: viewingHistory.title,
+    posterPath: viewingHistory.posterPath
   })
     .from(reviews)
     .leftJoin(users, eq(reviews.userId, users.id))
+    .leftJoin(viewingHistory, and(
+      eq(reviews.tmdbId, viewingHistory.tmdbId),
+      eq(reviews.mediaType, viewingHistory.mediaType)
+    ))
     .orderBy(desc(reviews.createdAt))
     .limit(limit)
     .offset(offset);
   
   return result.map(r => ({
     ...r,
-    userName: r.userName || 'Usuário Anônimo'
+    userName: r.userName || 'Usuário Anônimo',
+    contentTitle: r.contentTitle || undefined,
+    posterPath: r.posterPath || undefined
   }));
 }
 
