@@ -644,3 +644,7 @@
 - [x] Updated review creation to store contentTitle when submitting new reviews
 - [x] Fixed TypeScript types across CommunityFeed, ReviewDialog, ReviewForm
 - [x] All 51 tests passing, 0 TypeScript errors
+
+## Remove Reviews from Home Page (Round 61)
+- [x] Remove CommunityFeed section from Home page
+- [x] Reviews should only be displayed on the movie details screen

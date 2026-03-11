@@ -18,7 +18,6 @@ import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { PWAWelcome } from "@/components/PWAWelcome";
 import { SearchFilters, type SearchFiltersType, loadSavedFilters } from "@/components/SearchFilters";
 import { PersonalizedRecommendations } from "@/components/PersonalizedRecommendations";
-import { CommunityFeed } from "@/components/CommunityFeed";
 import { AIAssistantDialog } from "@/components/AIAssistantDialog";
 import { SectionAd } from "@/components/AdBanner";
 
@@ -420,9 +419,6 @@ export default function Home() {
 
       {/* Personalized Recommendations (only for logged-in users) */}
       {user && <PersonalizedRecommendations filters={searchFilters} />}
-
-      {/* Community Feed */}
-      <CommunityFeed />
 
       {/* Trending Movies */}
       <section className="py-12" data-tour="trending-movies">
