@@ -13,7 +13,15 @@ import {
   Calendar, 
   Clock,
   ExternalLink,
-  ArrowLeft
+  ArrowLeft,
+  Lock,
+  UserPlus,
+  LogIn,
+  ListChecks,
+  BarChart3,
+  History,
+  MessageSquare,
+  BellRing
 } from "lucide-react";
 import { Link, useParams, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -27,6 +35,7 @@ import { ReviewDialog } from "@/components/ReviewDialog";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { ReportAvailabilityDialog } from "@/components/ReportAvailabilityDialog";
 import { LoginPromptInline } from "@/components/LoginPrompt";
+import { FeaturesCTA, ActionLockedPrompt } from "@/components/FeaturesCTA";
 import { ReviewSectionPreview } from "@/components/BlurredPreviews";
 import { InArticleAd } from "@/components/AdBanner";
 
@@ -295,8 +304,8 @@ export default function MovieDetails() {
                 ))}
               </div>
 
-              <div className="flex flex-wrap gap-3">
-                {isAuthenticated ? (
+              {isAuthenticated ? (
+                <div className="flex flex-wrap gap-3">
                   <Button
                     size="lg"
                     variant="default"
@@ -306,19 +315,6 @@ export default function MovieDetails() {
                     <Bookmark className="h-5 w-5" />
                     Adicionar à lista
                   </Button>
-                ) : (
-                  <Button
-                    size="lg"
-                    variant="default"
-                    onClick={() => window.location.href = getLoginUrl()}
-                    className="gap-2"
-                  >
-                    <Bookmark className="h-5 w-5" />
-                    Adicionar à lista
-                  </Button>
-                )}
-
-                {isAuthenticated ? (
                   <Button
                     size="lg"
                     variant={isWatched ? "outline" : "secondary"}
@@ -329,18 +325,21 @@ export default function MovieDetails() {
                     <Clock className="h-5 w-5" />
                     {isWatched ? "Assistido" : "Marcar como assistido"}
                   </Button>
-                ) : (
-                  <Button
-                    size="lg"
-                    variant="secondary"
-                    onClick={() => window.location.href = getLoginUrl()}
-                    className="gap-2"
-                  >
-                    <Clock className="h-5 w-5" />
-                    Marcar como assistido
-                  </Button>
-                )}
-              </div>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <ActionLockedPrompt
+                    actionLabel="Adicionar à lista"
+                    actionIcon={Bookmark}
+                    description="Salve este filme para assistir depois"
+                  />
+                  <ActionLockedPrompt
+                    actionLabel="Marcar como assistido"
+                    actionIcon={Clock}
+                    description="Registre que você já assistiu este filme"
+                  />
+                </div>
+              )}
 
               <div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">Sinopse</h3>
@@ -623,6 +622,9 @@ export default function MovieDetails() {
           </div>
         </div>
       </div>
+
+      {/* Broad CTA for non-authenticated users */}
+      {!isAuthenticated && <FeaturesCTA />}
 
       {/* Similar Movies */}
       {similarMovies && similarMovies.results && similarMovies.results.length > 0 && (

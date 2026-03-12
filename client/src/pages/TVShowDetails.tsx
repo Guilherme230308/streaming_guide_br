@@ -9,9 +9,11 @@ import {
   BookmarkCheck, 
   Star, 
   Calendar,
+  Clock,
   ExternalLink,
   ArrowLeft,
-  Film
+  Film,
+  Lock
 } from "lucide-react";
 import { Link, useParams, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -22,6 +24,7 @@ import { handleProviderClick as handleDeepLink, getProviderDeepLink, isPWAStanda
 import { deduplicateProviders } from "@/lib/providerUtils";
 import { ReportAvailabilityDialog } from "@/components/ReportAvailabilityDialog";
 import { InArticleAd } from "@/components/AdBanner";
+import { FeaturesCTA, ActionLockedPrompt } from "@/components/FeaturesCTA";
 
 export default function TVShowDetails() {
   const { id } = useParams();
@@ -249,28 +252,42 @@ export default function TVShowDetails() {
                 ))}
               </div>
 
-              <div className="flex flex-wrap gap-3">
-                <Button
-                  size="lg"
-                  variant="default"
-                  onClick={() => isAuthenticated ? setShowListDialog(true) : handleWatchlistToggle()}
-                  className="gap-2"
-                >
-                  <Bookmark className="h-5 w-5" />
-                  Adicionar à lista
-                </Button>
-
-                <Button
-                  size="lg"
-                  variant={isWatched ? "outline" : "secondary"}
-                  onClick={handleMarkAsWatched}
-                  className="gap-2"
-                  disabled={isWatched}
-                >
-                  <Tv className="h-5 w-5" />
-                  {isWatched ? "Assistido" : "Marcar como assistido"}
-                </Button>
-              </div>
+              {isAuthenticated ? (
+                <div className="flex flex-wrap gap-3">
+                  <Button
+                    size="lg"
+                    variant="default"
+                    onClick={() => setShowListDialog(true)}
+                    className="gap-2"
+                  >
+                    <Bookmark className="h-5 w-5" />
+                    Adicionar à lista
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant={isWatched ? "outline" : "secondary"}
+                    onClick={handleMarkAsWatched}
+                    className="gap-2"
+                    disabled={isWatched}
+                  >
+                    <Tv className="h-5 w-5" />
+                    {isWatched ? "Assistido" : "Marcar como assistido"}
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <ActionLockedPrompt
+                    actionLabel="Adicionar à lista"
+                    actionIcon={Bookmark}
+                    description="Salve esta série para assistir depois"
+                  />
+                  <ActionLockedPrompt
+                    actionLabel="Marcar como assistido"
+                    actionIcon={Clock}
+                    description="Registre que você já assistiu esta série"
+                  />
+                </div>
+              )}
 
               <div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">Sinopse</h3>
@@ -427,6 +444,9 @@ export default function TVShowDetails() {
           )}
         </div>
       </div>
+
+      {/* Broad CTA for non-authenticated users */}
+      {!isAuthenticated && <FeaturesCTA />}
 
       {/* Similar TV Shows */}
       {similarShows && similarShows.results && similarShows.results.length > 0 && (
