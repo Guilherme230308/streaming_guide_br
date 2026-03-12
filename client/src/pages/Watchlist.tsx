@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ContentCard } from "@/components/ContentCard";
 import { Badge } from "@/components/ui/badge";
 import { Film, Tv, Bookmark, Trash2, ExternalLink } from "lucide-react";
+import { LoginPromptPage } from "@/components/LoginPrompt";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
@@ -38,18 +39,11 @@ export default function Watchlist() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background pt-16">
-        <div className="container py-20 text-center">
-          <Bookmark className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-foreground mb-2">Faça login para ver sua lista</h1>
-          <p className="text-muted-foreground mb-6">
-            Salve seus filmes e séries favoritos para assistir depois
-          </p>
-          <Button onClick={() => (window.location.href = getLoginUrl())}>
-            Fazer Login
-          </Button>
-        </div>
-      </div>
+      <LoginPromptPage
+        title="Minha Lista"
+        description="Crie uma conta gratuita para salvar seus filmes e séries favoritos e assistir depois."
+        icon={<Bookmark className="h-16 w-16 text-primary/50" />}
+      />
     );
   }
 

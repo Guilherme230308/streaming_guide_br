@@ -3,8 +3,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Film, Tv, Clock, Sparkles } from "lucide-react";
+import { LoginPromptPage } from "@/components/LoginPrompt";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { useAuth } from "@/_core/hooks/useAuth";
 import { useState } from "react";
 
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p";
@@ -15,23 +17,37 @@ function getImageUrl(path: string | null, size: string = "w500"): string {
 }
 
 export default function History() {
+  const { isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState<"history" | "recommendations">("history");
 
-  const { data: history, isLoading: historyLoading } = trpc.viewingHistory.get.useQuery();
+  const { data: history, isLoading: historyLoading } = trpc.viewingHistory.get.useQuery(
+    undefined,
+    { enabled: isAuthenticated }
+  );
   
   const { data: movieRecommendations } = trpc.viewingHistory.getRecommendations.useQuery({
     mediaType: "movie",
     page: 1,
   }, {
-    enabled: activeTab === "recommendations",
+    enabled: isAuthenticated && activeTab === "recommendations",
   });
 
   const { data: tvRecommendations } = trpc.viewingHistory.getRecommendations.useQuery({
     mediaType: "tv",
     page: 1,
   }, {
-    enabled: activeTab === "recommendations",
+    enabled: isAuthenticated && activeTab === "recommendations",
   });
+
+  if (!isAuthenticated) {
+    return (
+      <LoginPromptPage
+        title="Histórico & Recomendações"
+        description="Crie uma conta gratuita para acompanhar o que você já assistiu e receber recomendações personalizadas."
+        icon={<Clock className="h-16 w-16 text-primary/50" />}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pt-16">

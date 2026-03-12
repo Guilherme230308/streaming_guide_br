@@ -2,7 +2,8 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Film, Check } from "lucide-react";
+import { Film, Check, CreditCard } from "lucide-react";
+import { LoginPromptPage } from "@/components/LoginPrompt";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
@@ -65,18 +66,11 @@ export default function MySubscriptions() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background pt-16">
-        <div className="container py-20 text-center">
-          <Film className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-foreground mb-2">Faça login para gerenciar suas assinaturas</h1>
-          <p className="text-muted-foreground mb-6">
-            Selecione os serviços de streaming que você assina
-          </p>
-          <Button onClick={() => (window.location.href = getLoginUrl())}>
-            Fazer Login
-          </Button>
-        </div>
-      </div>
+      <LoginPromptPage
+        title="Minhas Assinaturas"
+        description="Crie uma conta gratuita para selecionar seus serviços de streaming e filtrar conteúdo disponível."
+        icon={<CreditCard className="h-16 w-16 text-primary/50" />}
+      />
     );
   }
 

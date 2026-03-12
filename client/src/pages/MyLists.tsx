@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Trash2, Edit, Film, Tv, Lock, Globe } from "lucide-react";
+import { Plus, Trash2, Edit, Film, Tv, Lock, Globe, List } from "lucide-react";
+import { LoginPromptPage } from "@/components/LoginPrompt";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
 
@@ -94,19 +95,11 @@ export default function MyLists() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center pt-16">
-        <Card className="max-w-md w-full">
-          <CardContent className="pt-6 text-center">
-            <h2 className="text-2xl font-bold mb-4">Login Necessário</h2>
-            <p className="text-muted-foreground mb-6">
-              Faça login para gerenciar suas listas personalizadas
-            </p>
-            <Button onClick={() => window.location.href = getLoginUrl()}>
-              Fazer Login
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+      <LoginPromptPage
+        title="Minhas Listas"
+        description="Crie uma conta gratuita para criar e gerenciar suas listas personalizadas de filmes e séries."
+        icon={<List className="h-16 w-16 text-primary/50" />}
+      />
     );
   }
 

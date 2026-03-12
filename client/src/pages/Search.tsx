@@ -16,6 +16,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { SlidersHorizontal } from "lucide-react";
 import { ALL_GENRES } from "@/lib/genres";
 import { InFeedAd } from "@/components/AdBanner";
+import { getLoginUrl } from "@/const";
+import { toast } from "sonner";
 
 export default function Search() {
   const searchParams = useSearch();
@@ -122,18 +124,27 @@ export default function Search() {
           {/* Filters Row */}
           <div className="flex flex-wrap items-center gap-4 mt-4">
             {/* Subscription Filter */}
-            {isAuthenticated && (
-              <div className="flex items-center gap-2">
-                <Switch
-                  id="subscription-filter"
-                  checked={filterBySubscriptions}
-                  onCheckedChange={setFilterBySubscriptions}
-                />
-                <Label htmlFor="subscription-filter" className="text-sm text-muted-foreground cursor-pointer">
-                  Apenas minhas assinaturas
-                </Label>
-              </div>
-            )}
+            <div className="flex items-center gap-2">
+              <Switch
+                id="subscription-filter"
+                checked={filterBySubscriptions}
+                onCheckedChange={(checked) => {
+                  if (!isAuthenticated && checked) {
+                    toast.info("Crie uma conta gratuita para filtrar por suas assinaturas.", {
+                      action: {
+                        label: "Criar conta",
+                        onClick: () => window.location.href = getLoginUrl(),
+                      },
+                    });
+                    return;
+                  }
+                  setFilterBySubscriptions(checked);
+                }}
+              />
+              <Label htmlFor="subscription-filter" className="text-sm text-muted-foreground cursor-pointer">
+                Apenas minhas assinaturas
+              </Label>
+            </div>
 
             {/* Advanced Filters Popover */}
             <Popover>

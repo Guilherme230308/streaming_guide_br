@@ -134,13 +134,14 @@ export const appRouter = router({
         };
       }),
 
-    searchFiltered: protectedProcedure
+    searchFiltered: publicProcedure
       .input(z.object({
         query: z.string().min(1),
         page: z.number().default(1),
       }))
       .query(async ({ input, ctx }) => {
         const results = await tmdb.searchMulti(input.query, input.page);
+        if (!ctx.user) return results;
         const userSubscriptions = await db.getUserSubscriptions(ctx.user.id);
         const activeProviderIds = userSubscriptions
           .filter(sub => sub.isActive)

@@ -19,6 +19,8 @@ import {
   ArrowLeft
 } from "lucide-react";
 import { Link } from "wouter";
+import { LoginPromptPage } from "@/components/LoginPrompt";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 // Provider logos mapping
 const PROVIDER_LOGOS: Record<number, string> = {
@@ -35,7 +37,21 @@ const PROVIDER_LOGOS: Record<number, string> = {
 };
 
 export default function StreamingAnalysis() {
-  const { data, isLoading, error } = trpc.streamingAnalysis.getAnalysis.useQuery();
+  const { isAuthenticated } = useAuth();
+  const { data, isLoading, error } = trpc.streamingAnalysis.getAnalysis.useQuery(
+    undefined,
+    { enabled: isAuthenticated }
+  );
+
+  if (!isAuthenticated) {
+    return (
+      <LoginPromptPage
+        title="Análise de Streamings"
+        description="Crie uma conta gratuita para descobrir quais serviços de streaming valem mais a pena para você."
+        icon={<BarChart3 className="h-16 w-16 text-primary/50" />}
+      />
+    );
+  }
 
   if (isLoading) {
     return (

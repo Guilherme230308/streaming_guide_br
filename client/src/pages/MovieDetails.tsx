@@ -26,6 +26,7 @@ import { RatingStars } from "@/components/RatingStars";
 import { ReviewDialog } from "@/components/ReviewDialog";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { ReportAvailabilityDialog } from "@/components/ReportAvailabilityDialog";
+import { LoginPromptInline } from "@/components/LoginPrompt";
 import { InArticleAd } from "@/components/AdBanner";
 
 export default function MovieDetails() {
@@ -121,7 +122,12 @@ export default function MovieDetails() {
 
   const handleWatchlistToggle = () => {
     if (!isAuthenticated) {
-      window.location.href = getLoginUrl();
+      toast.info("Crie uma conta gratuita para salvar filmes na sua lista.", {
+        action: {
+          label: "Criar conta",
+          onClick: () => window.location.href = getLoginUrl(),
+        },
+      });
       return;
     }
 
@@ -145,7 +151,12 @@ export default function MovieDetails() {
 
   const handleMarkAsWatched = () => {
     if (!isAuthenticated) {
-      window.location.href = getLoginUrl();
+      toast.info("Crie uma conta gratuita para marcar filmes como assistidos.", {
+        action: {
+          label: "Criar conta",
+          onClick: () => window.location.href = getLoginUrl(),
+        },
+      });
       return;
     }
 
@@ -533,14 +544,12 @@ export default function MovieDetails() {
               </CardContent>
             </Card>
           ) : (
-            <Card className="mb-8">
-              <CardContent className="pt-6 text-center">
-                <p className="text-muted-foreground mb-4">Faça login para avaliar e escrever um review</p>
-                <Button onClick={() => window.location.href = getLoginUrl()}>
-                  Fazer Login
-                </Button>
-              </CardContent>
-            </Card>
+            <div className="mb-8">
+              <LoginPromptInline
+                title="Avalie este filme"
+                description="Crie uma conta gratuita para avaliar e escrever reviews."
+              />
+            </div>
           )}
 
           {/* Average Rating */}

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Film, Bell, BellOff, Trash2, CheckCircle, Clock, Sparkles, AlertCircle, Play } from "lucide-react";
+import { LoginPromptPage } from "@/components/LoginPrompt";
 import { PushNotificationManager } from "@/components/PushNotificationManager";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -72,18 +73,11 @@ export default function Alerts() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background pt-16">
-        <div className="container py-20 text-center">
-          <Bell className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-foreground mb-2">Faça login para gerenciar alertas</h1>
-          <p className="text-muted-foreground mb-6">
-            Receba notificações quando conteúdo chegar nos seus serviços de streaming
-          </p>
-          <Button onClick={() => (window.location.href = getLoginUrl())}>
-            Fazer Login
-          </Button>
-        </div>
-      </div>
+      <LoginPromptPage
+        title="Alertas e Notificações"
+        description="Crie uma conta gratuita para receber notificações quando filmes e séries chegarem nos seus serviços de streaming."
+        icon={<Bell className="h-16 w-16 text-primary/50" />}
+      />
     );
   }
 

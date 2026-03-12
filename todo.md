@@ -648,3 +648,19 @@
 ## Remove Reviews from Home Page (Round 61)
 - [x] Remove CommunityFeed section from Home page
 - [x] Reviews should only be displayed on the movie details screen
+
+## Auth Gates & Login Prompts (Round 62)
+- [x] Make searchFiltered (#3) public (currently protectedProcedure)
+- [x] Add login prompt when non-logged user tries to access Watchlist page
+- [x] Add login prompt when non-logged user tries to access MyLists page
+- [x] Add login prompt when non-logged user tries to access Alerts page
+- [x] Add login prompt when non-logged user tries to access History page
+- [x] Add login prompt when non-logged user tries to access MySubscriptions page
+- [x] Add login prompt when non-logged user tries to access StreamingAnalysis page
+- [x] AffiliateAnalytics already has admin-only redirect (unchanged)
+- [x] Add toast with "Criar conta" action when non-logged user tries to add to watchlist
+- [x] Add toast with "Criar conta" action when non-logged user tries to mark as watched
+- [x] Add LoginPromptInline when non-logged user tries to rate or write review
+- [x] Search subscription filter shows toast for non-logged users
+- [x] Created reusable LoginPrompt components (LoginPromptPage and LoginPromptInline)
+- [x] All 51 tests passing, 0 TypeScript errors

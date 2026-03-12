@@ -79,7 +79,12 @@ export default function TVShowDetails() {
 
   const handleWatchlistToggle = () => {
     if (!isAuthenticated) {
-      window.location.href = getLoginUrl();
+      toast.info("Crie uma conta gratuita para salvar séries na sua lista.", {
+        action: {
+          label: "Criar conta",
+          onClick: () => window.location.href = getLoginUrl(),
+        },
+      });
       return;
     }
 
@@ -103,7 +108,12 @@ export default function TVShowDetails() {
 
   const handleMarkAsWatched = () => {
     if (!isAuthenticated) {
-      window.location.href = getLoginUrl();
+      toast.info("Crie uma conta gratuita para marcar séries como assistidas.", {
+        action: {
+          label: "Criar conta",
+          onClick: () => window.location.href = getLoginUrl(),
+        },
+      });
       return;
     }
 
@@ -240,50 +250,26 @@ export default function TVShowDetails() {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                {isAuthenticated ? (
-                  <Button
-                    size="lg"
-                    variant="default"
-                    onClick={() => setShowListDialog(true)}
-                    className="gap-2"
-                  >
-                    <Bookmark className="h-5 w-5" />
-                    Adicionar à lista
-                  </Button>
-                ) : (
-                  <Button
-                    size="lg"
-                    variant="default"
-                    onClick={() => window.location.href = getLoginUrl()}
-                    className="gap-2"
-                  >
-                    <Bookmark className="h-5 w-5" />
-                    Adicionar à lista
-                  </Button>
-                )}
+                <Button
+                  size="lg"
+                  variant="default"
+                  onClick={() => isAuthenticated ? setShowListDialog(true) : handleWatchlistToggle()}
+                  className="gap-2"
+                >
+                  <Bookmark className="h-5 w-5" />
+                  Adicionar à lista
+                </Button>
 
-                {isAuthenticated ? (
-                  <Button
-                    size="lg"
-                    variant={isWatched ? "outline" : "secondary"}
-                    onClick={handleMarkAsWatched}
-                    className="gap-2"
-                    disabled={isWatched}
-                  >
-                    <Tv className="h-5 w-5" />
-                    {isWatched ? "Assistido" : "Marcar como assistido"}
-                  </Button>
-                ) : (
-                  <Button
-                    size="lg"
-                    variant="secondary"
-                    onClick={() => window.location.href = getLoginUrl()}
-                    className="gap-2"
-                  >
-                    <Tv className="h-5 w-5" />
-                    Marcar como assistido
-                  </Button>
-                )}
+                <Button
+                  size="lg"
+                  variant={isWatched ? "outline" : "secondary"}
+                  onClick={handleMarkAsWatched}
+                  className="gap-2"
+                  disabled={isWatched}
+                >
+                  <Tv className="h-5 w-5" />
+                  {isWatched ? "Assistido" : "Marcar como assistido"}
+                </Button>
               </div>
 
               <div>
