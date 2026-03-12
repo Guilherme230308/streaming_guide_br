@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "wouter";
 import { MoreVertical, Bookmark, Check } from "lucide-react";
 import {
@@ -37,11 +37,27 @@ export function ContentCard({
   mediaType,
   releaseDate,
   voteAverage,
-  providers = [],
+  providers: propProviders,
 }: ContentCardProps) {
   const [showListDialog, setShowListDialog] = useState(false);
   const utils = trpc.useUtils();
   const { isAuthenticated } = useAuth();
+
+  // Lazy-load providers when not passed as prop
+  const { data: fetchedProviders } = trpc.content.getItemProviders.useQuery(
+    { tmdbId: id, mediaType },
+    { 
+      enabled: !propProviders || propProviders.length === 0,
+      staleTime: 1000 * 60 * 30, // Cache for 30 minutes
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  // Use prop providers if available, otherwise use fetched providers
+  const providers = useMemo(() => {
+    if (propProviders && propProviders.length > 0) return propProviders;
+    return fetchedProviders || [];
+  }, [propProviders, fetchedProviders]);
 
   // Only query protected endpoints when user is authenticated
   const { data: isWatched } = trpc.viewingHistory.isWatched.useQuery(
@@ -134,6 +150,8 @@ export function ContentCard({
     toast.info("Marcado como não interessado");
   };
 
+  const dedupedProviders = useMemo(() => deduplicateProviders(providers), [providers]);
+
   return (
     <>
       <SwipeableCard onSwipeRight={handleSwipeRight} onSwipeLeft={handleSwipeLeft}>
@@ -151,6 +169,27 @@ export function ContentCard({
               ) : (
                 <div className="w-full h-full bg-muted flex items-center justify-center">
                   <span className="text-muted-foreground text-sm">No Image</span>
+                </div>
+              )}
+
+              {/* Streaming Provider Icons - Overlay at bottom of poster */}
+              {dedupedProviders.length > 0 && (
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent px-2 py-2 pt-6">
+                  <div className="flex items-center gap-1">
+                    {dedupedProviders.slice(0, 5).map((provider) => (
+                      <img
+                        key={provider.provider_id}
+                        src={`https://image.tmdb.org/t/p/w92${provider.logo_path}`}
+                        alt={provider.provider_name}
+                        title={provider.provider_name}
+                        className="h-6 w-6 rounded-md object-cover border border-white/20 shadow-sm"
+                        loading="lazy"
+                      />
+                    ))}
+                    {dedupedProviders.length > 5 && (
+                      <span className="text-[10px] text-white/80 font-medium ml-0.5">+{dedupedProviders.length - 5}</span>
+                    )}
+                  </div>
                 </div>
               )}
 
@@ -185,30 +224,9 @@ export function ContentCard({
               <h3 className="font-semibold text-foreground line-clamp-2 mb-1">
                 {title}
               </h3>
-              <div className="flex items-center justify-between gap-2">
-                {year && (
-                  <p className="text-sm text-muted-foreground">{year}</p>
-                )}
-                
-                {/* Streaming Provider Icons - Display only, not clickable */}
-                {providers && providers.length > 0 && (
-                  <div className="flex items-center gap-1 mt-1 flex-wrap">
-                    {deduplicateProviders(providers).slice(0, 4).map((provider) => (
-                      <img
-                        key={provider.provider_id}
-                        src={`https://image.tmdb.org/t/p/w92${provider.logo_path}`}
-                        alt={provider.provider_name}
-                        title={provider.provider_name}
-                        className="h-6 w-6 rounded-md object-cover border border-border/50"
-                        loading="lazy"
-                      />
-                    ))}
-                    {deduplicateProviders(providers).length > 4 && (
-                      <span className="text-xs text-muted-foreground font-medium">+{deduplicateProviders(providers).length - 4}</span>
-                    )}
-                  </div>
-                )}
-              </div>
+              {year && (
+                <p className="text-sm text-muted-foreground">{year}</p>
+              )}
             </div>
           </div>
         </Link>

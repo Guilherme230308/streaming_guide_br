@@ -220,6 +220,32 @@ export const appRouter = router({
         return { ...details, watchProviders: providers };
       }),
 
+    getItemProviders: publicProcedure
+      .input(z.object({
+        tmdbId: z.number(),
+        mediaType: z.enum(['movie', 'tv']),
+      }))
+      .query(async ({ input }) => {
+        const providers = await getProvidersWithCache(input.tmdbId, input.mediaType);
+        if (!providers) return [];
+        const allProviders = [
+          ...(providers.flatrate || []),
+          ...(providers.rent || []),
+          ...(providers.buy || []),
+        ];
+        // Deduplicate by provider_id
+        const seen = new Set<number>();
+        return allProviders.filter(p => {
+          if (seen.has(p.provider_id)) return false;
+          seen.add(p.provider_id);
+          return true;
+        }).map(p => ({
+          provider_id: p.provider_id,
+          provider_name: p.provider_name,
+          logo_path: p.logo_path,
+        }));
+      }),
+
     getTrending: publicProcedure
       .input(z.object({
         mediaType: z.enum(['movie', 'tv']),
