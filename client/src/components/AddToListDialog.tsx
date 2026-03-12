@@ -35,7 +35,9 @@ export function AddToListDialog({
 
   const utils = trpc.useUtils();
 
-  const { data: lists = [] } = trpc.customLists.getUserLists.useQuery();
+  const { data: lists = [] } = trpc.customLists.getUserLists.useQuery(undefined, {
+    enabled: open,
+  });
   const { data: itemLists = [] } = trpc.customLists.getItemLists.useQuery(
     { tmdbId, mediaType },
     { enabled: open }

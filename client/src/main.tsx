@@ -18,6 +18,17 @@ const redirectToLoginIfUnauthorized = (error: unknown) => {
 
   if (!isUnauthorized) return;
 
+  // Do not auto-redirect on public pages (movie/tv details, search, home)
+  // Users should be able to browse freely; login prompts are shown inline
+  const publicPathPatterns = [/^\/movie\//, /^\/tv\//, /^\/search/, /^\/$/];
+  const currentPath = window.location.pathname;
+  const isPublicPage = publicPathPatterns.some(pattern => pattern.test(currentPath));
+
+  if (isPublicPage) {
+    console.warn("[Auth] Suppressed UNAUTHORIZED redirect on public page:", currentPath);
+    return;
+  }
+
   window.location.href = getLoginUrl();
 };
 
