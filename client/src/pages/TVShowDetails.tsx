@@ -444,10 +444,10 @@ export default function TVShowDetails() {
             />
           )}
         </div>
-      </div>
 
-      {/* Broad CTA for non-authenticated users */}
-      {!isAuthenticated && <FeaturesCTA />}
+        {/* Broad CTA for non-authenticated users */}
+        {!isAuthenticated && <FeaturesCTA />}
+      </div>
 
       {/* Similar TV Shows */}
       {similarShows && similarShows.results && similarShows.results.length > 0 && (

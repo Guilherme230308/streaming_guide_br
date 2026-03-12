@@ -65,7 +65,7 @@ const LOCKED_FEATURES = [
  */
 export function FeaturesCTA() {
   return (
-    <div id="signup-cta" className="container py-12 border-t border-border">
+    <div id="signup-cta" className="py-12 border-t border-border mt-6">
       <div className="max-w-4xl mx-auto">
         <Card className="overflow-hidden border-cyan-500/20 bg-gradient-to-br from-background via-background to-cyan-950/10">
           <CardContent className="p-0">

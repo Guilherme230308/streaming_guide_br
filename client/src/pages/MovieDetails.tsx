@@ -497,6 +497,9 @@ export default function MovieDetails() {
             />
           )}
         </div>
+
+        {/* Broad CTA for non-authenticated users */}
+        {!isAuthenticated && <FeaturesCTA />}
       </div>
 
       {/* Ad placement between streaming and reviews */}
@@ -623,9 +626,6 @@ export default function MovieDetails() {
           </div>
         </div>
       </div>
-
-      {/* Broad CTA for non-authenticated users */}
-      {!isAuthenticated && <FeaturesCTA />}
 
       {/* Similar Movies */}
       {similarMovies && similarMovies.results && similarMovies.results.length > 0 && (

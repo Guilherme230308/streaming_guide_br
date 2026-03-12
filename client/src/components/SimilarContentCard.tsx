@@ -13,7 +13,7 @@ interface SimilarContentCardProps {
 
 /**
  * Card for similar movies/series with batch-loaded streaming provider icons.
- * Matches the design of ContentCard provider overlay.
+ * Icons are displayed below the card next to the year, matching the search result card design.
  */
 export function SimilarContentCard({
   id,
@@ -56,36 +56,37 @@ export function SimilarContentCard({
               <span className="text-muted-foreground text-sm">No Image</span>
             </div>
           )}
-
-          {/* Streaming Provider Icons - Overlay at bottom of poster */}
-          {providers.length > 0 && (
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent px-2 py-2 pt-6">
-              <div className="flex items-center gap-1">
-                {providers.slice(0, 4).map((provider) => (
-                  <img
-                    key={provider.provider_id}
-                    src={`https://image.tmdb.org/t/p/w92${provider.logo_path}`}
-                    alt={provider.provider_name}
-                    title={provider.provider_name}
-                    className="h-5 w-5 rounded-[4px] object-cover border border-white/20 shadow-sm"
-                    loading="lazy"
-                  />
-                ))}
-                {providers.length > 4 && (
-                  <span className="text-[9px] text-white/80 font-medium ml-0.5">
-                    +{providers.length - 4}
-                  </span>
-                )}
-              </div>
-            </div>
-          )}
         </div>
         <h3 className="text-sm font-medium text-foreground line-clamp-2 group-hover:text-primary transition-colors">
           {title}
         </h3>
-        {year && (
-          <p className="text-xs text-muted-foreground mt-1">{year}</p>
-        )}
+        {/* Year and streaming provider icons on the same row */}
+        <div className="flex items-center justify-between mt-1">
+          {year ? (
+            <span className="text-xs text-muted-foreground">{year}</span>
+          ) : (
+            <span />
+          )}
+          {providers.length > 0 && (
+            <div className="flex items-center gap-0.5">
+              {providers.slice(0, 4).map((provider) => (
+                <img
+                  key={provider.provider_id}
+                  src={`https://image.tmdb.org/t/p/w92${provider.logo_path}`}
+                  alt={provider.provider_name}
+                  title={provider.provider_name}
+                  className="h-5 w-5 rounded-[3px] object-cover"
+                  loading="lazy"
+                />
+              ))}
+              {providers.length > 4 && (
+                <span className="text-[9px] text-muted-foreground font-medium ml-0.5">
+                  +{providers.length - 4}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </Link>
   );
