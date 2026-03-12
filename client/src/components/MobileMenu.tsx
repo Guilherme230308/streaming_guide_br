@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/sheet";
 import {
   Menu,
-  Bookmark,
   List,
   Bell,
   Calendar,
@@ -20,16 +19,33 @@ import {
   LogOut,
   Sparkles,
   BarChart3,
+  Lock,
+  UserPlus,
+  LogIn,
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
+
+// All menu items with auth requirement flag
+const ALL_MENU_ITEMS = [
+  { href: "/lists", icon: List, label: "Listas", tour: "lists", requiresAuth: true },
+  { href: "/subscriptions", icon: Bell, label: "Assinaturas", tour: "subscriptions", requiresAuth: true },
+  { href: "/upcoming", icon: Calendar, label: "Em Breve", tour: "", requiresAuth: true },
+  { href: "/alerts", icon: Bell, label: "Alertas", tour: "alerts", requiresAuth: true },
+  { href: "/genres", icon: Grid3x3, label: "Gêneros", tour: "genres", requiresAuth: false },
+  { href: "/history", icon: Clock, label: "Histórico", tour: "history", requiresAuth: true },
+  { href: "/streaming-prices", icon: DollarSign, label: "Preços", tour: "", requiresAuth: false },
+  { href: "/streaming-analysis", icon: Sparkles, label: "Análise", tour: "", requiresAuth: true },
+];
 
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
   const [location] = useLocation();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const logoutMutation = trpc.auth.logout.useMutation();
 
   // Swipe gesture detection with haptic feedback and reverse swipe
@@ -40,9 +56,8 @@ export function MobileMenu() {
     let touchEndY = 0;
 
     const triggerHapticFeedback = () => {
-      // Vibration API for haptic feedback (if supported)
       if ('vibrate' in navigator) {
-        navigator.vibrate(10); // Short 10ms vibration
+        navigator.vibrate(10);
       }
     };
 
@@ -60,27 +75,25 @@ export function MobileMenu() {
     const handleSwipe = () => {
       const swipeDistanceX = touchEndX - touchStartX;
       const swipeDistanceY = Math.abs(touchEndY - touchStartY);
-      const minSwipeDistance = 50; // Minimum distance for swipe
-      const edgeThreshold = 50; // Distance from left edge to trigger
+      const minSwipeDistance = 50;
+      const edgeThreshold = 50;
       const screenWidth = window.innerWidth;
 
-      // Swipe from left edge to open menu
       if (
-        !open && // Only when menu is closed
-        touchStartX <= edgeThreshold && // Started from left edge
-        swipeDistanceX > minSwipeDistance && // Swiped right enough
-        swipeDistanceY < 100 // Mostly horizontal swipe
+        !open &&
+        touchStartX <= edgeThreshold &&
+        swipeDistanceX > minSwipeDistance &&
+        swipeDistanceY < 100
       ) {
         setOpen(true);
         triggerHapticFeedback();
       }
 
-      // Reverse swipe (right to left) to close menu
       if (
-        open && // Only when menu is open
-        touchStartX > screenWidth - 320 && // Started from menu area (menu width is 280-320px)
-        swipeDistanceX < -minSwipeDistance && // Swiped left enough (negative distance)
-        swipeDistanceY < 100 // Mostly horizontal swipe
+        open &&
+        touchStartX > screenWidth - 320 &&
+        swipeDistanceX < -minSwipeDistance &&
+        swipeDistanceY < 100
       ) {
         setOpen(false);
         triggerHapticFeedback();
@@ -101,16 +114,21 @@ export function MobileMenu() {
     window.location.href = "/";
   };
 
+  const handleLockedClick = () => {
+    toast.info("Crie uma conta gratuita para acessar esta funcionalidade.", {
+      action: {
+        label: "Criar conta",
+        onClick: () => { window.location.href = getLoginUrl(); },
+      },
+    });
+  };
+
+  // Build menu items: all items always visible, admin item only for admins
   const menuItems = [
-    { href: "/lists", icon: List, label: "Listas", tour: "lists" },
-    { href: "/subscriptions", icon: Bell, label: "Assinaturas", tour: "subscriptions" },
-    { href: "/upcoming", icon: Calendar, label: "Em Breve", tour: "" },
-    { href: "/alerts", icon: Bell, label: "Alertas", tour: "alerts" },
-    { href: "/genres", icon: Grid3x3, label: "Gêneros", tour: "genres" },
-    { href: "/history", icon: Clock, label: "Histórico", tour: "history" },
-    { href: "/streaming-prices", icon: DollarSign, label: "Preços", tour: "" },
-    { href: "/streaming-analysis", icon: Sparkles, label: "Análise", tour: "" },
-    ...(user?.role === 'admin' ? [{ href: "/affiliate-analytics", icon: BarChart3, label: "Receita", tour: "", isAdmin: true }] : []),
+    ...ALL_MENU_ITEMS,
+    ...(isAuthenticated && user?.role === 'admin'
+      ? [{ href: "/affiliate-analytics", icon: BarChart3, label: "Receita", tour: "", requiresAuth: true, isAdmin: true }]
+      : []),
   ];
 
   const isActive = (href: string) => location === href;
@@ -132,7 +150,7 @@ export function MobileMenu() {
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <User className="h-5 w-5" />
-            {user?.name || "Menu"}
+            {isAuthenticated ? (user?.name || "Menu") : "Menu"}
           </SheetTitle>
         </SheetHeader>
 
@@ -140,6 +158,22 @@ export function MobileMenu() {
           {menuItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.href);
+            const isLocked = item.requiresAuth && !isAuthenticated;
+
+            if (isLocked) {
+              return (
+                <Button
+                  key={item.href}
+                  variant="ghost"
+                  className="w-full justify-start gap-3 h-12 opacity-45 cursor-not-allowed"
+                  onClick={handleLockedClick}
+                >
+                  <Icon className="h-5 w-5 flex-shrink-0" />
+                  <span className="text-base flex-1 text-left">{item.label}</span>
+                  <Lock className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                </Button>
+              );
+            }
 
             return (
               <Link key={item.href} href={item.href}>
@@ -161,14 +195,39 @@ export function MobileMenu() {
 
         <Separator className="my-4" />
 
-        <Button
-          variant="ghost"
-          className="w-full justify-start gap-3 h-12 text-destructive hover:text-destructive hover:bg-destructive/10"
-          onClick={handleLogout}
-        >
-          <LogOut className="h-5 w-5 flex-shrink-0" />
-          <span className="text-base">Sair</span>
-        </Button>
+        {isAuthenticated ? (
+          <Button
+            variant="ghost"
+            className="w-full justify-start gap-3 h-12 text-destructive hover:text-destructive hover:bg-destructive/10"
+            onClick={handleLogout}
+          >
+            <LogOut className="h-5 w-5 flex-shrink-0" />
+            <span className="text-base">Sair</span>
+          </Button>
+        ) : (
+          <div className="space-y-2">
+            <Button
+              asChild
+              variant="default"
+              className="w-full justify-start gap-3 h-12 bg-cyan-600 hover:bg-cyan-700"
+            >
+              <a href={getLoginUrl()}>
+                <UserPlus className="h-5 w-5 flex-shrink-0" />
+                <span className="text-base">Criar conta grátis</span>
+              </a>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="w-full justify-start gap-3 h-12"
+            >
+              <a href={getLoginUrl()}>
+                <LogIn className="h-5 w-5 flex-shrink-0" />
+                <span className="text-base">Entrar</span>
+              </a>
+            </Button>
+          </div>
+        )}
       </SheetContent>
     </Sheet>
   );
