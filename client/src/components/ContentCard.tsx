@@ -13,6 +13,8 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { SwipeableCard } from "@/components/SwipeableCard";
 import { deduplicateProviders } from "@/lib/providerUtils";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { getLoginUrl } from "@/const";
 
 interface ContentCardProps {
   id: number;
@@ -39,11 +41,13 @@ export function ContentCard({
 }: ContentCardProps) {
   const [showListDialog, setShowListDialog] = useState(false);
   const utils = trpc.useUtils();
+  const { isAuthenticated } = useAuth();
 
-  const { data: isWatched } = trpc.viewingHistory.isWatched.useQuery({
-    tmdbId: id,
-    mediaType,
-  });
+  // Only query protected endpoints when user is authenticated
+  const { data: isWatched } = trpc.viewingHistory.isWatched.useQuery(
+    { tmdbId: id, mediaType },
+    { enabled: isAuthenticated }
+  );
 
   const markAsWatchedMutation = trpc.viewingHistory.add.useMutation({
     onSuccess: () => {
@@ -59,6 +63,16 @@ export function ContentCard({
     e.preventDefault();
     e.stopPropagation();
     
+    if (!isAuthenticated) {
+      toast.info("Crie uma conta gratuita para marcar como assistido.", {
+        action: {
+          label: "Criar conta",
+          onClick: () => window.location.href = getLoginUrl(),
+        },
+      });
+      return;
+    }
+    
     markAsWatchedMutation.mutate({
       tmdbId: id,
       mediaType,
@@ -70,6 +84,17 @@ export function ContentCard({
   const handleAddToList = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    if (!isAuthenticated) {
+      toast.info("Crie uma conta gratuita para adicionar à lista.", {
+        action: {
+          label: "Criar conta",
+          onClick: () => window.location.href = getLoginUrl(),
+        },
+      });
+      return;
+    }
+    
     setShowListDialog(true);
   };
 
@@ -87,6 +112,16 @@ export function ContentCard({
   });
 
   const handleSwipeRight = () => {
+    if (!isAuthenticated) {
+      toast.info("Crie uma conta gratuita para adicionar à lista.", {
+        action: {
+          label: "Criar conta",
+          onClick: () => window.location.href = getLoginUrl(),
+        },
+      });
+      return;
+    }
+    
     addToWatchlistMutation.mutate({
       tmdbId: id,
       mediaType,
@@ -136,7 +171,7 @@ export function ContentCard({
                       <Bookmark className="h-4 w-4 mr-2" />
                       Adicionar à lista
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleMarkAsWatched} disabled={isWatched}>
+                    <DropdownMenuItem onClick={handleMarkAsWatched} disabled={!!isWatched}>
                       <Check className="h-4 w-4 mr-2" />
                       {isWatched ? "Assistido" : "Marcar como assistido"}
                     </DropdownMenuItem>
@@ -180,14 +215,16 @@ export function ContentCard({
       </SwipeableCard>
 
       {/* Add to List Dialog */}
-      <AddToListDialog
-        open={showListDialog}
-        onOpenChange={setShowListDialog}
-        tmdbId={id}
-        mediaType={mediaType}
-        title={title}
-        posterPath={posterPath || null}
-      />
+      {isAuthenticated && (
+        <AddToListDialog
+          open={showListDialog}
+          onOpenChange={setShowListDialog}
+          tmdbId={id}
+          mediaType={mediaType}
+          title={title}
+          posterPath={posterPath || null}
+        />
+      )}
     </>
   );
 }

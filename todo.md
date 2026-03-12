@@ -696,3 +696,14 @@
 - [x] Added cleanupOutdatedCaches to remove old cache versions
 - [x] Added networkTimeoutSeconds fallback (5s for pages, 10s for API)
 - [x] All 51 tests passing, 0 TypeScript errors
+
+## Fix Login Modal on Search for Non-Logged Users (Round 66 - Bug Fix)
+- [x] Investigate why login modal appears ~10s after search results load
+- [x] Root cause: ContentCard made unguarded trpc.viewingHistory.isWatched query (protectedProcedure)
+- [x] Global error handler in main.tsx redirected to login on any UNAUTHORIZED error
+- [x] Added `enabled: isAuthenticated` guard to ContentCard's isWatched query
+- [x] Added auth checks to ContentCard's swipe/menu actions with toast prompts
+- [x] Only render AddToListDialog when authenticated
+- [x] Verified MovieDetails and TVShowDetails already had proper guards
+- [x] Verified Search page already had proper guards
+- [x] All 51 tests passing, 0 TypeScript errors
