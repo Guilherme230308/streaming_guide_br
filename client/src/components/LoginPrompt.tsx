@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { LogIn, Lock } from "lucide-react";
+import { LogIn, Lock, UserPlus } from "lucide-react";
 import { getLoginUrl } from "@/const";
 
 interface LoginPromptProps {
@@ -48,14 +48,25 @@ export function LoginPromptPage({
               </div>
               <h1 className="text-2xl font-bold mb-2">{title}</h1>
               <p className="text-muted-foreground mb-6 text-sm leading-relaxed">{description}</p>
-              <Button
-                size="lg"
-                className="bg-primary hover:bg-primary/90 w-full"
-                onClick={() => window.location.href = getLoginUrl()}
-              >
-                <LogIn className="h-5 w-5 mr-2" />
-                Criar conta / Entrar
-              </Button>
+              <div className="flex flex-col gap-3">
+                <Button
+                  size="lg"
+                  className="bg-cyan-500 hover:bg-cyan-400 text-black font-bold w-full shadow-lg shadow-cyan-500/25 transition-all duration-200 hover:shadow-cyan-400/40 hover:scale-[1.02]"
+                  onClick={() => window.location.href = getLoginUrl()}
+                >
+                  <UserPlus className="h-5 w-5 mr-2" />
+                  Criar conta grátis
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full border-border/60 hover:bg-muted/50"
+                  onClick={() => window.location.href = getLoginUrl()}
+                >
+                  <LogIn className="h-5 w-5 mr-2" />
+                  Já tenho conta — Entrar
+                </Button>
+              </div>
               <p className="text-xs text-muted-foreground/60 mt-4">
                 100% gratuito. Leva menos de 30 segundos.
               </p>
@@ -91,12 +102,23 @@ export function LoginPromptInline({
             <Lock className="h-8 w-8 text-muted-foreground/50 mx-auto mb-3" />
             <p className="font-semibold mb-1">{title}</p>
             <p className="text-muted-foreground text-sm mb-4">{description}</p>
-            <Button
-              onClick={() => window.location.href = getLoginUrl()}
-            >
-              <LogIn className="h-4 w-4 mr-2" />
-              Criar conta / Entrar
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-2 justify-center">
+              <Button
+                className="bg-cyan-500 hover:bg-cyan-400 text-black font-bold shadow-lg shadow-cyan-500/25 transition-all duration-200 hover:shadow-cyan-400/40 hover:scale-[1.02]"
+                onClick={() => window.location.href = getLoginUrl()}
+              >
+                <UserPlus className="h-4 w-4 mr-2" />
+                Criar conta grátis
+              </Button>
+              <Button
+                variant="outline"
+                className="border-border/60 hover:bg-muted/50"
+                onClick={() => window.location.href = getLoginUrl()}
+              >
+                <LogIn className="h-4 w-4 mr-2" />
+                Entrar
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
