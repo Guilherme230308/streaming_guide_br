@@ -36,6 +36,7 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { ReportAvailabilityDialog } from "@/components/ReportAvailabilityDialog";
 import { LoginPromptInline } from "@/components/LoginPrompt";
 import { FeaturesCTA, ActionLockedPrompt } from "@/components/FeaturesCTA";
+import { SimilarContentCard } from "@/components/SimilarContentCard";
 import { ReviewSectionPreview } from "@/components/BlurredPreviews";
 import { InArticleAd } from "@/components/AdBanner";
 
@@ -632,26 +633,14 @@ export default function MovieDetails() {
           <h2 className="text-2xl font-bold text-foreground mb-6">Filmes Similares</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
             {similarMovies.results.slice(0, 12).map((similarMovie: any) => (
-              <Link key={similarMovie.id} href={`/movie/${similarMovie.id}`}>
-                <div className="group cursor-pointer">
-                  <div className="relative overflow-hidden rounded-lg mb-2 aspect-[2/3]">
-                    <img
-                      src={getImageUrl(similarMovie.poster_path, "w342")}
-                      alt={similarMovie.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-
-                  </div>
-                  <h3 className="text-sm font-medium text-foreground line-clamp-2 group-hover:text-primary transition-colors">
-                    {similarMovie.title}
-                  </h3>
-                  {similarMovie.release_date && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {new Date(similarMovie.release_date).getFullYear()}
-                    </p>
-                  )}
-                </div>
-              </Link>
+              <SimilarContentCard
+                key={similarMovie.id}
+                id={similarMovie.id}
+                title={similarMovie.title}
+                posterPath={similarMovie.poster_path}
+                mediaType="movie"
+                releaseDate={similarMovie.release_date}
+              />
             ))}
           </div>
         </div>

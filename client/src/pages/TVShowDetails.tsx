@@ -25,6 +25,7 @@ import { deduplicateProviders } from "@/lib/providerUtils";
 import { ReportAvailabilityDialog } from "@/components/ReportAvailabilityDialog";
 import { InArticleAd } from "@/components/AdBanner";
 import { FeaturesCTA, ActionLockedPrompt } from "@/components/FeaturesCTA";
+import { SimilarContentCard } from "@/components/SimilarContentCard";
 
 export default function TVShowDetails() {
   const { id } = useParams();
@@ -454,26 +455,14 @@ export default function TVShowDetails() {
           <h2 className="text-2xl font-bold text-foreground mb-6">Séries Similares</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
             {similarShows.results.slice(0, 12).map((similarShow: any) => (
-              <Link key={similarShow.id} href={`/tv/${similarShow.id}`}>
-                <div className="group cursor-pointer">
-                  <div className="relative overflow-hidden rounded-lg mb-2 aspect-[2/3]">
-                    <img
-                      src={getImageUrl(similarShow.poster_path, "w342")}
-                      alt={similarShow.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-
-                  </div>
-                  <h3 className="text-sm font-medium text-foreground line-clamp-2 group-hover:text-primary transition-colors">
-                    {similarShow.name}
-                  </h3>
-                  {similarShow.first_air_date && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {new Date(similarShow.first_air_date).getFullYear()}
-                    </p>
-                  )}
-                </div>
-              </Link>
+              <SimilarContentCard
+                key={similarShow.id}
+                id={similarShow.id}
+                title={similarShow.name}
+                posterPath={similarShow.poster_path}
+                mediaType="tv"
+                releaseDate={similarShow.first_air_date}
+              />
             ))}
           </div>
         </div>
