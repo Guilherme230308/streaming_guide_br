@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Film, Search, Bell, List, TrendingUp, CheckCircle, Sparkles, Clock, ChevronRight, BarChart3, Smartphone } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
+import { useState, useRef, useEffect } from "react";
+import { trpc } from "@/lib/trpc";
 
 const HERO_IMG = "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029229201/cgGBWpLKRuMgKbls.jpg";
 const PHONE_IMG = "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029229201/dVPxUTQUbCSVnCSG.webp";
@@ -10,6 +13,59 @@ const LOGOS_IMG = "https://files.manuscdn.com/user_upload_by_module/session_file
 const COZY_IMG = "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029229201/CJlpFDHPtMLbFYvE.jpeg";
 
 export default function LandingPage() {
+  const [, setLocation] = useLocation();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  const { data: suggestions } = trpc.content.searchWithFilters.useQuery(
+    { query: searchQuery, page: 1 },
+    { enabled: searchQuery.length >= 2 }
+  );
+
+  // Close suggestions on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      setLocation(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    const items = (suggestions?.results || []) as any[];
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedIndex((prev) => Math.min(prev + 1, items.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedIndex((prev) => Math.max(prev - 1, -1));
+    } else if (e.key === "Enter") {
+      if (selectedIndex >= 0 && items[selectedIndex]) {
+        const item = items[selectedIndex];
+        // Determine type: if it has 'name' field it's a TV show, otherwise movie
+        const type = "name" in item ? "tv" : "movie";
+        setLocation(`/${type}/${item.id}`);
+        setShowSuggestions(false);
+      } else {
+        handleSearch();
+      }
+    } else if (e.key === "Escape") {
+      setShowSuggestions(false);
+    }
+  };
+
+  const allSuggestions = (suggestions?.results || []) as any[];
+
   return (
     <div className="min-h-screen bg-background pt-16">
       {/* Hero Section with Background Image */}
@@ -40,6 +96,78 @@ export default function LandingPage() {
               Encontre em qual streaming está disponível, compare preços, receba alertas e organize tudo em listas personalizadas.
             </p>
             
+            {/* Search Bar */}
+            <div ref={searchRef} className="relative max-w-xl mb-6">
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar filmes e séries..."
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setShowSuggestions(true);
+                      setSelectedIndex(-1);
+                    }}
+                    onFocus={() => setShowSuggestions(true)}
+                    onKeyDown={handleKeyDown}
+                    className="pl-10 h-12 text-base bg-background/70 backdrop-blur-sm border-border/50"
+                  />
+                </div>
+                <Button size="lg" className="h-12 px-6" onClick={handleSearch}>
+                  Buscar
+                </Button>
+              </div>
+
+              {/* Autocomplete Suggestions */}
+              {showSuggestions && searchQuery.length >= 2 && allSuggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-xl z-50 max-h-80 overflow-y-auto">
+                  {allSuggestions.slice(0, 6).map((item: any, index: number) => {
+                    const type = item.media_type === "tv" ? "tv" : "movie";
+                    const title = item.title || item.name;
+                    const year = (item.release_date || item.first_air_date || "").slice(0, 4);
+                    const posterUrl = item.poster_path
+                      ? `https://image.tmdb.org/t/p/w92${item.poster_path}`
+                      : null;
+                    return (
+                      <button
+                        key={`${type}-${item.id}`}
+                        className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-accent/50 transition-colors ${
+                          index === selectedIndex ? "bg-accent/50" : ""
+                        }`}
+                        onClick={() => {
+                          setLocation(`/${type}/${item.id}`);
+                          setShowSuggestions(false);
+                        }}
+                      >
+                        {posterUrl ? (
+                          <img src={posterUrl} alt={title} className="w-8 h-12 object-cover rounded" />
+                        ) : (
+                          <div className="w-8 h-12 bg-muted/30 rounded flex items-center justify-center">
+                            <Film className="h-4 w-4 text-muted-foreground" />
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="font-medium text-sm text-foreground truncate">{title}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {item.media_type === "tv" ? "Série" : "Filme"}
+                            {year ? ` • ${year}` : ""}
+                            {item.vote_average ? ` • ⭐ ${item.vote_average.toFixed(1)}` : ""}
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                  <button
+                    className="w-full px-4 py-3 text-sm text-primary hover:bg-accent/50 text-left font-medium border-t border-border/50"
+                    onClick={handleSearch}
+                  >
+                    Ver todos os resultados para "{searchQuery}"
+                  </button>
+                </div>
+              )}
+            </div>
+
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 size="lg" 

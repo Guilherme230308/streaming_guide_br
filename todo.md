@@ -676,3 +676,11 @@
 - [x] Add blurred preview to MovieDetails review section (LoginPromptInline)
 - [x] Created BlurredPreviews.tsx with 7 preview components
 - [x] All 51 tests passing, 0 TypeScript errors
+
+## Landing Page Search & Navigation Fix (Round 64)
+- [x] Ensure non-logged users can search for movies/series from the landing page
+- [x] Ensure non-logged users can navigate to movie/series detail pages
+- [x] Keep the current landing page design intact
+- [x] Added search bar with autocomplete to landing page hero section
+- [x] Keyboard navigation (arrow keys + Enter) works in suggestions
+- [x] All 51 tests passing, 0 TypeScript errors
