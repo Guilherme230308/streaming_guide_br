@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Film, Bell, BellOff, Trash2, CheckCircle, Clock, Sparkles, AlertCircle, Play } from "lucide-react";
 import { LoginPromptPage } from "@/components/LoginPrompt";
+import { AlertsPreview } from "@/components/BlurredPreviews";
 import { PushNotificationManager } from "@/components/PushNotificationManager";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -77,6 +78,7 @@ export default function Alerts() {
         title="Alertas e Notificações"
         description="Crie uma conta gratuita para receber notificações quando filmes e séries chegarem nos seus serviços de streaming."
         icon={<Bell className="h-16 w-16 text-primary/50" />}
+        preview={<AlertsPreview />}
       />
     );
   }

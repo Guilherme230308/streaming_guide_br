@@ -664,3 +664,15 @@
 - [x] Search subscription filter shows toast for non-logged users
 - [x] Created reusable LoginPrompt components (LoginPromptPage and LoginPromptInline)
 - [x] All 51 tests passing, 0 TypeScript errors
+
+## Blurred Preview on Protected Pages (Round 63)
+- [x] Update LoginPromptPage component to support blurred preview content behind the prompt
+- [x] Add blurred preview to Watchlist page (fake movie grid)
+- [x] Add blurred preview to MyLists page (fake lists)
+- [x] Add blurred preview to Alerts page (fake alerts)
+- [x] Add blurred preview to History page (fake history grid)
+- [x] Add blurred preview to MySubscriptions page (fake provider grid)
+- [x] Add blurred preview to StreamingAnalysis page (fake analysis cards)
+- [x] Add blurred preview to MovieDetails review section (LoginPromptInline)
+- [x] Created BlurredPreviews.tsx with 7 preview components
+- [x] All 51 tests passing, 0 TypeScript errors

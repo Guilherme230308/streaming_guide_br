@@ -5,6 +5,7 @@ import { ContentCard } from "@/components/ContentCard";
 import { Badge } from "@/components/ui/badge";
 import { Film, Tv, Bookmark, Trash2, ExternalLink } from "lucide-react";
 import { LoginPromptPage } from "@/components/LoginPrompt";
+import { WatchlistPreview } from "@/components/BlurredPreviews";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
@@ -43,6 +44,7 @@ export default function Watchlist() {
         title="Minha Lista"
         description="Crie uma conta gratuita para salvar seus filmes e séries favoritos e assistir depois."
         icon={<Bookmark className="h-16 w-16 text-primary/50" />}
+        preview={<WatchlistPreview />}
       />
     );
   }

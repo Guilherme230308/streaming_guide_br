@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import { LoginPromptPage } from "@/components/LoginPrompt";
+import { AnalysisPreview } from "@/components/BlurredPreviews";
 import { useAuth } from "@/_core/hooks/useAuth";
 
 // Provider logos mapping
@@ -49,6 +50,7 @@ export default function StreamingAnalysis() {
         title="Análise de Streamings"
         description="Crie uma conta gratuita para descobrir quais serviços de streaming valem mais a pena para você."
         icon={<BarChart3 className="h-16 w-16 text-primary/50" />}
+        preview={<AnalysisPreview />}
       />
     );
   }

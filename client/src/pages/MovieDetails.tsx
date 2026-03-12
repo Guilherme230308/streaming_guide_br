@@ -27,6 +27,7 @@ import { ReviewDialog } from "@/components/ReviewDialog";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { ReportAvailabilityDialog } from "@/components/ReportAvailabilityDialog";
 import { LoginPromptInline } from "@/components/LoginPrompt";
+import { ReviewSectionPreview } from "@/components/BlurredPreviews";
 import { InArticleAd } from "@/components/AdBanner";
 
 export default function MovieDetails() {
@@ -548,6 +549,7 @@ export default function MovieDetails() {
               <LoginPromptInline
                 title="Avalie este filme"
                 description="Crie uma conta gratuita para avaliar e escrever reviews."
+                preview={<ReviewSectionPreview />}
               />
             </div>
           )}

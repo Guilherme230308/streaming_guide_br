@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Film, Tv, Clock, Sparkles } from "lucide-react";
 import { LoginPromptPage } from "@/components/LoginPrompt";
+import { HistoryPreview } from "@/components/BlurredPreviews";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -45,6 +46,7 @@ export default function History() {
         title="Histórico & Recomendações"
         description="Crie uma conta gratuita para acompanhar o que você já assistiu e receber recomendações personalizadas."
         icon={<Clock className="h-16 w-16 text-primary/50" />}
+        preview={<HistoryPreview />}
       />
     );
   }

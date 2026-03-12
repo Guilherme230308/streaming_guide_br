@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Film, Check, CreditCard } from "lucide-react";
 import { LoginPromptPage } from "@/components/LoginPrompt";
+import { SubscriptionsPreview } from "@/components/BlurredPreviews";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
@@ -70,6 +71,7 @@ export default function MySubscriptions() {
         title="Minhas Assinaturas"
         description="Crie uma conta gratuita para selecionar seus serviços de streaming e filtrar conteúdo disponível."
         icon={<CreditCard className="h-16 w-16 text-primary/50" />}
+        preview={<SubscriptionsPreview />}
       />
     );
   }

@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Trash2, Edit, Film, Tv, Lock, Globe, List } from "lucide-react";
 import { LoginPromptPage } from "@/components/LoginPrompt";
+import { MyListsPreview } from "@/components/BlurredPreviews";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
 
@@ -99,6 +100,7 @@ export default function MyLists() {
         title="Minhas Listas"
         description="Crie uma conta gratuita para criar e gerenciar suas listas personalizadas de filmes e séries."
         icon={<List className="h-16 w-16 text-primary/50" />}
+        preview={<MyListsPreview />}
       />
     );
   }
