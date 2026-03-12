@@ -684,3 +684,15 @@
 - [x] Added search bar with autocomplete to landing page hero section
 - [x] Keyboard navigation (arrow keys + Enter) works in suggestions
 - [x] All 51 tests passing, 0 TypeScript errors
+
+## Search Bar Disappears on Homepage Navigation (Round 65 - Bug Fix)
+- [x] Fix search bar disappearing when navigating back to homepage (caused by stale PWA cache)
+
+## Fix PWA Cache Strategy (Round 65 - Bug Fix)
+- [x] Update Service Worker to use network-first strategy for HTML navigation requests
+- [x] Ensure tRPC API calls use network-first strategy (not stale cache)
+- [x] Changed TMDB API from CacheFirst to StaleWhileRevalidate for fresher data
+- [x] Added skipWaiting + clientsClaim for immediate SW activation
+- [x] Added cleanupOutdatedCaches to remove old cache versions
+- [x] Added networkTimeoutSeconds fallback (5s for pages, 10s for API)
+- [x] All 51 tests passing, 0 TypeScript errors

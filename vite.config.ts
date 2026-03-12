@@ -184,10 +184,45 @@ const plugins = [
       globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
       navigateFallback: null, // Disable navigate fallback to prevent intercepting API routes
       maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB limit for large bundles
+      skipWaiting: true, // Activate new SW immediately without waiting
+      clientsClaim: true, // Take control of all pages immediately
+      cleanupOutdatedCaches: true, // Remove old caches from previous versions
       runtimeCaching: [
         {
+          // HTML navigation requests - always fetch from network first
+          urlPattern: ({ request }) => request.mode === "navigate",
+          handler: "NetworkFirst",
+          options: {
+            cacheName: "pages-cache",
+            expiration: {
+              maxEntries: 50,
+              maxAgeSeconds: 60 * 60, // 1 hour
+            },
+            networkTimeoutSeconds: 5, // Fall back to cache after 5s
+            cacheableResponse: {
+              statuses: [0, 200],
+            },
+          },
+        },
+        {
+          // tRPC API calls - always fetch from network first
+          urlPattern: /\/api\/trpc\/.*/i,
+          handler: "NetworkFirst",
+          options: {
+            cacheName: "api-cache",
+            expiration: {
+              maxEntries: 100,
+              maxAgeSeconds: 60 * 5, // 5 minutes
+            },
+            networkTimeoutSeconds: 10,
+            cacheableResponse: {
+              statuses: [0, 200],
+            },
+          },
+        },
+        {
           urlPattern: /^https:\/\/api\.themoviedb\.org\/.*/i,
-          handler: "CacheFirst",
+          handler: "StaleWhileRevalidate",
           options: {
             cacheName: "tmdb-api-cache",
             expiration: {
