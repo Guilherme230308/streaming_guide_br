@@ -36,7 +36,7 @@ const ALL_MENU_ITEMS = [
   { href: "/subscriptions", icon: Bell, label: "Assinaturas", tour: "subscriptions", requiresAuth: true },
   { href: "/upcoming", icon: Calendar, label: "Em Breve", tour: "", requiresAuth: true },
   { href: "/alerts", icon: Bell, label: "Alertas", tour: "alerts", requiresAuth: true },
-  { href: "/genres", icon: Grid3x3, label: "Gêneros", tour: "genres", requiresAuth: false },
+  { href: "/genres", icon: Grid3x3, label: "Gêneros", tour: "genres", requiresAuth: true },
   { href: "/history", icon: Clock, label: "Histórico", tour: "history", requiresAuth: true },
   { href: "/streaming-prices", icon: DollarSign, label: "Preços", tour: "", requiresAuth: true },
   { href: "/streaming-analysis", icon: Sparkles, label: "Análise", tour: "", requiresAuth: true },
