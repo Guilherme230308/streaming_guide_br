@@ -707,3 +707,11 @@
 - [x] Verified MovieDetails and TVShowDetails already had proper guards
 - [x] Verified Search page already had proper guards
 - [x] All 51 tests passing, 0 TypeScript errors
+
+## Batch Provider Loading Optimization
+- [x] Create batch endpoint to fetch providers for multiple movies/shows at once
+- [x] Create a React context/hook to batch provider requests from ContentCards
+- [x] Update ContentCard to use batch provider loading instead of individual requests
+- [x] Ensure 30-minute cache is preserved
+- [x] Write tests for batch endpoint
+- [x] Verify no regressions on search, home, genres, and other pages (56 tests passing)

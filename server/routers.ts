@@ -5,7 +5,7 @@ import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as tmdb from "./tmdb";
 import * as db from "./db";
-import { getProvidersWithCache, invalidateProviderCache } from "./providerCache";
+import { getProvidersWithCache, getBatchProvidersWithCache, invalidateProviderCache } from "./providerCache";
 import { runAvailabilityCheckJob, runAllJobs } from "./backgroundJobs";
 import { invokeLLM } from "./_core/llm";
 import { notifyOwner } from "./_core/notification";
@@ -244,6 +244,44 @@ export const appRouter = router({
           provider_name: p.provider_name,
           logo_path: p.logo_path,
         }));
+      }),
+
+    getBatchProviders: publicProcedure
+      .input(z.object({
+        items: z.array(z.object({
+          tmdbId: z.number(),
+          mediaType: z.enum(['movie', 'tv']),
+        })).max(40), // Limit to 40 items per batch
+      }))
+      .query(async ({ input }) => {
+        const batchItems = input.items.map(item => ({
+          id: item.tmdbId,
+          mediaType: item.mediaType,
+        }));
+        const batchResults = await getBatchProvidersWithCache(batchItems);
+        const result: Record<string, Array<{ provider_id: number; provider_name: string; logo_path: string }>> = {};
+        for (const [key, providers] of Array.from(batchResults.entries())) {
+          if (!providers) {
+            result[key] = [];
+            continue;
+          }
+          const allProviders = [
+            ...(providers.flatrate || []),
+            ...(providers.rent || []),
+            ...(providers.buy || []),
+          ];
+          const seen = new Set<number>();
+          result[key] = allProviders.filter(p => {
+            if (seen.has(p.provider_id)) return false;
+            seen.add(p.provider_id);
+            return true;
+          }).map(p => ({
+            provider_id: p.provider_id,
+            provider_name: p.provider_name,
+            logo_path: p.logo_path,
+          }));
+        }
+        return result;
       }),
 
     getTrending: publicProcedure

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Link } from "wouter";
-import { trpc } from "@/lib/trpc";
 import { deduplicateProviders } from "@/lib/providerUtils";
+import { useBatchProviders } from "@/contexts/ProviderBatchContext";
 
 interface SimilarContentCardProps {
   id: number;
@@ -12,7 +12,7 @@ interface SimilarContentCardProps {
 }
 
 /**
- * Card for similar movies/series with lazy-loaded streaming provider icons.
+ * Card for similar movies/series with batch-loaded streaming provider icons.
  * Matches the design of ContentCard provider overlay.
  */
 export function SimilarContentCard({
@@ -30,18 +30,12 @@ export function SimilarContentCard({
     return `https://image.tmdb.org/t/p/${size}${path}`;
   };
 
-  // Lazy-load providers for this item
-  const { data: fetchedProviders } = trpc.content.getItemProviders.useQuery(
-    { tmdbId: id, mediaType },
-    {
-      staleTime: 1000 * 60 * 30, // Cache for 30 minutes
-      refetchOnWindowFocus: false,
-    }
-  );
+  // Use batch provider loading instead of individual requests
+  const batchProviders = useBatchProviders(id, mediaType);
 
   const providers = useMemo(
-    () => deduplicateProviders(fetchedProviders || []),
-    [fetchedProviders]
+    () => deduplicateProviders(batchProviders || []),
+    [batchProviders]
   );
 
   const posterUrl = getImageUrl(posterPath);

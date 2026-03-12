@@ -15,6 +15,7 @@ import { SwipeableCard } from "@/components/SwipeableCard";
 import { deduplicateProviders } from "@/lib/providerUtils";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
+import { useBatchProviders } from "@/contexts/ProviderBatchContext";
 
 interface ContentCardProps {
   id: number;
@@ -43,21 +44,14 @@ export function ContentCard({
   const utils = trpc.useUtils();
   const { isAuthenticated } = useAuth();
 
-  // Lazy-load providers when not passed as prop
-  const { data: fetchedProviders } = trpc.content.getItemProviders.useQuery(
-    { tmdbId: id, mediaType },
-    { 
-      enabled: !propProviders || propProviders.length === 0,
-      staleTime: 1000 * 60 * 30, // Cache for 30 minutes
-      refetchOnWindowFocus: false,
-    }
-  );
+  // Use batch provider loading instead of individual requests
+  const batchProviders = useBatchProviders(id, mediaType, propProviders);
 
-  // Use prop providers if available, otherwise use fetched providers
+  // Use prop providers if available, then batch, then empty
   const providers = useMemo(() => {
     if (propProviders && propProviders.length > 0) return propProviders;
-    return fetchedProviders || [];
-  }, [propProviders, fetchedProviders]);
+    return batchProviders || [];
+  }, [propProviders, batchProviders]);
 
   // Only query protected endpoints when user is authenticated
   const { data: isWatched } = trpc.viewingHistory.isWatched.useQuery(
