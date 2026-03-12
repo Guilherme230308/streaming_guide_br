@@ -166,27 +166,6 @@ export function ContentCard({
                 </div>
               )}
 
-              {/* Streaming Provider Icons - Overlay at bottom of poster */}
-              {dedupedProviders.length > 0 && (
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent px-2 py-2 pt-6">
-                  <div className="flex items-center gap-1">
-                    {dedupedProviders.slice(0, 5).map((provider) => (
-                      <img
-                        key={provider.provider_id}
-                        src={`https://image.tmdb.org/t/p/w92${provider.logo_path}`}
-                        alt={provider.provider_name}
-                        title={provider.provider_name}
-                        className="h-6 w-6 rounded-md object-cover border border-white/20 shadow-sm"
-                        loading="lazy"
-                      />
-                    ))}
-                    {dedupedProviders.length > 5 && (
-                      <span className="text-[10px] text-white/80 font-medium ml-0.5">+{dedupedProviders.length - 5}</span>
-                    )}
-                  </div>
-                </div>
-              )}
-
               {/* Three-dot menu - Always visible on mobile, visible on hover on desktop */}
               <div className="absolute top-2 right-2 z-10 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                 <DropdownMenu>
@@ -218,9 +197,31 @@ export function ContentCard({
               <h3 className="font-semibold text-foreground line-clamp-2 mb-1">
                 {title}
               </h3>
-              {year && (
-                <p className="text-sm text-muted-foreground">{year}</p>
-              )}
+              {/* Year and streaming provider icons on the same row */}
+              <div className="flex items-center justify-between">
+                {year ? (
+                  <span className="text-sm text-muted-foreground">{year}</span>
+                ) : (
+                  <span />
+                )}
+                {dedupedProviders.length > 0 && (
+                  <div className="flex items-center gap-0.5">
+                    {dedupedProviders.slice(0, 4).map((provider) => (
+                      <img
+                        key={provider.provider_id}
+                        src={`https://image.tmdb.org/t/p/w92${provider.logo_path}`}
+                        alt={provider.provider_name}
+                        title={provider.provider_name}
+                        className="h-5 w-5 rounded-[3px] object-cover"
+                        loading="lazy"
+                      />
+                    ))}
+                    {dedupedProviders.length > 4 && (
+                      <span className="text-[9px] text-muted-foreground font-medium ml-0.5">+{dedupedProviders.length - 4}</span>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </Link>
