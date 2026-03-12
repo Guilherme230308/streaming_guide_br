@@ -16,7 +16,7 @@ const DETAIL_PAGES = ["/movie/", "/tv/", "/list/"];
 const NAV_ITEMS = [
   { href: "/lists", icon: List, label: "Listas", requiresAuth: true },
   { href: "/alerts", icon: Bell, label: "Alertas", requiresAuth: true },
-  { href: "/streaming-prices", icon: DollarSign, label: "Preços", requiresAuth: false },
+  { href: "/streaming-prices", icon: DollarSign, label: "Preços", requiresAuth: true },
   { href: "/streaming-analysis", icon: Sparkles, label: "Análise", requiresAuth: true },
 ];
 

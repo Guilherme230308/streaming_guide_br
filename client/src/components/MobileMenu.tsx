@@ -38,7 +38,7 @@ const ALL_MENU_ITEMS = [
   { href: "/alerts", icon: Bell, label: "Alertas", tour: "alerts", requiresAuth: true },
   { href: "/genres", icon: Grid3x3, label: "Gêneros", tour: "genres", requiresAuth: false },
   { href: "/history", icon: Clock, label: "Histórico", tour: "history", requiresAuth: true },
-  { href: "/streaming-prices", icon: DollarSign, label: "Preços", tour: "", requiresAuth: false },
+  { href: "/streaming-prices", icon: DollarSign, label: "Preços", tour: "", requiresAuth: true },
   { href: "/streaming-analysis", icon: Sparkles, label: "Análise", tour: "", requiresAuth: true },
 ];
 
