@@ -13,7 +13,8 @@ import {
   ExternalLink,
   ArrowLeft,
   Film,
-  Lock
+  Lock,
+  MessageSquare
 } from "lucide-react";
 import { Link, useParams, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -22,10 +23,15 @@ import { toast } from "sonner";
 import { AddToListDialog } from "@/components/AddToListDialog";
 import { handleProviderClick as handleDeepLink, getProviderDeepLink, isPWAStandalone } from "@/lib/deepLinks";
 import { deduplicateProviders } from "@/lib/providerUtils";
+import { RatingStars } from "@/components/RatingStars";
+import { ReviewDialog } from "@/components/ReviewDialog";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { ReportAvailabilityDialog } from "@/components/ReportAvailabilityDialog";
-import { InArticleAd } from "@/components/AdBanner";
+import { LoginPromptInline } from "@/components/LoginPrompt";
 import { FeaturesCTA, ActionLockedPrompt } from "@/components/FeaturesCTA";
 import { SimilarContentCard } from "@/components/SimilarContentCard";
+import { ReviewSectionPreview } from "@/components/BlurredPreviews";
+import { InArticleAd } from "@/components/AdBanner";
 
 export default function TVShowDetails() {
   const { id } = useParams();
@@ -48,12 +54,33 @@ export default function TVShowDetails() {
     { enabled: tvId > 0 }
   );
 
+  const { data: userRating } = trpc.ratings.getUserRating.useQuery(
+    { tmdbId: tvId, mediaType: "tv" },
+    { enabled: isAuthenticated && tvId > 0 }
+  );
+
+  const { data: averageRating } = trpc.ratings.getAverage.useQuery(
+    { tmdbId: tvId, mediaType: "tv" },
+    { enabled: tvId > 0 }
+  );
+
+  const { data: userReview } = trpc.reviews.getUserReview.useQuery(
+    { tmdbId: tvId, mediaType: "tv" },
+    { enabled: isAuthenticated && tvId > 0 }
+  );
+
+  const { data: reviews } = trpc.reviews.getContentReviews.useQuery(
+    { tmdbId: tvId, mediaType: "tv" },
+    { enabled: tvId > 0 }
+  );
+
   const { data: isWatched } = trpc.viewingHistory.isWatched.useQuery(
     { tmdbId: tvId, mediaType: "tv" },
     { enabled: isAuthenticated && tvId > 0 }
   );
 
   const [showListDialog, setShowListDialog] = useState(false);
+  const [showMarkAsWatchedDialog, setShowMarkAsWatchedDialog] = useState(false);
 
   const utils = trpc.useUtils();
   
@@ -72,6 +99,22 @@ export default function TVShowDetails() {
   });
 
   const trackClick = trpc.affiliate.trackClick.useMutation();
+
+  const ratingMutation = trpc.ratings.upsert.useMutation({
+    onSuccess: () => {
+      utils.ratings.getUserRating.invalidate({ tmdbId: tvId, mediaType: "tv" });
+      utils.ratings.getAverage.invalidate({ tmdbId: tvId, mediaType: "tv" });
+      toast.success("Avaliação salva!");
+    },
+  });
+
+  const deleteReviewMutation = trpc.reviews.delete.useMutation({
+    onSuccess: () => {
+      utils.reviews.getContentReviews.invalidate({ tmdbId: tvId, mediaType: "tv" });
+      utils.reviews.getUserReview.invalidate({ tmdbId: tvId, mediaType: "tv" });
+      toast.success("Review excluído!");
+    },
+  });
 
   const markAsWatchedMutation = trpc.viewingHistory.add.useMutation({
     onSuccess: () => {
@@ -134,7 +177,6 @@ export default function TVShowDetails() {
   const handleProviderClick = (provider: any, clickType: 'stream' | 'rent' | 'buy', event: React.MouseEvent) => {
     event.preventDefault();
     
-    // Track affiliate click via tRPC mutation
     trackClick.mutate({
       tmdbId: tvId,
       mediaType: "tv",
@@ -143,8 +185,6 @@ export default function TVShowDetails() {
       clickType,
     });
     
-    // Handle deep linking with both localized and original title
-    // Uses PWA-aware method that works in standalone mode
     handleDeepLink(provider.provider_id, provider.provider_name, "tv", tvId, show?.name, show?.original_name);
   };
 
@@ -154,7 +194,6 @@ export default function TVShowDetails() {
   };
 
   const getProviderUrl = (provider: any) => {
-    // Provide real URL in href for PWA compatibility and accessibility
     return getProviderDeepLink(provider.provider_id, "tv", tvId, show?.name, show?.original_name);
   };
 
@@ -340,7 +379,7 @@ export default function TVShowDetails() {
               </Card>
             )}
 
-            {/* Rent & Buy sections similar to movie */}
+            {/* Rent */}
             {providers.rent && providers.rent.length > 0 && (
               <Card>
                 <CardContent className="p-6">
@@ -375,6 +414,7 @@ export default function TVShowDetails() {
               </Card>
             )}
 
+            {/* Buy */}
             {providers.buy && providers.buy.length > 0 && (
               <Card>
                 <CardContent className="p-6">
@@ -449,6 +489,131 @@ export default function TVShowDetails() {
         {!isAuthenticated && <FeaturesCTA />}
       </div>
 
+      {/* Ad placement between streaming and reviews */}
+      <div className="container">
+        <InArticleAd />
+      </div>
+
+      {/* Ratings and Reviews */}
+      <div className="container py-12 border-t border-border">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold text-foreground mb-6">Avaliações e Reviews</h2>
+          
+          {/* User Rating */}
+          {isAuthenticated ? (
+            <Card className="mb-8">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2">Sua Avaliação</h3>
+                    <RatingStars
+                      rating={userRating?.rating || 0}
+                      onRatingChange={(rating) => {
+                        ratingMutation.mutate({ tmdbId: tvId, mediaType: "tv", rating });
+                        
+                        // Ask if user wants to mark as watched
+                        if (!isWatched && show) {
+                          setTimeout(() => {
+                            setShowMarkAsWatchedDialog(true);
+                          }, 500);
+                        }
+                      }}
+                      size="lg"
+                    />
+                  </div>
+                  <ReviewDialog
+                    tmdbId={tvId}
+                    mediaType="tv"
+                    contentTitle={show.name}
+                    existingReview={userReview}
+                    onSuccess={() => {
+                      utils.reviews.getUserReview.invalidate({ tmdbId: tvId, mediaType: "tv" });
+                      utils.reviews.getContentReviews.invalidate({ tmdbId: tvId, mediaType: "tv" });
+                    }}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="mb-8">
+              <LoginPromptInline
+                title="Avalie esta série"
+                description="Crie uma conta gratuita para avaliar e escrever reviews."
+                preview={<ReviewSectionPreview />}
+              />
+            </div>
+          )}
+
+          {/* Average Rating */}
+          {averageRating && averageRating.count > 0 && (
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center gap-2">
+                <RatingStars rating={Math.round(averageRating.average)} readonly size="md" />
+                <span className="text-lg font-semibold">
+                  {averageRating.average.toFixed(1)}
+                </span>
+              </div>
+              <span className="text-muted-foreground">
+                {averageRating.count} {averageRating.count === 1 ? "avaliação" : "avaliações"}
+              </span>
+            </div>
+          )}
+
+          {/* Reviews List */}
+          <div className="space-y-6">
+            {reviews && reviews.length > 0 ? (
+              reviews.map((review) => (
+                <Card key={review.id}>
+                  <CardContent className="pt-6">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <h4 className="font-semibold text-lg">{review.title}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Por {review.userName} • {new Date(review.createdAt).toLocaleDateString("pt-BR")}
+                        </p>
+                      </div>
+                      {isAuthenticated && user?.id === review.userId && (
+                        <div className="flex gap-2">
+                          <ReviewDialog
+                            tmdbId={tvId}
+                            mediaType="tv"
+                            contentTitle={show.name}
+                            existingReview={{
+                              id: review.id,
+                              title: review.title,
+                              content: review.content,
+                            }}
+                            onSuccess={() => {
+                              utils.reviews.getContentReviews.invalidate({ tmdbId: tvId, mediaType: "tv" });
+                            }}
+                          />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              if (confirm("Tem certeza que deseja excluir este review?")) {
+                                deleteReviewMutation.mutate({ reviewId: review.id });
+                              }
+                            }}
+                          >
+                            Excluir
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-foreground whitespace-pre-wrap">{review.content}</p>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <p className="text-center text-muted-foreground py-8">
+                Nenhum review ainda. Seja o primeiro a escrever!
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Similar TV Shows */}
       {similarShows && similarShows.results && similarShows.results.length > 0 && (
         <div className="container py-12">
@@ -467,11 +632,6 @@ export default function TVShowDetails() {
           </div>
         </div>
       )}
-
-      {/* Ad placement before footer */}
-      <div className="container">
-        <InArticleAd />
-      </div>
 
       {/* Footer */}
       <footer className="border-t border-border/40 py-8 mt-12">
@@ -494,6 +654,27 @@ export default function TVShowDetails() {
           title={show.name}
           posterPath={show.poster_path}
           releaseDate={show.first_air_date}
+        />
+      )}
+
+      {/* Mark as Watched Confirmation Dialog */}
+      {show && (
+        <ConfirmDialog
+          open={showMarkAsWatchedDialog}
+          onOpenChange={setShowMarkAsWatchedDialog}
+          title="Marcar como Assistido"
+          description="Deseja marcar esta série como assistida?"
+          confirmText="Sim, marcar"
+          cancelText="Não"
+          onConfirm={() => {
+            markAsWatchedMutation.mutate({
+              tmdbId: tvId,
+              mediaType: "tv",
+              title: show.name,
+              posterPath: show.poster_path,
+            });
+            setShowMarkAsWatchedDialog(false);
+          }}
         />
       )}
     </div>

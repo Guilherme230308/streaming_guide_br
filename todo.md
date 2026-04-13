@@ -715,3 +715,8 @@
 - [x] Ensure 30-minute cache is preserved
 - [x] Write tests for batch endpoint
 - [x] Verify no regressions on search, home, genres, and other pages (56 tests passing)
+
+## TV Show Reviews
+- [x] Add reviews section to TVShowDetails page (matching MovieDetails)
+- [x] Ensure review backend endpoints support TV shows (already supported via mediaType param)
+- [x] Test reviews on TV show pages (56 tests passing, 0 TS errors)
