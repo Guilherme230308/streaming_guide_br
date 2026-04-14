@@ -2,12 +2,14 @@ import { Helmet } from "react-helmet-async";
 
 const SITE_NAME = "Onde Assistir";
 const SITE_URL = "https://streamguide.click";
-const DEFAULT_DESCRIPTION = "Descubra onde assistir seus filmes e séries favoritos no Brasil. Compare preços de streaming, aluguel e compra em Netflix, Prime Video, Disney+, HBO Max e mais.";
+const DEFAULT_DESCRIPTION = "Descubra onde assistir seus filmes e séries favoritos no Brasil. Compare preços de streaming, aluguel e compra em Netflix, Prime Video, Disney+ e HBO Max.";
+const DEFAULT_KEYWORDS = "onde assistir, streaming brasil, filmes online, séries online, netflix, prime video, disney plus, hbo max, globoplay, comparar streaming, preços streaming";
 const DEFAULT_IMAGE = `${SITE_URL}/og-default.png`;
 
 interface SEOProps {
   title?: string;
   description?: string;
+  keywords?: string;
   image?: string;
   url?: string;
   type?: "website" | "article" | "video.movie" | "video.tv_show";
@@ -19,6 +21,7 @@ interface SEOProps {
 export function SEO({
   title,
   description = DEFAULT_DESCRIPTION,
+  keywords = DEFAULT_KEYWORDS,
   image = DEFAULT_IMAGE,
   url,
   type = "website",
@@ -26,7 +29,7 @@ export function SEO({
   jsonLd,
   children,
 }: SEOProps) {
-  const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} - Onde Assistir Filmes e Séries no Brasil`;
+  const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} - Filmes e Séries nos Streamings do Brasil`;
   const fullUrl = url ? `${SITE_URL}${url}` : SITE_URL;
 
   return (
@@ -34,6 +37,7 @@ export function SEO({
       {/* Basic Meta Tags */}
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
+      <meta name="keywords" content={keywords} />
       <link rel="canonical" href={fullUrl} />
       {noindex && <meta name="robots" content="noindex, nofollow" />}
 

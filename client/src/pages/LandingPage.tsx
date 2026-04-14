@@ -70,8 +70,9 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background pt-16">
       <SEO
-        title="Onde Assistir Filmes e Séries no Brasil"
-        description="Descubra onde assistir seus filmes e séries favoritos no Brasil. Compare preços de streaming em Netflix, Prime Video, Disney+, HBO Max, Globoplay e mais. Grátis!"
+        title="Filmes e Séries nos Streamings do Brasil"
+        description="Descubra onde assistir filmes e séries no Brasil. Compare preços de Netflix, Prime Video, Disney+, HBO Max e Globoplay. Grátis!"
+        keywords="onde assistir, streaming brasil, filmes online, séries online, netflix brasil, prime video, disney plus, hbo max, globoplay, comparar streaming, preços streaming, onde ver filmes"
         url="/"
         jsonLd={buildWebSiteJsonLd()}
       />

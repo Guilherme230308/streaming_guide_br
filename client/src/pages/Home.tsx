@@ -210,8 +210,9 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden pt-16">
       <SEO
-        title="Buscar Filmes e Séries"
-        description="Busque e descubra onde assistir seus filmes e séries favoritos no Brasil. Compare preços de streaming, aluguel e compra."
+        title="Filmes e Séries nos Streamings do Brasil"
+        description="Descubra onde assistir filmes e séries no Brasil. Compare preços de Netflix, Prime Video, Disney+, HBO Max e Globoplay. Grátis!"
+        keywords="onde assistir, streaming brasil, filmes online, séries online, netflix brasil, prime video, disney plus, hbo max, globoplay, comparar streaming, preços streaming, onde ver filmes"
         url="/"
         jsonLd={buildWebSiteJsonLd()}
       />

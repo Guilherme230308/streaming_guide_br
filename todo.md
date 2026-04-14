@@ -738,3 +738,8 @@
 - [x] Generate branded 1200x630px OG default image
 - [x] Add image to project public directory
 - [x] Update SEO references to use the new image (already referenced in index.html, SEO.tsx, seo.ts)
+
+## SEO Fixes - Homepage
+- [x] Fix title to be 30-60 characters (56 chars)
+- [x] Add meta description with 50-160 characters (127 chars)
+- [x] Add keywords meta tag (12 keywords)
