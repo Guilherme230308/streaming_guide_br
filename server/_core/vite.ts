@@ -38,9 +38,14 @@ export async function setupVite(app: Express, server: Server) {
         `src="/src/main.tsx"`,
         `src="/src/main.tsx?v=${nanoid()}"`
       );
-      // Inject SEO meta tags for bot requests
+      // Inject SEO meta tags for bot requests - replace defaults instead of appending
       const seoMetaTags = (req as any).__seoMetaTags;
       if (seoMetaTags) {
+        // Remove default OG and Twitter meta tags so bots pick up the dynamic ones
+        template = template.replace(/<!--\s*Open Graph defaults[\s\S]*?-->\s*/g, '');
+        template = template.replace(/<!--\s*Twitter Card defaults[\s\S]*?-->\s*/g, '');
+        template = template.replace(/<meta\s+property="og:[^"]*"\s+content="[^"]*"\s*\/?>\s*/g, '');
+        template = template.replace(/<meta\s+name="twitter:[^"]*"\s+content="[^"]*"\s*\/?>\s*/g, '');
         template = template.replace('</head>', `${seoMetaTags}\n  </head>`);
       }
       const page = await vite.transformIndexHtml(url, template);
@@ -70,9 +75,14 @@ export function serveStatic(app: Express) {
   app.get(/^(?!\/api\/).*/, (req, res) => {
     const seoMetaTags = (req as any).__seoMetaTags;
     if (seoMetaTags) {
-      // For bot requests, inject meta tags into the HTML
+      // For bot requests, replace default meta tags with dynamic ones
       const indexPath = path.resolve(distPath, "index.html");
       let html = fs.readFileSync(indexPath, "utf-8");
+      // Remove default OG and Twitter meta tags so bots pick up the dynamic ones
+      html = html.replace(/<!--\s*Open Graph defaults[\s\S]*?-->\s*/g, '');
+      html = html.replace(/<!--\s*Twitter Card defaults[\s\S]*?-->\s*/g, '');
+      html = html.replace(/<meta\s+property="og:[^"]*"\s+content="[^"]*"\s*\/?>\s*/g, '');
+      html = html.replace(/<meta\s+name="twitter:[^"]*"\s+content="[^"]*"\s*\/?>\s*/g, '');
       html = html.replace('</head>', `${seoMetaTags}\n  </head>`);
       res.set("Content-Type", "text/html").send(html);
     } else {
