@@ -202,19 +202,51 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Streaming Logos Section */}
+      {/* Streaming Platforms Section - Clickable logos linking to /melhores pages */}
       <section className="container py-12 border-b border-border/20">
         <div className="max-w-5xl mx-auto">
-          <p className="text-center text-sm text-muted-foreground mb-6 uppercase tracking-wider font-medium">
-            Cobertura completa dos principais streamings do Brasil
+          <p className="text-center text-sm text-muted-foreground mb-2 uppercase tracking-wider font-medium">
+            Explore os catálogos dos principais streamings do Brasil
           </p>
-          <div className="relative rounded-2xl overflow-hidden">
-            <img 
-              src={LOGOS_IMG} 
-              alt="Logos dos streamings - Netflix, Prime Video, Disney+, HBO Max, Apple TV+" 
-              className="w-full h-auto object-contain max-h-48 mx-auto"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background" />
+          <p className="text-center text-xs text-muted-foreground/70 mb-8">
+            Clique em um streaming para ver os melhores filmes e séries disponíveis
+          </p>
+          <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-4 sm:gap-6">
+            {[
+              { slug: "netflix", name: "Netflix", logo: "https://image.tmdb.org/t/p/w92/pbpMk2JmcoNnQwB5JGpXAbmDP7.jpg" },
+              { slug: "amazon-prime-video", name: "Prime Video", logo: "https://image.tmdb.org/t/p/w92/pvBPMkGqrgKEMCBhPMR2OJxJWXq.jpg" },
+              { slug: "disney-plus", name: "Disney+", logo: "https://image.tmdb.org/t/p/w92/97yvRBw1GzX7fXprcF80er19ot.jpg" },
+              { slug: "hbo-max", name: "HBO Max", logo: "https://image.tmdb.org/t/p/w92/Ajqyt5aNxNGjmF6uOfxArGrdf3X.jpg" },
+              { slug: "paramount-plus", name: "Paramount+", logo: "https://image.tmdb.org/t/p/w92/xbhHHa1YgtpwhC8lb1NQ3ACVcLd.jpg" },
+              { slug: "crunchyroll", name: "Crunchyroll", logo: "https://image.tmdb.org/t/p/w92/8Gt1iClBlzTeQs8WQm8UrCoIxnQ.jpg" },
+              { slug: "globoplay", name: "Globoplay", logo: "https://image.tmdb.org/t/p/w92/mRBIHNJgLMIEReXl2CYq1ZFpAPR.jpg" },
+              { slug: "apple-tv-plus", name: "Apple TV+", logo: "https://image.tmdb.org/t/p/w92/6uhKBfmtzFqOcLousHwZuzcrScK.jpg" },
+              { slug: "star-plus", name: "Star+", logo: "https://image.tmdb.org/t/p/w92/o3sUySbd80qbNlCMGMICaZOkFKE.jpg" },
+            ].map((provider) => (
+              <Link key={provider.slug} href={`/melhores/${provider.slug}`}>
+                <div className="group flex flex-col items-center gap-2 cursor-pointer">
+                  <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border-2 border-border/30 group-hover:border-primary/60 transition-all group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-primary/20">
+                    <img
+                      src={provider.logo}
+                      alt={provider.name}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                  <span className="text-[11px] sm:text-xs text-muted-foreground group-hover:text-primary transition-colors font-medium text-center leading-tight">
+                    {provider.name}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+          <div className="text-center mt-6">
+            <Link href="/melhores">
+              <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80 gap-1">
+                Ver todos os streamings
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
