@@ -777,3 +777,15 @@
 - [x] Generate OG image for Star+ (1200x630)
 - [x] Upload images to webdev static assets (CDN hosted)
 - [x] Update seo.ts to reference provider-specific OG images
+
+## Fix OG Image Preview on WhatsApp
+- [ ] Diagnose why OG images are not showing in WhatsApp previews for movie/TV pages
+- [ ] Fix bot meta injection to properly serve og:image with poster
+- [ ] Test with WhatsApp user-agent
+
+## Bug Fixes (WhatsApp OG Image Preview)
+- [x] Fix WhatsApp/social media not showing poster images when sharing movie/TV links
+- [x] Upgrade TMDB image size from w500 to w780 for better WhatsApp compatibility
+- [x] Add og:image:width, og:image:height, og:image:type meta tags
+- [x] Fix regex in vite.ts to properly strip ALL default OG/Twitter/title/description tags before injecting dynamic ones
+- [x] Remove duplicate og:image tags (default og-default.png was not being removed, WhatsApp picked it up instead of movie poster)

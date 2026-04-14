@@ -6,6 +6,27 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import viteConfig from "../../vite.config";
 
+/**
+ * Strip default OG/Twitter/title/description meta tags from HTML
+ * so that dynamic SEO tags injected for bot requests are the only ones present.
+ * This prevents WhatsApp/Facebook/Twitter from picking up the default og-default.png
+ * instead of the movie/TV show poster.
+ */
+function stripDefaultMetaTags(html: string): string {
+  // Remove HTML comment blocks wrapping default OG/Twitter sections
+  html = html.replace(/<!--\s*Open Graph defaults[\s\S]*?-->\s*/g, '');
+  html = html.replace(/<!--\s*Twitter Card defaults[\s\S]*?-->\s*/g, '');
+  // Remove all OG meta tags (handles any attribute order and multi-line)
+  html = html.replace(/<meta[^>]*property=["']og:[^"']*["'][^>]*>\s*/gi, '');
+  // Remove all Twitter meta tags
+  html = html.replace(/<meta[^>]*name=["']twitter:[^"']*["'][^>]*>\s*/gi, '');
+  // Remove default title tag (will be replaced by dynamic one)
+  html = html.replace(/<title>[^<]*<\/title>\s*/gi, '');
+  // Remove default description meta tag
+  html = html.replace(/<meta[^>]*name=["']description["'][^>]*>\s*/gi, '');
+  return html;
+}
+
 export async function setupVite(app: Express, server: Server) {
   const serverOptions = {
     middlewareMode: true,
@@ -41,11 +62,7 @@ export async function setupVite(app: Express, server: Server) {
       // Inject SEO meta tags for bot requests - replace defaults instead of appending
       const seoMetaTags = (req as any).__seoMetaTags;
       if (seoMetaTags) {
-        // Remove default OG and Twitter meta tags so bots pick up the dynamic ones
-        template = template.replace(/<!--\s*Open Graph defaults[\s\S]*?-->\s*/g, '');
-        template = template.replace(/<!--\s*Twitter Card defaults[\s\S]*?-->\s*/g, '');
-        template = template.replace(/<meta\s+property="og:[^"]*"\s+content="[^"]*"\s*\/?>\s*/g, '');
-        template = template.replace(/<meta\s+name="twitter:[^"]*"\s+content="[^"]*"\s*\/?>\s*/g, '');
+        template = stripDefaultMetaTags(template);
         template = template.replace('</head>', `${seoMetaTags}\n  </head>`);
       }
       const page = await vite.transformIndexHtml(url, template);
@@ -78,11 +95,7 @@ export function serveStatic(app: Express) {
       // For bot requests, replace default meta tags with dynamic ones
       const indexPath = path.resolve(distPath, "index.html");
       let html = fs.readFileSync(indexPath, "utf-8");
-      // Remove default OG and Twitter meta tags so bots pick up the dynamic ones
-      html = html.replace(/<!--\s*Open Graph defaults[\s\S]*?-->\s*/g, '');
-      html = html.replace(/<!--\s*Twitter Card defaults[\s\S]*?-->\s*/g, '');
-      html = html.replace(/<meta\s+property="og:[^"]*"\s+content="[^"]*"\s*\/?>\s*/g, '');
-      html = html.replace(/<meta\s+name="twitter:[^"]*"\s+content="[^"]*"\s*\/?>\s*/g, '');
+      html = stripDefaultMetaTags(html);
       html = html.replace('</head>', `${seoMetaTags}\n  </head>`);
       res.set("Content-Type", "text/html").send(html);
     } else {

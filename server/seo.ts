@@ -146,11 +146,13 @@ async function getMovieMetaTags(movieId: number): Promise<string> {
       ? `${movie.overview.substring(0, 155)}...`
       : `Descubra onde assistir ${movie.title} no Brasil.`;
     const image = movie.poster_path
-      ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+      ? `https://image.tmdb.org/t/p/w780${movie.poster_path}`
       : `${SITE_URL}/og-default.png`;
+    const imageWidth = movie.poster_path ? "780" : "1200";
+    const imageHeight = movie.poster_path ? "1170" : "630";
     const url = `${SITE_URL}/movie/${movieId}`;
 
-    return buildMetaTags({ title, description, image, url, type: "video.movie" });
+    return buildMetaTags({ title, description, image, url, type: "video.movie", imageWidth, imageHeight });
   } catch (e) {
     return "";
   }
@@ -164,11 +166,13 @@ async function getTVShowMetaTags(tvId: number): Promise<string> {
       ? `${show.overview.substring(0, 155)}...`
       : `Descubra onde assistir ${show.name} no Brasil.`;
     const image = show.poster_path
-      ? `https://image.tmdb.org/t/p/w500${show.poster_path}`
+      ? `https://image.tmdb.org/t/p/w780${show.poster_path}`
       : `${SITE_URL}/og-default.png`;
+    const imageWidth = show.poster_path ? "780" : "1200";
+    const imageHeight = show.poster_path ? "1170" : "630";
     const url = `${SITE_URL}/tv/${tvId}`;
 
-    return buildMetaTags({ title, description, image, url, type: "video.tv_show" });
+    return buildMetaTags({ title, description, image, url, type: "video.tv_show", imageWidth, imageHeight });
   } catch (e) {
     return "";
   }
@@ -221,11 +225,18 @@ function buildMetaTags(opts: {
   image: string;
   url: string;
   type: string;
+  imageWidth?: string;
+  imageHeight?: string;
 }): string {
+  const imgWidth = opts.imageWidth || "1200";
+  const imgHeight = opts.imageHeight || "630";
   return `
     <meta property="og:title" content="${escapeHtml(opts.title)}" />
     <meta property="og:description" content="${escapeHtml(opts.description)}" />
     <meta property="og:image" content="${escapeHtml(opts.image)}" />
+    <meta property="og:image:width" content="${imgWidth}" />
+    <meta property="og:image:height" content="${imgHeight}" />
+    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:url" content="${escapeHtml(opts.url)}" />
     <meta property="og:type" content="${opts.type}" />
     <meta property="og:site_name" content="Onde Assistir" />
