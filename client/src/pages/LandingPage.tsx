@@ -533,6 +533,11 @@ export default function LandingPage() {
               <Film className="h-6 w-6 text-primary" />
               <span className="font-semibold text-foreground">Onde Assistir</span>
             </div>
+            <div className="flex gap-4 text-sm text-muted-foreground">
+              <Link href="/melhores" className="hover:text-foreground transition-colors">Melhores por Streaming</Link>
+              <Link href="/streaming-prices" className="hover:text-foreground transition-colors">Preços</Link>
+              <Link href="/about" className="hover:text-foreground transition-colors">Sobre</Link>
+            </div>
             <p className="text-sm text-muted-foreground">
               © 2026 Onde Assistir. Encontre onde assistir seus filmes e séries favoritos no Brasil.
             </p>

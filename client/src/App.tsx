@@ -22,6 +22,8 @@ import About from "./pages/About";
 import StreamingPrices from "./pages/StreamingPrices";
 import AffiliateAnalytics from "./pages/AffiliateAnalytics";
 import StreamingAnalysis from "./pages/StreamingAnalysis";
+import ProviderIndex from "./pages/ProviderIndex";
+import ProviderContent from "./pages/ProviderContent";
 
 function Router() {
   return (
@@ -42,6 +44,8 @@ function Router() {
       <Route path={"/streaming-prices"} component={StreamingPrices} />
       <Route path={"/affiliate-analytics"} component={AffiliateAnalytics} />
       <Route path={"/streaming-analysis"} component={StreamingAnalysis} />
+      <Route path={"/melhores"} component={ProviderIndex} />
+      <Route path={"/melhores/:slug"} component={ProviderContent} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

@@ -393,3 +393,31 @@ export async function discoverTVShowsByGenre(genreId: number, page: number = 1):
   });
   return response.data;
 }
+
+// Discover movies by streaming provider (watch_region=BR)
+export async function discoverMoviesByProvider(providerId: number, page: number = 1): Promise<{ results: TMDBMovie[]; page: number; total_pages: number; total_results: number }> {
+  const response = await tmdbApi.get('/discover/movie', {
+    params: {
+      with_watch_providers: providerId,
+      watch_region: 'BR',
+      page,
+      language: 'pt-BR',
+      sort_by: 'popularity.desc',
+    },
+  });
+  return response.data;
+}
+
+// Discover TV shows by streaming provider (watch_region=BR)
+export async function discoverTVShowsByProvider(providerId: number, page: number = 1): Promise<{ results: TMDBTVShow[]; page: number; total_pages: number; total_results: number }> {
+  const response = await tmdbApi.get('/discover/tv', {
+    params: {
+      with_watch_providers: providerId,
+      watch_region: 'BR',
+      page,
+      language: 'pt-BR',
+      sort_by: 'popularity.desc',
+    },
+  });
+  return response.data;
+}

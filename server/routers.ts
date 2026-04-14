@@ -510,6 +510,20 @@ export const appRouter = router({
           return await tmdb.discoverTVShowsByGenre(input.genreId, input.page);
         }
       }),
+
+    discoverByProvider: publicProcedure
+      .input(z.object({
+        mediaType: z.enum(['movie', 'tv']),
+        providerId: z.number(),
+        page: z.number().default(1),
+      }))
+      .query(async ({ input }) => {
+        if (input.mediaType === 'movie') {
+          return await tmdb.discoverMoviesByProvider(input.providerId, input.page);
+        } else {
+          return await tmdb.discoverTVShowsByProvider(input.providerId, input.page);
+        }
+      }),
   }),
 
   watchlist: router({

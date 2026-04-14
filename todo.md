@@ -751,3 +751,11 @@
 
 ## Google Search Console
 - [x] Add Google verification file (googlebaf7970e4a6bef15.html) to public directory
+
+## SEO Content Pages (Auto-generated)
+- [x] Create backend endpoint to fetch popular content by streaming provider
+- [x] Create SEO content page component (e.g. /melhores/netflix, /melhores/disney-plus)
+- [x] Create index page listing all provider pages (/melhores)
+- [x] Add proper SEO meta tags, OG, and JSON-LD (ItemList) to each page
+- [x] Add pages to sitemap.xml (10 new URLs)
+- [x] Add link in footer/navigation (LandingPage footer)

@@ -4,10 +4,17 @@ import * as tmdb from "./tmdb";
 const SITE_URL = "https://streamguide.click";
 
 // Static pages for sitemap
+const PROVIDER_SLUGS = [
+  "netflix", "amazon-prime-video", "disney-plus", "hbo-max",
+  "paramount-plus", "crunchyroll", "globoplay", "apple-tv-plus", "star-plus",
+];
+
 const STATIC_PAGES = [
   { url: "/", changefreq: "daily", priority: 1.0 },
   { url: "/streaming-prices", changefreq: "weekly", priority: 0.8 },
   { url: "/genres", changefreq: "weekly", priority: 0.7 },
+  { url: "/melhores", changefreq: "weekly", priority: 0.8 },
+  ...PROVIDER_SLUGS.map(slug => ({ url: `/melhores/${slug}`, changefreq: "weekly" as const, priority: 0.7 })),
   { url: "/about", changefreq: "monthly", priority: 0.3 },
 ];
 
