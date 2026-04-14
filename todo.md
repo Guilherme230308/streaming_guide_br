@@ -743,3 +743,8 @@
 - [x] Fix title to be 30-60 characters (56 chars)
 - [x] Add meta description with 50-160 characters (127 chars)
 - [x] Add keywords meta tag (12 keywords)
+
+## Social Share Buttons
+- [x] Create reusable ShareButtons component (WhatsApp, Twitter, Facebook, Copy Link)
+- [x] Integrate into MovieDetails page
+- [x] Integrate into TVShowDetails page

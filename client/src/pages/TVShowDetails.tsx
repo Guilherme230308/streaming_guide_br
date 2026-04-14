@@ -33,6 +33,7 @@ import { SimilarContentCard } from "@/components/SimilarContentCard";
 import { ReviewSectionPreview } from "@/components/BlurredPreviews";
 import { InArticleAd } from "@/components/AdBanner";
 import { SEO, buildTVShowJsonLd, buildBreadcrumbJsonLd } from "@/components/SEO";
+import { ShareButtons } from "@/components/ShareButtons";
 
 export default function TVShowDetails() {
   const { id } = useParams();
@@ -353,6 +354,12 @@ export default function TVShowDetails() {
                 <h3 className="text-lg font-semibold text-foreground mb-2">Sinopse</h3>
                 <p className="text-muted-foreground leading-relaxed">{show.overview}</p>
               </div>
+
+              <ShareButtons
+                title={show.name}
+                url={`/tv/${tvId}`}
+                description={`Descubra onde assistir ${show.name} no Brasil`}
+              />
             </div>
           </div>
         </div>

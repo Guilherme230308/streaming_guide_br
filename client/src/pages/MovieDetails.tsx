@@ -40,6 +40,7 @@ import { SimilarContentCard } from "@/components/SimilarContentCard";
 import { ReviewSectionPreview } from "@/components/BlurredPreviews";
 import { InArticleAd } from "@/components/AdBanner";
 import { SEO, buildMovieJsonLd, buildBreadcrumbJsonLd } from "@/components/SEO";
+import { ShareButtons } from "@/components/ShareButtons";
 
 export default function MovieDetails() {
   const { id } = useParams();
@@ -366,6 +367,12 @@ export default function MovieDetails() {
                 <h3 className="text-lg font-semibold text-foreground mb-2">Sinopse</h3>
                 <p className="text-muted-foreground leading-relaxed">{movie.overview}</p>
               </div>
+
+              <ShareButtons
+                title={movie.title}
+                url={`/movie/${movieId}`}
+                description={`Descubra onde assistir ${movie.title} no Brasil`}
+              />
             </div>
           </div>
         </div>
