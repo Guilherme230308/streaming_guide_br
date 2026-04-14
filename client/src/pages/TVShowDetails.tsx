@@ -32,6 +32,7 @@ import { FeaturesCTA, ActionLockedPrompt } from "@/components/FeaturesCTA";
 import { SimilarContentCard } from "@/components/SimilarContentCard";
 import { ReviewSectionPreview } from "@/components/BlurredPreviews";
 import { InArticleAd } from "@/components/AdBanner";
+import { SEO, buildTVShowJsonLd, buildBreadcrumbJsonLd } from "@/components/SEO";
 
 export default function TVShowDetails() {
   const { id } = useParams();
@@ -221,8 +222,27 @@ export default function TVShowDetails() {
 
   const providers = show.watchProviders;
 
+  const showSeoDescription = show.overview
+    ? `${show.overview.substring(0, 155)}...`
+    : `Descubra onde assistir ${show.name} no Brasil. Veja preços e plataformas de streaming.`;
+
+  const showJsonLd = buildTVShowJsonLd(show);
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: "Início", url: "/" },
+    { name: "Séries", url: "/search?type=tv" },
+    { name: show.name, url: `/tv/${tvId}` },
+  ]);
+
   return (
     <div className="min-h-screen bg-background pt-16">
+      <SEO
+        title={`${show.name} - Onde Assistir`}
+        description={showSeoDescription}
+        image={show.poster_path ? `https://image.tmdb.org/t/p/w500${show.poster_path}` : undefined}
+        url={`/tv/${tvId}`}
+        type="video.tv_show"
+        jsonLd={[showJsonLd, breadcrumbJsonLd]}
+      />
       {/* Hero Section */}
       <div className="relative">
         <div className="absolute inset-0 overflow-hidden">

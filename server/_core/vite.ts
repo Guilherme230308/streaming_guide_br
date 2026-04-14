@@ -38,6 +38,11 @@ export async function setupVite(app: Express, server: Server) {
         `src="/src/main.tsx"`,
         `src="/src/main.tsx?v=${nanoid()}"`
       );
+      // Inject SEO meta tags for bot requests
+      const seoMetaTags = (req as any).__seoMetaTags;
+      if (seoMetaTags) {
+        template = template.replace('</head>', `${seoMetaTags}\n  </head>`);
+      }
       const page = await vite.transformIndexHtml(url, template);
       res.status(200).set({ "Content-Type": "text/html" }).end(page);
     } catch (e) {
@@ -63,6 +68,15 @@ export function serveStatic(app: Express) {
   // fall through to index.html if the file doesn't exist (but not for API routes)
   // Use a more specific pattern that excludes /api/ routes
   app.get(/^(?!\/api\/).*/, (req, res) => {
-    res.sendFile(path.resolve(distPath, "index.html"));
+    const seoMetaTags = (req as any).__seoMetaTags;
+    if (seoMetaTags) {
+      // For bot requests, inject meta tags into the HTML
+      const indexPath = path.resolve(distPath, "index.html");
+      let html = fs.readFileSync(indexPath, "utf-8");
+      html = html.replace('</head>', `${seoMetaTags}\n  </head>`);
+      res.set("Content-Type", "text/html").send(html);
+    } else {
+      res.sendFile(path.resolve(distPath, "index.html"));
+    }
   });
 }

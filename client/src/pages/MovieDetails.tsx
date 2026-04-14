@@ -39,6 +39,7 @@ import { FeaturesCTA, ActionLockedPrompt } from "@/components/FeaturesCTA";
 import { SimilarContentCard } from "@/components/SimilarContentCard";
 import { ReviewSectionPreview } from "@/components/BlurredPreviews";
 import { InArticleAd } from "@/components/AdBanner";
+import { SEO, buildMovieJsonLd, buildBreadcrumbJsonLd } from "@/components/SEO";
 
 export default function MovieDetails() {
   const { id } = useParams();
@@ -239,8 +240,27 @@ export default function MovieDetails() {
 
   const providers = movie.watchProviders;
 
+  const movieSeoDescription = movie.overview
+    ? `${movie.overview.substring(0, 155)}...`
+    : `Descubra onde assistir ${movie.title} no Brasil. Veja preços e plataformas de streaming.`;
+
+  const movieJsonLd = buildMovieJsonLd(movie);
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: "Início", url: "/" },
+    { name: "Filmes", url: "/search?type=movie" },
+    { name: movie.title, url: `/movie/${movieId}` },
+  ]);
+
   return (
     <div className="min-h-screen bg-background pt-16">
+      <SEO
+        title={`${movie.title} - Onde Assistir`}
+        description={movieSeoDescription}
+        image={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : undefined}
+        url={`/movie/${movieId}`}
+        type="video.movie"
+        jsonLd={[movieJsonLd, breadcrumbJsonLd]}
+      />
       {/* Hero Section with Backdrop */}
       <div className="relative">
         <div className="absolute inset-0 overflow-hidden">

@@ -2,10 +2,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Database, RefreshCw, Shield, Users, AlertCircle, ExternalLink } from "lucide-react";
 import { Link } from "wouter";
+import { SEO } from "@/components/SEO";
 
 export default function About() {
   return (
     <div className="min-h-screen bg-background pt-16">
+      <SEO
+        title="Sobre o Onde Assistir"
+        description="Saiba como o Onde Assistir coleta e apresenta informações sobre disponibilidade de filmes e séries nos streamings brasileiros."
+        url="/about"
+      />
       <div className="container py-12 max-w-4xl">
         {/* Hero Section */}
         <div className="mb-12">

@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Film, Tv, ArrowLeft } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { SEO } from "@/components/SEO";
 
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p";
 
@@ -76,6 +77,11 @@ export default function Genres() {
 
   return (
     <div className="min-h-screen bg-background pt-16">
+      <SEO
+        title="Gêneros - Filmes e Séries"
+        description="Explore filmes e séries por gênero. Ação, comédia, drama, terror, ficção científica e mais. Descubra onde assistir no Brasil."
+        url="/genres"
+      />
       {/* Content */}
       <main className="container py-8">
         <div className="mb-6">

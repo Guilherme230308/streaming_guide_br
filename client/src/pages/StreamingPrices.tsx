@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { DollarSign, TrendingUp, Info, ExternalLink } from "lucide-react";
 import { Link } from "wouter";
+import { SEO } from "@/components/SEO";
 
 interface StreamingService {
   name: string;
@@ -161,6 +162,11 @@ export default function StreamingPrices() {
 
   return (
     <div className="min-h-screen bg-background pt-16">
+      <SEO
+        title="Preços de Streaming no Brasil 2026"
+        description="Compare preços de todos os serviços de streaming no Brasil: Netflix, Prime Video, Disney+, HBO Max, Globoplay, Star+, Paramount+ e mais. Atualizado em 2026."
+        url="/streaming-prices"
+      />
       <div className="container py-12">
         {/* Hero Section */}
         <div className="mb-12 max-w-4xl">

@@ -1,0 +1,15 @@
+# Robots.txt for streamguide.click
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /watchlist
+Disallow: /subscriptions
+Disallow: /alerts
+Disallow: /history
+Disallow: /lists
+Disallow: /list/
+Disallow: /affiliate-analytics
+Disallow: /streaming-analysis
+
+# Sitemap
+Sitemap: https://streamguide.click/sitemap.xml

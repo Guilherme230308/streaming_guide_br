@@ -16,6 +16,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { SlidersHorizontal } from "lucide-react";
 import { ALL_GENRES } from "@/lib/genres";
 import { InFeedAd } from "@/components/AdBanner";
+import { SEO } from "@/components/SEO";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
 
@@ -107,6 +108,12 @@ export default function Search() {
 
   return (
     <div className="min-h-screen bg-background pt-16">
+      <SEO
+        title={debouncedQuery ? `Buscar "${debouncedQuery}"` : "Busca Avançada"}
+        description={debouncedQuery ? `Resultados para "${debouncedQuery}" - Descubra onde assistir no Brasil.` : "Busque filmes e séries e descubra onde assistir no Brasil. Filtre por gênero, ano, avaliação e plataforma."}
+        url={`/search${debouncedQuery ? `?q=${encodeURIComponent(debouncedQuery)}` : ""}`}
+        noindex={!debouncedQuery}
+      />
       {/* Search Bar & Filters */}
       <div className="border-b border-border/40 bg-background">
         <div className="container py-4">

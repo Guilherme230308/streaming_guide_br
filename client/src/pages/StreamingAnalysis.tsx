@@ -22,6 +22,7 @@ import { Link } from "wouter";
 import { LoginPromptPage } from "@/components/LoginPrompt";
 import { AnalysisPreview } from "@/components/BlurredPreviews";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { SEO } from "@/components/SEO";
 
 // Provider logos mapping
 const PROVIDER_LOGOS: Record<number, string> = {
@@ -102,6 +103,12 @@ export default function StreamingAnalysis() {
 
   return (
     <div className="min-h-screen bg-background pt-16">
+      <SEO
+        title="Análise de Streamings"
+        description="Descubra quais serviços de streaming valem mais a pena para você. Análise personalizada baseada nos seus filmes e séries favoritos."
+        url="/streaming-analysis"
+        noindex
+      />
       <div className="container py-12">
         {/* Hero Section */}
         <div className="mb-12 max-w-4xl">

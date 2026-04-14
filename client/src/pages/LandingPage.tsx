@@ -6,6 +6,7 @@ import { Link, useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 import { useState, useRef, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
+import { SEO, buildWebSiteJsonLd } from "@/components/SEO";
 
 const HERO_IMG = "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029229201/cgGBWpLKRuMgKbls.jpg";
 const PHONE_IMG = "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029229201/dVPxUTQUbCSVnCSG.webp";
@@ -68,6 +69,12 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-background pt-16">
+      <SEO
+        title="Onde Assistir Filmes e Séries no Brasil"
+        description="Descubra onde assistir seus filmes e séries favoritos no Brasil. Compare preços de streaming em Netflix, Prime Video, Disney+, HBO Max, Globoplay e mais. Grátis!"
+        url="/"
+        jsonLd={buildWebSiteJsonLd()}
+      />
       {/* Hero Section with Background Image */}
       <section className="relative overflow-hidden">
         {/* Background image with overlay */}

@@ -20,6 +20,7 @@ import { SearchFilters, type SearchFiltersType, loadSavedFilters } from "@/compo
 import { PersonalizedRecommendations } from "@/components/PersonalizedRecommendations";
 import { AIAssistantDialog } from "@/components/AIAssistantDialog";
 import { SectionAd } from "@/components/AdBanner";
+import { SEO, buildWebSiteJsonLd } from "@/components/SEO";
 
 const RECENT_SEARCHES_KEY = "recentSearches";
 const MAX_RECENT_SEARCHES = 5;
@@ -208,6 +209,12 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden pt-16">
+      <SEO
+        title="Buscar Filmes e Séries"
+        description="Busque e descubra onde assistir seus filmes e séries favoritos no Brasil. Compare preços de streaming, aluguel e compra."
+        url="/"
+        jsonLd={buildWebSiteJsonLd()}
+      />
       {TourComponent}
       <SwipeEdgeIndicator />
 
