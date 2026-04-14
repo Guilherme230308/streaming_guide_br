@@ -189,7 +189,7 @@ export default function LandingPage() {
                 size="lg" 
                 variant="outline" 
                 className="text-lg px-8 py-6 bg-background/50 backdrop-blur-sm"
-                onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => (window.location.href = getLoginUrl())}
               >
                 Ver Recursos
               </Button>

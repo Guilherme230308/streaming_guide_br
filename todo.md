@@ -789,3 +789,4 @@
 - [x] Add og:image:width, og:image:height, og:image:type meta tags
 - [x] Fix regex in vite.ts to properly strip ALL default OG/Twitter/title/description tags before injecting dynamic ones
 - [x] Remove duplicate og:image tags (default og-default.png was not being removed, WhatsApp picked it up instead of movie poster)
+- [x] "Ver Recursos" button on landing page should open the tutorial
