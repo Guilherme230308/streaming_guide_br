@@ -733,3 +733,8 @@
 - [x] Create dynamic sitemap endpoint with 84 URLs (static + trending + popular)
 - [x] Set lang="pt-BR" and update base meta tags in index.html
 - [x] Test SEO implementation (56 tests passing, 0 TS errors)
+
+## OG Default Image
+- [x] Generate branded 1200x630px OG default image
+- [x] Add image to project public directory
+- [x] Update SEO references to use the new image (already referenced in index.html, SEO.tsx, seo.ts)
