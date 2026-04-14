@@ -748,3 +748,6 @@
 - [x] Create reusable ShareButtons component (WhatsApp, Twitter, Facebook, Copy Link)
 - [x] Integrate into MovieDetails page
 - [x] Integrate into TVShowDetails page
+
+## Google Search Console
+- [x] Add Google verification file (googlebaf7970e4a6bef15.html) to public directory
