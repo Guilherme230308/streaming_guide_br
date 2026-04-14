@@ -156,7 +156,7 @@ export default function About() {
             </p>
             
             <ul className="list-disc list-inside space-y-2 ml-4">
-              <li>Informações de perfil básicas (nome, email) via OAuth do Manus</li>
+              <li>Informações de perfil básicas (nome, email) via login seguro</li>
               <li>Suas preferências de streamings e listas personalizadas</li>
               <li>Histórico de visualização e avaliações (apenas para recomendações)</li>
               <li>Alertas configurados</li>
