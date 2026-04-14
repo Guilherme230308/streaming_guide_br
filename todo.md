@@ -794,3 +794,4 @@
 
 ## Bug Fixes (Onboarding Tour)
 - [ ] Fix onboarding tour step 6 of 8 - modal disappears and tour breaks
+- [x] Fix mobile navigation not scrolling to top when navigating to a new page

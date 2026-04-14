@@ -1,7 +1,8 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
+import { Route, Switch, useLocation } from "wouter";
+import { useEffect } from "react";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { ProviderBatchProvider } from "./contexts/ProviderBatchContext";
@@ -25,8 +26,18 @@ import StreamingAnalysis from "./pages/StreamingAnalysis";
 import ProviderIndex from "./pages/ProviderIndex";
 import ProviderContent from "./pages/ProviderContent";
 
+function ScrollToTop() {
+  const [location] = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
+  return null;
+}
+
 function Router() {
   return (
+    <>
+    <ScrollToTop />
     <Switch>
       <Route path={"/"} component={Home} />
       <Route path={"/search"} component={Search} />
@@ -49,6 +60,7 @@ function Router() {
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>
+    </>
   );
 }
 
