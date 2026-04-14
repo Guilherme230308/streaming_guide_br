@@ -43,7 +43,7 @@ export function AppHeader() {
           <Link href="/">
             <div className="flex items-center gap-2 cursor-pointer flex-shrink-0">
               <Film className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-              <span className="text-lg sm:text-2xl font-bold text-foreground whitespace-nowrap">Onde Assistir</span>
+              <span className="text-lg sm:text-2xl font-bold text-foreground whitespace-nowrap">Stream Radar</span>
             </div>
           </Link>
 

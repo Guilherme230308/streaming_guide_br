@@ -8,15 +8,15 @@ export default function About() {
   return (
     <div className="min-h-screen bg-background pt-16">
       <SEO
-        title="Sobre o Onde Assistir"
-        description="Saiba como o Onde Assistir coleta e apresenta informações sobre disponibilidade de filmes e séries nos streamings brasileiros."
+        title="Sobre o Stream Radar"
+        description="Saiba como o Stream Radar coleta e apresenta informações sobre disponibilidade de filmes e séries nos streamings brasileiros."
         url="/about"
       />
       <div className="container py-12 max-w-4xl">
         {/* Hero Section */}
         <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Sobre o Onde Assistir
+            Sobre o Stream Radar
           </h1>
           <p className="text-xl text-muted-foreground">
             Entenda como coletamos e apresentamos informações sobre disponibilidade de filmes e séries nos streamings brasileiros.
@@ -33,7 +33,7 @@ export default function About() {
           </CardHeader>
           <CardContent className="text-muted-foreground space-y-4">
             <p>
-              O <strong className="text-foreground">Onde Assistir</strong> foi criado para resolver um problema comum: descobrir em qual streaming brasileiro está disponível aquele filme ou série que você quer assistir.
+              O <strong className="text-foreground">Stream Radar</strong> foi criado para resolver um problema comum: descobrir em qual streaming brasileiro está disponível aquele filme ou série que você quer assistir.
             </p>
             <p>
               Com tantos serviços de streaming disponíveis (Netflix, Prime Video, Disney+, HBO Max, Paramount+, Apple TV+, e muitos outros), fica difícil saber onde encontrar o conteúdo desejado. Nossa plataforma centraliza essas informações em um só lugar, economizando seu tempo e facilitando suas escolhas.
@@ -174,7 +174,7 @@ export default function About() {
             Dúvidas ou Sugestões?
           </h2>
           <p className="text-muted-foreground mb-6">
-            Estamos sempre trabalhando para melhorar o Onde Assistir. Se você encontrou algum problema ou tem sugestões de novos recursos, adoraríamos ouvir!
+            Estamos sempre trabalhando para melhorar o Stream Radar. Se você encontrou algum problema ou tem sugestões de novos recursos, adoraríamos ouvir!
           </p>
           <Link href="/">
             <a className="text-primary hover:underline font-medium">
@@ -188,7 +188,7 @@ export default function About() {
       <footer className="border-t border-border/40 py-8 mt-12">
         <div className="container text-center text-sm text-muted-foreground">
           <p>
-            © 2026 Onde Assistir. Dados fornecidos por{" "}
+            © 2026 Stream Radar. Dados fornecidos por{" "}
             <a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
               The Movie Database (TMDB)
             </a>

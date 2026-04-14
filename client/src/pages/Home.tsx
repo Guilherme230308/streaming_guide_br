@@ -562,7 +562,7 @@ export default function Home() {
       <footer className="border-t border-border/40 py-8 mt-12">
         <div className="container px-4 text-center text-sm text-muted-foreground">
           <p>Dados de disponibilidade fornecidos por <a href="https://www.justwatch.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">JustWatch</a></p>
-          <p className="mt-2">© 2026 Onde Assistir. Todos os direitos reservados.</p>
+          <p className="mt-2">© 2026 Stream Radar. Todos os direitos reservados.</p>
         </div>
       </footer>
 

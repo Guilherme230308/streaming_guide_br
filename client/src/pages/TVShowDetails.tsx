@@ -665,7 +665,7 @@ export default function TVShowDetails() {
         <div className="container">
           <div className="flex flex-col items-center gap-4 text-center">
             <p className="text-xs text-muted-foreground">
-              © 2026 Onde Assistir. Todos os direitos reservados.
+              © 2026 Stream Radar. Todos os direitos reservados.
             </p>
           </div>
         </div>

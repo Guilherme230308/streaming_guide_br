@@ -41,7 +41,7 @@ export function PWAWelcome() {
             </div>
           </div>
           <DialogTitle className="text-center text-xl">
-            Bem-vindo ao Onde Assistir!
+            Bem-vindo ao Stream Radar!
           </DialogTitle>
           <DialogDescription className="text-center">
             O app foi instalado com sucesso na sua tela inicial

@@ -159,8 +159,8 @@ const plugins = [
     registerType: "autoUpdate",
     includeAssets: ["icon-192.png", "icon-512.png"],
     manifest: {
-      name: "Onde Assistir - Guia de Streaming Brasil",
-      short_name: "Onde Assistir",
+      name: "Stream Radar - Guia de Streaming Brasil",
+      short_name: "Stream Radar",
       description: "Descubra onde assistir seus filmes e séries favoritos nos streamings brasileiros",
       theme_color: "#0891b2",
       background_color: "#0a1929",

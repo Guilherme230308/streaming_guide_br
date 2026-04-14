@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
 
-const SITE_NAME = "Onde Assistir";
+const SITE_NAME = "Stream Radar";
 const SITE_URL = "https://streamguide.click";
 const DEFAULT_DESCRIPTION = "Descubra onde assistir seus filmes e séries favoritos no Brasil. Compare preços de streaming, aluguel e compra em Netflix, Prime Video, Disney+ e HBO Max.";
 const DEFAULT_KEYWORDS = "onde assistir, streaming brasil, filmes online, séries online, netflix, prime video, disney plus, hbo max, globoplay, comparar streaming, preços streaming";

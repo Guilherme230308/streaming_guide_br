@@ -141,7 +141,7 @@ function isBot(userAgent: string): boolean {
 async function getMovieMetaTags(movieId: number): Promise<string> {
   try {
     const movie = await tmdb.getMovieDetails(movieId);
-    const title = `${movie.title} - Onde Assistir | Onde Assistir`;
+    const title = `${movie.title} - Onde Assistir | Stream Radar`;
     const description = movie.overview
       ? `${movie.overview.substring(0, 155)}...`
       : `Descubra onde assistir ${movie.title} no Brasil.`;
@@ -161,7 +161,7 @@ async function getMovieMetaTags(movieId: number): Promise<string> {
 async function getTVShowMetaTags(tvId: number): Promise<string> {
   try {
     const show = await tmdb.getTVShowDetails(tvId);
-    const title = `${show.name} - Onde Assistir | Onde Assistir`;
+    const title = `${show.name} - Onde Assistir | Stream Radar`;
     const description = show.overview
       ? `${show.overview.substring(0, 155)}...`
       : `Descubra onde assistir ${show.name} no Brasil.`;
@@ -196,7 +196,7 @@ function getMelhoresIndexMetaTags(): string {
   const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
   const currentMonth = `${months[date.getMonth()]} ${date.getFullYear()}`;
   return buildMetaTags({
-    title: `Melhores Filmes e Séries por Streaming - ${currentMonth} | Onde Assistir`,
+    title: `Melhores Filmes e Séries por Streaming - ${currentMonth} | Stream Radar`,
     description: `Descubra os melhores filmes e séries em cada plataforma de streaming no Brasil em ${currentMonth}. Compare catálogos de Netflix, Prime Video, Disney+, HBO Max e mais.`,
     image: `${SITE_URL}/og-default.png`,
     url: `${SITE_URL}/melhores`,
@@ -211,7 +211,7 @@ function getProviderMetaTags(slug: string): string {
   const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
   const currentMonth = `${months[date.getMonth()]} ${date.getFullYear()}`;
   return buildMetaTags({
-    title: `Melhores Filmes e Séries na ${provider.name} - ${currentMonth} | Onde Assistir`,
+    title: `Melhores Filmes e Séries na ${provider.name} - ${currentMonth} | Stream Radar`,
     description: provider.description,
     image: provider.ogImage,
     url: `${SITE_URL}/melhores/${slug}`,
@@ -239,7 +239,7 @@ function buildMetaTags(opts: {
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:url" content="${escapeHtml(opts.url)}" />
     <meta property="og:type" content="${opts.type}" />
-    <meta property="og:site_name" content="Onde Assistir" />
+    <meta property="og:site_name" content="Stream Radar" />
     <meta property="og:locale" content="pt_BR" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(opts.title)}" />

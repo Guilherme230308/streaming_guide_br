@@ -383,7 +383,7 @@ export default function StreamingPrices() {
       {/* Footer */}
       <footer className="border-t border-border/40 py-8 mt-12">
         <div className="container text-center text-sm text-muted-foreground">
-          <p>© 2026 Onde Assistir. Preços atualizados em Fevereiro de 2026.</p>
+          <p>© 2026 Stream Radar. Preços atualizados em Fevereiro de 2026.</p>
         </div>
       </footer>
     </div>

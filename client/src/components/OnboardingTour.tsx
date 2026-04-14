@@ -16,7 +16,7 @@ const tourSteps: TourStep[] = [
   {
     selector: "body",
     icon: <Sparkles className="h-6 w-6" />,
-    title: "Bem-vindo ao Onde Assistir!",
+    title: "Bem-vindo ao Stream Radar!",
     description: "Descubra onde assistir seus filmes e séries favoritos no Brasil. Vamos te mostrar as principais funcionalidades em poucos segundos.",
     side: "bottom",
   },
@@ -66,7 +66,7 @@ const tourSteps: TourStep[] = [
     selector: "body",
     icon: <Sparkles className="h-6 w-6" />,
     title: "Tudo pronto! 🎬",
-    description: "Agora você conhece o Onde Assistir. Comece buscando um filme ou série e descubra onde assistir no Brasil!",
+    description: "Agora você conhece o Stream Radar. Comece buscando um filme ou série e descubra onde assistir no Brasil!",
     side: "bottom",
   },
 ];

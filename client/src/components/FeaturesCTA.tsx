@@ -78,7 +78,7 @@ export function FeaturesCTA() {
                 Desbloqueie todas as funcionalidades
               </h2>
               <p className="text-muted-foreground max-w-lg mx-auto">
-                Crie uma conta gratuita e aproveite ao máximo o Onde Assistir.
+                Crie uma conta gratuita e aproveite ao máximo o Stream Radar.
                 Salve listas, avalie conteúdo, receba alertas e muito mais.
               </p>
             </div>

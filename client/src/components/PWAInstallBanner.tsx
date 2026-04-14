@@ -155,7 +155,7 @@ export function PWAInstallBanner() {
             </div>
             <div>
               <h3 className="font-semibold text-base mb-1">
-                Instale o App Onde Assistir
+                Instale o App Stream Radar
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Acesso rápido direto da sua tela inicial

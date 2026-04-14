@@ -453,7 +453,7 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-8">
-                Por que usar o Onde Assistir?
+                Por que usar o Stream Radar?
               </h2>
 
               <div className="space-y-5">
@@ -563,7 +563,7 @@ export default function LandingPage() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2">
               <Film className="h-6 w-6 text-primary" />
-              <span className="font-semibold text-foreground">Onde Assistir</span>
+              <span className="font-semibold text-foreground">Stream Radar</span>
             </div>
             <div className="flex gap-4 text-sm text-muted-foreground">
               <Link href="/melhores" className="hover:text-foreground transition-colors">Melhores por Streaming</Link>
@@ -571,7 +571,7 @@ export default function LandingPage() {
               <Link href="/about" className="hover:text-foreground transition-colors">Sobre</Link>
             </div>
             <p className="text-sm text-muted-foreground">
-              © 2026 Onde Assistir. Encontre onde assistir seus filmes e séries favoritos no Brasil.
+              © 2026 Stream Radar. Encontre onde assistir seus filmes e séries favoritos no Brasil.
             </p>
           </div>
         </div>

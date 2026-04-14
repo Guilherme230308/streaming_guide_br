@@ -313,7 +313,7 @@ export function PWAInstallPrompt() {
                 <Smartphone className="h-6 w-6" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-foreground">Instalar Onde Assistir</h2>
+                <h2 className="text-lg font-bold text-foreground">Instalar Stream Radar</h2>
                 <p className="text-sm text-muted-foreground">Acesse mais rápido direto da sua tela inicial</p>
               </div>
             </div>
