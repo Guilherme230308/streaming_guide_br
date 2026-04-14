@@ -174,6 +174,47 @@ async function getTVShowMetaTags(tvId: number): Promise<string> {
   }
 }
 
+// Provider metadata for /melhores pages
+const PROVIDER_META: Record<string, { name: string; description: string; color: string }> = {
+  "netflix": { name: "Netflix", description: "Descubra os melhores filmes e séries disponíveis na Netflix no Brasil. Veja o catálogo atualizado com os títulos mais populares e bem avaliados.", color: "#E50914" },
+  "amazon-prime-video": { name: "Amazon Prime Video", description: "Explore os melhores filmes e séries do Amazon Prime Video no Brasil. Catálogo atualizado com títulos populares e originais Amazon.", color: "#00A8E1" },
+  "disney-plus": { name: "Disney+", description: "Veja os melhores filmes e séries da Disney+ no Brasil. Disney, Pixar, Marvel, Star Wars e National Geographic em um só lugar.", color: "#113CCF" },
+  "hbo-max": { name: "HBO Max", description: "Confira os melhores filmes e séries do HBO Max no Brasil. Séries HBO, filmes Warner Bros e conteúdo exclusivo atualizado.", color: "#B535F6" },
+  "paramount-plus": { name: "Paramount+", description: "Descubra os melhores filmes e séries do Paramount+ no Brasil. Filmes Paramount, séries CBS e produções originais.", color: "#0064FF" },
+  "crunchyroll": { name: "Crunchyroll", description: "Explore os melhores animes disponíveis no Crunchyroll no Brasil. O maior catálogo de anime do mundo atualizado.", color: "#F47521" },
+  "globoplay": { name: "Globoplay", description: "Veja os melhores filmes, séries e novelas do Globoplay. Conteúdo nacional da Globo e produções originais.", color: "#F72B2B" },
+  "apple-tv-plus": { name: "Apple TV+", description: "Confira os melhores filmes e séries do Apple TV+ no Brasil. Produções originais Apple premiadas e aclamadas pela crítica.", color: "#000000" },
+  "star-plus": { name: "Star+", description: "Descubra os melhores filmes, séries e esportes do Star+ no Brasil. ESPN, séries e filmes para adultos.", color: "#02C8C8" },
+};
+
+function getMelhoresIndexMetaTags(): string {
+  const date = new Date();
+  const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+  const currentMonth = `${months[date.getMonth()]} ${date.getFullYear()}`;
+  return buildMetaTags({
+    title: `Melhores Filmes e Séries por Streaming - ${currentMonth} | Onde Assistir`,
+    description: `Descubra os melhores filmes e séries em cada plataforma de streaming no Brasil em ${currentMonth}. Compare catálogos de Netflix, Prime Video, Disney+, HBO Max e mais.`,
+    image: `${SITE_URL}/og-default.png`,
+    url: `${SITE_URL}/melhores`,
+    type: "website",
+  });
+}
+
+function getProviderMetaTags(slug: string): string {
+  const provider = PROVIDER_META[slug];
+  if (!provider) return "";
+  const date = new Date();
+  const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+  const currentMonth = `${months[date.getMonth()]} ${date.getFullYear()}`;
+  return buildMetaTags({
+    title: `Melhores Filmes e Séries na ${provider.name} - ${currentMonth} | Onde Assistir`,
+    description: provider.description,
+    image: `${SITE_URL}/og-default.png`,
+    url: `${SITE_URL}/melhores/${slug}`,
+    type: "website",
+  });
+}
+
 function buildMetaTags(opts: {
   title: string;
   description: string;
@@ -231,11 +272,13 @@ export function botMetaInjectionMiddleware() {
       return next();
     }
 
-    // Only handle movie and TV show detail pages
+    // Handle movie, TV show, and /melhores pages
     const movieMatch = req.path.match(/^\/movie\/(\d+)$/);
     const tvMatch = req.path.match(/^\/tv\/(\d+)$/);
+    const melhoresIndexMatch = req.path === "/melhores";
+    const melhoresProviderMatch = req.path.match(/^\/melhores\/([a-z-]+)$/);
 
-    if (!movieMatch && !tvMatch) {
+    if (!movieMatch && !tvMatch && !melhoresIndexMatch && !melhoresProviderMatch) {
       return next();
     }
 
@@ -245,6 +288,10 @@ export function botMetaInjectionMiddleware() {
         metaTags = await getMovieMetaTags(parseInt(movieMatch[1]));
       } else if (tvMatch) {
         metaTags = await getTVShowMetaTags(parseInt(tvMatch[1]));
+      } else if (melhoresIndexMatch) {
+        metaTags = getMelhoresIndexMetaTags();
+      } else if (melhoresProviderMatch) {
+        metaTags = getProviderMetaTags(melhoresProviderMatch[1]);
       }
 
       if (!metaTags) {

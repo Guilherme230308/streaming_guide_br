@@ -759,3 +759,8 @@
 - [x] Add proper SEO meta tags, OG, and JSON-LD (ItemList) to each page
 - [x] Add pages to sitemap.xml (10 new URLs)
 - [x] Add link in footer/navigation (LandingPage footer)
+
+## Bot Meta Injection for /melhores Pages
+- [x] Add server-side meta tag injection for /melhores index page
+- [x] Add server-side meta tag injection for /melhores/:slug provider pages (all 9 providers)
+- [x] Test with WhatsApp/Facebook user-agent (verified correct titles and descriptions)
