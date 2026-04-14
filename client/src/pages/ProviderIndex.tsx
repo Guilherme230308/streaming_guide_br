@@ -6,7 +6,7 @@ const PROVIDERS = [
   { id: 8, slug: "netflix", name: "Netflix", description: "Filmes, séries e documentários originais e licenciados", color: "#E50914" },
   { id: 119, slug: "amazon-prime-video", name: "Amazon Prime Video", description: "Grande catálogo com filmes, séries e conteúdo original Amazon", color: "#00A8E1" },
   { id: 337, slug: "disney-plus", name: "Disney+", description: "Disney, Pixar, Marvel, Star Wars e National Geographic", color: "#113CCF" },
-  { id: 384, slug: "hbo-max", name: "HBO Max", description: "Séries HBO, filmes Warner Bros e conteúdo exclusivo", color: "#B535F6" },
+  { id: 1899, slug: "hbo-max", name: "Max", description: "Séries HBO, filmes Warner Bros e conteúdo exclusivo", color: "#B535F6" },
   { id: 531, slug: "paramount-plus", name: "Paramount+", description: "Filmes Paramount, séries CBS e conteúdo original", color: "#0064FF" },
   { id: 283, slug: "crunchyroll", name: "Crunchyroll", description: "O maior catálogo de anime do mundo", color: "#F47521" },
   { id: 307, slug: "globoplay", name: "Globoplay", description: "Novelas, séries e jornalismo da Globo", color: "#F72B2B" },
@@ -15,18 +15,21 @@ const PROVIDERS = [
 ];
 
 function getProviderLogoUrl(providerId: number) {
-  const logoMap: Record<number, string> = {
-    8: "/t/p/w92/pbpMk2JmcoNnQwB5JGpXAbmDP7.jpg",
-    119: "/t/p/w92/pvBPMkGqrgKEMCBhPMR2OJxJWXq.jpg",
+  const tmdbLogoMap: Record<number, string> = {
+    8: "/t/p/w92/pbpMk2JmcoNnQwx5JGpXngfoWtp.jpg",
+    119: "/t/p/w92/pvske1MyAoymrs5bguRfVqYiM9a.jpg",
     337: "/t/p/w92/97yvRBw1GzX7fXprcF80er19ot.jpg",
-    384: "/t/p/w92/Ajqyt5aNxNGjmF6uOfxArGrdf3X.jpg",
+    1899: "/t/p/w92/jbe4gVSfRlbPTdESXhEKpornsfu.jpg",
     531: "/t/p/w92/xbhHHa1YgtpwhC8lb1NQ3ACVcLd.jpg",
-    283: "/t/p/w92/8Gt1iClBlzTeQs8WQm8UrCoIxnQ.jpg",
-    307: "/t/p/w92/mRBIHNJgLMIEReXl2CYq1ZFpAPR.jpg",
+    283: "/t/p/w92/fzN5Jok5Ig1eJ7gyNGoMhnLSCfh.jpg",
+    307: "/t/p/w92/7Cg8esVVXOijXAm1f1vrS7jVjcN.jpg",
     350: "/t/p/w92/6uhKBfmtzFqOcLousHwZuzcrScK.jpg",
-    484: "/t/p/w92/o3sUySbd80qbNlCMGMICaZOkFKE.jpg",
   };
-  const path = logoMap[providerId];
+  const cdnLogoMap: Record<number, string> = {
+    484: "https://d2xsxph8kpxj0f.cloudfront.net/310519663332642038/6zRbVUcmsbK5sCwMQ2CbCm/star-plus-logo_13598112.png",
+  };
+  if (cdnLogoMap[providerId]) return cdnLogoMap[providerId];
+  const path = tmdbLogoMap[providerId];
   return path ? `https://image.tmdb.org${path}` : null;
 }
 

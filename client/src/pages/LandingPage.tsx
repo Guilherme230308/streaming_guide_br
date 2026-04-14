@@ -213,15 +213,15 @@ export default function LandingPage() {
           </p>
           <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-4 sm:gap-6">
             {[
-              { slug: "netflix", name: "Netflix", logo: "https://image.tmdb.org/t/p/w92/pbpMk2JmcoNnQwB5JGpXAbmDP7.jpg" },
-              { slug: "amazon-prime-video", name: "Prime Video", logo: "https://image.tmdb.org/t/p/w92/pvBPMkGqrgKEMCBhPMR2OJxJWXq.jpg" },
+              { slug: "netflix", name: "Netflix", logo: "https://image.tmdb.org/t/p/w92/pbpMk2JmcoNnQwx5JGpXngfoWtp.jpg" },
+              { slug: "amazon-prime-video", name: "Prime Video", logo: "https://image.tmdb.org/t/p/w92/pvske1MyAoymrs5bguRfVqYiM9a.jpg" },
               { slug: "disney-plus", name: "Disney+", logo: "https://image.tmdb.org/t/p/w92/97yvRBw1GzX7fXprcF80er19ot.jpg" },
-              { slug: "hbo-max", name: "HBO Max", logo: "https://image.tmdb.org/t/p/w92/Ajqyt5aNxNGjmF6uOfxArGrdf3X.jpg" },
+              { slug: "hbo-max", name: "Max", logo: "https://image.tmdb.org/t/p/w92/jbe4gVSfRlbPTdESXhEKpornsfu.jpg" },
               { slug: "paramount-plus", name: "Paramount+", logo: "https://image.tmdb.org/t/p/w92/xbhHHa1YgtpwhC8lb1NQ3ACVcLd.jpg" },
-              { slug: "crunchyroll", name: "Crunchyroll", logo: "https://image.tmdb.org/t/p/w92/8Gt1iClBlzTeQs8WQm8UrCoIxnQ.jpg" },
-              { slug: "globoplay", name: "Globoplay", logo: "https://image.tmdb.org/t/p/w92/mRBIHNJgLMIEReXl2CYq1ZFpAPR.jpg" },
+              { slug: "crunchyroll", name: "Crunchyroll", logo: "https://image.tmdb.org/t/p/w92/fzN5Jok5Ig1eJ7gyNGoMhnLSCfh.jpg" },
+              { slug: "globoplay", name: "Globoplay", logo: "https://image.tmdb.org/t/p/w92/7Cg8esVVXOijXAm1f1vrS7jVjcN.jpg" },
               { slug: "apple-tv-plus", name: "Apple TV+", logo: "https://image.tmdb.org/t/p/w92/6uhKBfmtzFqOcLousHwZuzcrScK.jpg" },
-              { slug: "star-plus", name: "Star+", logo: "https://image.tmdb.org/t/p/w92/o3sUySbd80qbNlCMGMICaZOkFKE.jpg" },
+              { slug: "star-plus", name: "Star+", logo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663332642038/6zRbVUcmsbK5sCwMQ2CbCm/star-plus-logo_13598112.png" },
             ].map((provider) => (
               <Link key={provider.slug} href={`/melhores/${provider.slug}`}>
                 <div className="group flex flex-col items-center gap-2 cursor-pointer">
