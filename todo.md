@@ -764,3 +764,16 @@
 - [x] Add server-side meta tag injection for /melhores index page
 - [x] Add server-side meta tag injection for /melhores/:slug provider pages (all 9 providers)
 - [x] Test with WhatsApp/Facebook user-agent (verified correct titles and descriptions)
+
+## OG Images per Provider
+- [x] Generate OG image for Netflix (1200x630)
+- [x] Generate OG image for Amazon Prime Video (1200x630)
+- [x] Generate OG image for Disney+ (1200x630)
+- [x] Generate OG image for HBO Max (1200x630)
+- [x] Generate OG image for Paramount+ (1200x630)
+- [x] Generate OG image for Crunchyroll (1200x630)
+- [x] Generate OG image for Globoplay (1200x630)
+- [x] Generate OG image for Apple TV+ (1200x630)
+- [x] Generate OG image for Star+ (1200x630)
+- [x] Upload images to webdev static assets (CDN hosted)
+- [x] Update seo.ts to reference provider-specific OG images

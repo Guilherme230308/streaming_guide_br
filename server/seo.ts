@@ -175,16 +175,16 @@ async function getTVShowMetaTags(tvId: number): Promise<string> {
 }
 
 // Provider metadata for /melhores pages
-const PROVIDER_META: Record<string, { name: string; description: string; color: string }> = {
-  "netflix": { name: "Netflix", description: "Descubra os melhores filmes e séries disponíveis na Netflix no Brasil. Veja o catálogo atualizado com os títulos mais populares e bem avaliados.", color: "#E50914" },
-  "amazon-prime-video": { name: "Amazon Prime Video", description: "Explore os melhores filmes e séries do Amazon Prime Video no Brasil. Catálogo atualizado com títulos populares e originais Amazon.", color: "#00A8E1" },
-  "disney-plus": { name: "Disney+", description: "Veja os melhores filmes e séries da Disney+ no Brasil. Disney, Pixar, Marvel, Star Wars e National Geographic em um só lugar.", color: "#113CCF" },
-  "hbo-max": { name: "HBO Max", description: "Confira os melhores filmes e séries do HBO Max no Brasil. Séries HBO, filmes Warner Bros e conteúdo exclusivo atualizado.", color: "#B535F6" },
-  "paramount-plus": { name: "Paramount+", description: "Descubra os melhores filmes e séries do Paramount+ no Brasil. Filmes Paramount, séries CBS e produções originais.", color: "#0064FF" },
-  "crunchyroll": { name: "Crunchyroll", description: "Explore os melhores animes disponíveis no Crunchyroll no Brasil. O maior catálogo de anime do mundo atualizado.", color: "#F47521" },
-  "globoplay": { name: "Globoplay", description: "Veja os melhores filmes, séries e novelas do Globoplay. Conteúdo nacional da Globo e produções originais.", color: "#F72B2B" },
-  "apple-tv-plus": { name: "Apple TV+", description: "Confira os melhores filmes e séries do Apple TV+ no Brasil. Produções originais Apple premiadas e aclamadas pela crítica.", color: "#000000" },
-  "star-plus": { name: "Star+", description: "Descubra os melhores filmes, séries e esportes do Star+ no Brasil. ESPN, séries e filmes para adultos.", color: "#02C8C8" },
+const PROVIDER_META: Record<string, { name: string; description: string; color: string; ogImage: string }> = {
+  "netflix": { name: "Netflix", description: "Descubra os melhores filmes e séries disponíveis na Netflix no Brasil. Veja o catálogo atualizado com os títulos mais populares e bem avaliados.", color: "#E50914", ogImage: "https://d2xsxph8kpxj0f.cloudfront.net/310419663029229201/Cvg8278ofufQzThj4s4h83/og-netflix-eX46pVreo7Go9fQm6Zggsb.png" },
+  "amazon-prime-video": { name: "Amazon Prime Video", description: "Explore os melhores filmes e séries do Amazon Prime Video no Brasil. Catálogo atualizado com títulos populares e originais Amazon.", color: "#00A8E1", ogImage: "https://d2xsxph8kpxj0f.cloudfront.net/310419663029229201/Cvg8278ofufQzThj4s4h83/og-amazon-prime-video-ZKiV6Twu3tPMpeCrojwHMu.png" },
+  "disney-plus": { name: "Disney+", description: "Veja os melhores filmes e séries da Disney+ no Brasil. Disney, Pixar, Marvel, Star Wars e National Geographic em um só lugar.", color: "#113CCF", ogImage: "https://d2xsxph8kpxj0f.cloudfront.net/310419663029229201/Cvg8278ofufQzThj4s4h83/og-disney-plus-LaadhVAqe3VcGFKKWaETR9.png" },
+  "hbo-max": { name: "HBO Max", description: "Confira os melhores filmes e séries do HBO Max no Brasil. Séries HBO, filmes Warner Bros e conteúdo exclusivo atualizado.", color: "#B535F6", ogImage: "https://d2xsxph8kpxj0f.cloudfront.net/310419663029229201/Cvg8278ofufQzThj4s4h83/og-hbo-max-85FisE3m97VL3gULqF7k9Z.png" },
+  "paramount-plus": { name: "Paramount+", description: "Descubra os melhores filmes e séries do Paramount+ no Brasil. Filmes Paramount, séries CBS e produções originais.", color: "#0064FF", ogImage: "https://d2xsxph8kpxj0f.cloudfront.net/310419663029229201/Cvg8278ofufQzThj4s4h83/og-paramount-plus-Jx8wz7Fc4ApPrajRvGsLTZ.png" },
+  "crunchyroll": { name: "Crunchyroll", description: "Explore os melhores animes disponíveis no Crunchyroll no Brasil. O maior catálogo de anime do mundo atualizado.", color: "#F47521", ogImage: "https://d2xsxph8kpxj0f.cloudfront.net/310419663029229201/Cvg8278ofufQzThj4s4h83/og-crunchyroll-VNd2jg8WZUa6KXMRsBnR5w.png" },
+  "globoplay": { name: "Globoplay", description: "Veja os melhores filmes, séries e novelas do Globoplay. Conteúdo nacional da Globo e produções originais.", color: "#F72B2B", ogImage: "https://d2xsxph8kpxj0f.cloudfront.net/310419663029229201/Cvg8278ofufQzThj4s4h83/og-globoplay-G7ptPJxAmdeJzdkJXJZGme.png" },
+  "apple-tv-plus": { name: "Apple TV+", description: "Confira os melhores filmes e séries do Apple TV+ no Brasil. Produções originais Apple premiadas e aclamadas pela crítica.", color: "#000000", ogImage: "https://d2xsxph8kpxj0f.cloudfront.net/310419663029229201/Cvg8278ofufQzThj4s4h83/og-apple-tv-plus-A9GUXBBFH7NN6Ab7xCgYKY.png" },
+  "star-plus": { name: "Star+", description: "Descubra os melhores filmes, séries e esportes do Star+ no Brasil. ESPN, séries e filmes para adultos.", color: "#02C8C8", ogImage: "https://d2xsxph8kpxj0f.cloudfront.net/310419663029229201/Cvg8278ofufQzThj4s4h83/og-star-plus-FEJesfieQKUvHfiNSddH8C.png" },
 };
 
 function getMelhoresIndexMetaTags(): string {
@@ -209,7 +209,7 @@ function getProviderMetaTags(slug: string): string {
   return buildMetaTags({
     title: `Melhores Filmes e Séries na ${provider.name} - ${currentMonth} | Onde Assistir`,
     description: provider.description,
-    image: `${SITE_URL}/og-default.png`,
+    image: provider.ogImage,
     url: `${SITE_URL}/melhores/${slug}`,
     type: "website",
   });
