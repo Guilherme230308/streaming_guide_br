@@ -796,3 +796,10 @@
 - [x] Fix onboarding tour step 6 of 8 - modal disappears and tour breaks
 - [x] Fix mobile navigation not scrolling to top when navigating to a new page
 - [x] Fix onboarding tour step 6 - popover appears at wrong position (too high) and disappears on scroll
+
+## Bug Fixes (Streaming Links & OG Image)
+- [x] Fix Claro Video link - updated to clarotvmais.com.br (new Claro platform)
+- [x] Fix Apple TV link - changed to use Portuguese title for Apple TV Brasil
+- [x] Fix JustWatch link - JustWatch is data source, not streaming provider (expected behavior)
+- [x] Fix Google Play Movies link - changed to use Portuguese title
+- [x] Fix OG image not showing when sharing movie via mobile - made SITE_URL dynamic based on request host

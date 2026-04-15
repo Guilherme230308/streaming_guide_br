@@ -1,7 +1,16 @@
 import { type Express, type Request, type Response } from "express";
 import * as tmdb from "./tmdb";
 
-const SITE_URL = "https://streamguide.click";
+// Use the request host dynamically so OG URLs match the domain being accessed
+function getSiteUrl(req?: import("express").Request): string {
+  if (req) {
+    const host = req.get("host") || "streamguide.click";
+    const protocol = req.get("x-forwarded-proto") || req.protocol || "https";
+    return `${protocol}://${host}`;
+  }
+  return "https://streamguide.click";
+}
+const SITE_URL = "https://streamguide.click"; // fallback for sitemap
 
 // Static pages for sitemap
 const PROVIDER_SLUGS = [
@@ -138,8 +147,9 @@ function isBot(userAgent: string): boolean {
   return botPatterns.some((bot) => userAgent.toLowerCase().includes(bot.toLowerCase()));
 }
 
-async function getMovieMetaTags(movieId: number): Promise<string> {
+async function getMovieMetaTags(movieId: number, req?: import("express").Request): Promise<string> {
   try {
+    const siteUrl = getSiteUrl(req);
     const movie = await tmdb.getMovieDetails(movieId);
     const title = `${movie.title} - Onde Assistir | Stream Radar`;
     const description = movie.overview
@@ -147,10 +157,10 @@ async function getMovieMetaTags(movieId: number): Promise<string> {
       : `Descubra onde assistir ${movie.title} no Brasil.`;
     const image = movie.poster_path
       ? `https://image.tmdb.org/t/p/w780${movie.poster_path}`
-      : `${SITE_URL}/og-default.png`;
+      : `${siteUrl}/og-default.png`;
     const imageWidth = movie.poster_path ? "780" : "1200";
     const imageHeight = movie.poster_path ? "1170" : "630";
-    const url = `${SITE_URL}/movie/${movieId}`;
+    const url = `${siteUrl}/movie/${movieId}`;
 
     return buildMetaTags({ title, description, image, url, type: "video.movie", imageWidth, imageHeight });
   } catch (e) {
@@ -158,8 +168,9 @@ async function getMovieMetaTags(movieId: number): Promise<string> {
   }
 }
 
-async function getTVShowMetaTags(tvId: number): Promise<string> {
+async function getTVShowMetaTags(tvId: number, req?: import("express").Request): Promise<string> {
   try {
+    const siteUrl = getSiteUrl(req);
     const show = await tmdb.getTVShowDetails(tvId);
     const title = `${show.name} - Onde Assistir | Stream Radar`;
     const description = show.overview
@@ -167,10 +178,10 @@ async function getTVShowMetaTags(tvId: number): Promise<string> {
       : `Descubra onde assistir ${show.name} no Brasil.`;
     const image = show.poster_path
       ? `https://image.tmdb.org/t/p/w780${show.poster_path}`
-      : `${SITE_URL}/og-default.png`;
+      : `${siteUrl}/og-default.png`;
     const imageWidth = show.poster_path ? "780" : "1200";
     const imageHeight = show.poster_path ? "1170" : "630";
-    const url = `${SITE_URL}/tv/${tvId}`;
+    const url = `${siteUrl}/tv/${tvId}`;
 
     return buildMetaTags({ title, description, image, url, type: "video.tv_show", imageWidth, imageHeight });
   } catch (e) {
@@ -191,20 +202,22 @@ const PROVIDER_META: Record<string, { name: string; description: string; color: 
   "star-plus": { name: "Star+", description: "Descubra os melhores filmes, séries e esportes do Star+ no Brasil. ESPN, séries e filmes para adultos.", color: "#02C8C8", ogImage: "https://d2xsxph8kpxj0f.cloudfront.net/310419663029229201/Cvg8278ofufQzThj4s4h83/og-star-plus-FEJesfieQKUvHfiNSddH8C.png" },
 };
 
-function getMelhoresIndexMetaTags(): string {
+function getMelhoresIndexMetaTags(req?: import("express").Request): string {
+  const siteUrl = getSiteUrl(req);
   const date = new Date();
   const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
   const currentMonth = `${months[date.getMonth()]} ${date.getFullYear()}`;
   return buildMetaTags({
     title: `Melhores Filmes e Séries por Streaming - ${currentMonth} | Stream Radar`,
     description: `Descubra os melhores filmes e séries em cada plataforma de streaming no Brasil em ${currentMonth}. Compare catálogos de Netflix, Prime Video, Disney+, HBO Max e mais.`,
-    image: `${SITE_URL}/og-default.png`,
-    url: `${SITE_URL}/melhores`,
+    image: `${siteUrl}/og-default.png`,
+    url: `${siteUrl}/melhores`,
     type: "website",
   });
 }
 
-function getProviderMetaTags(slug: string): string {
+function getProviderMetaTags(slug: string, req?: import("express").Request): string {
+  const siteUrl = getSiteUrl(req);
   const provider = PROVIDER_META[slug];
   if (!provider) return "";
   const date = new Date();
@@ -214,7 +227,7 @@ function getProviderMetaTags(slug: string): string {
     title: `Melhores Filmes e Séries na ${provider.name} - ${currentMonth} | Stream Radar`,
     description: provider.description,
     image: provider.ogImage,
-    url: `${SITE_URL}/melhores/${slug}`,
+    url: `${siteUrl}/melhores/${slug}`,
     type: "website",
   });
 }
@@ -296,13 +309,13 @@ export function botMetaInjectionMiddleware() {
     try {
       let metaTags = "";
       if (movieMatch) {
-        metaTags = await getMovieMetaTags(parseInt(movieMatch[1]));
+        metaTags = await getMovieMetaTags(parseInt(movieMatch[1]), req);
       } else if (tvMatch) {
-        metaTags = await getTVShowMetaTags(parseInt(tvMatch[1]));
+        metaTags = await getTVShowMetaTags(parseInt(tvMatch[1]), req);
       } else if (melhoresIndexMatch) {
-        metaTags = getMelhoresIndexMetaTags();
+        metaTags = getMelhoresIndexMetaTags(req);
       } else if (melhoresProviderMatch) {
-        metaTags = getProviderMetaTags(melhoresProviderMatch[1]);
+        metaTags = getProviderMetaTags(melhoresProviderMatch[1], req);
       }
 
       if (!metaTags) {

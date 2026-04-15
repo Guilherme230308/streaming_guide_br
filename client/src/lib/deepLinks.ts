@@ -127,19 +127,19 @@ const DEEP_LINK_CONFIG: Record<number, DeepLinkConfig> = {
     providerId: 2,
     providerName: "Apple TV",
     searchUrlTemplate: "https://tv.apple.com/br/search?term={title}",
-    usesLocalTitle: false, // Apple TV works better with original (English) titles
+    usesLocalTitle: true, // Use Portuguese title for Apple TV Brasil
   },
   350: { // Apple TV Plus
     providerId: 350,
     providerName: "Apple TV Plus",
     searchUrlTemplate: "https://tv.apple.com/br/search?term={title}",
-    usesLocalTitle: false,
+    usesLocalTitle: true, // Use Portuguese title for Apple TV Brasil
   },
   3: { // Google Play Movies
     providerId: 3,
     providerName: "Google Play Movies",
     searchUrlTemplate: "https://play.google.com/store/search?q={title}&c=movies",
-    usesLocalTitle: false, // Google Play works better with original titles
+    usesLocalTitle: true, // Use Portuguese title for Google Play Brasil
   },
   10: { // Amazon Video (Buy/Rent)
     providerId: 10,
@@ -157,7 +157,7 @@ const DEEP_LINK_CONFIG: Record<number, DeepLinkConfig> = {
   384: { // Claro video
     providerId: 384,
     providerName: "Claro video",
-    searchUrlTemplate: "https://www.clarovideo.com/brasil/buscar?q={title}",
+    searchUrlTemplate: "https://www.clarotvmais.com.br/busca?q={title}",
     usesLocalTitle: true,
   },
   283: { // Crunchyroll
