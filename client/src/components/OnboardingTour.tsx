@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Search, Tv, ListVideo, Bell, BarChart3, ChevronRight, ChevronLeft, X, Sparkles, Film, SlidersHorizontal } from "lucide-react";
 
@@ -10,6 +10,8 @@ interface TourStep {
   title: string;
   description: string;
   side?: "top" | "bottom" | "left" | "right";
+  /** If true, only highlight the first visible child or a small portion of the element */
+  highlightFirstChild?: boolean;
 }
 
 const tourSteps: TourStep[] = [
@@ -54,6 +56,7 @@ const tourSteps: TourStep[] = [
     title: "Filmes e Séries em Alta",
     description: "Veja o que está bombando no momento! Navegue pelos filmes e séries mais populares e descubra onde assistir cada um.",
     side: "top",
+    highlightFirstChild: true,
   },
   {
     selector: "[data-tour='menu']",
@@ -70,6 +73,21 @@ const tourSteps: TourStep[] = [
     side: "bottom",
   },
 ];
+
+function getHighlightRect(el: Element, step: TourStep): DOMRect {
+  // For large sections, highlight just the heading area (first ~120px) instead of the whole section
+  if (step.highlightFirstChild) {
+    const heading = el.querySelector("h2, h3, .flex.items-center");
+    if (heading) {
+      return heading.getBoundingClientRect();
+    }
+    // Fallback: create a virtual rect for just the top portion
+    const fullRect = el.getBoundingClientRect();
+    const clampedHeight = Math.min(fullRect.height, 120);
+    return new DOMRect(fullRect.x, fullRect.y, fullRect.width, clampedHeight);
+  }
+  return el.getBoundingClientRect();
+}
 
 function TourOverlay({
   step,
@@ -91,9 +109,11 @@ function TourOverlay({
   const [arrowStyle, setArrowStyle] = useState<React.CSSProperties>({});
   const [arrowDirection, setArrowDirection] = useState<"up" | "down">("up");
   const [isAnimating, setIsAnimating] = useState(true);
+  const [isScrolling, setIsScrolling] = useState(false);
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === totalSteps - 1;
   const isCentered = step.selector === "body";
+  const positionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setIsAnimating(true);
@@ -101,8 +121,8 @@ function TourOverlay({
     return () => clearTimeout(timer);
   }, [currentStep]);
 
-  useEffect(() => {
-    if (isCentered) {
+  const positionPopover = useCallback((el?: Element | null) => {
+    if (isCentered || !el) {
       setHighlightStyle({ display: "none" });
       setPopoverStyle({
         position: "fixed",
@@ -115,22 +135,7 @@ function TourOverlay({
       return;
     }
 
-    const el = document.querySelector(step.selector);
-    if (!el) {
-      // Fallback to centered if element not found
-      setHighlightStyle({ display: "none" });
-      setPopoverStyle({
-        position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        zIndex: 10002,
-      });
-      setArrowStyle({ display: "none" });
-      return;
-    }
-
-    const rect = el.getBoundingClientRect();
+    const rect = getHighlightRect(el, step);
     const padding = 8;
 
     // Highlight around the element
@@ -201,10 +206,71 @@ function TourOverlay({
         left: `${Math.max(16, Math.min(arrowLeft, popoverWidth - 32))}px`,
       });
     }
-
-    // Scroll element into view if needed
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [step, isCentered]);
+
+  useEffect(() => {
+    // Clear any pending timeout
+    if (positionTimeoutRef.current) {
+      clearTimeout(positionTimeoutRef.current);
+    }
+
+    if (isCentered) {
+      positionPopover();
+      return;
+    }
+
+    const el = document.querySelector(step.selector);
+    if (!el) {
+      // Element not found — show centered fallback
+      positionPopover();
+      return;
+    }
+
+    // Check if element is in viewport
+    const rect = el.getBoundingClientRect();
+    const isInViewport = rect.top >= -100 && rect.top <= window.innerHeight - 100;
+
+    if (!isInViewport) {
+      // Need to scroll — mark as scrolling to prevent accidental close
+      setIsScrolling(true);
+      
+      // Scroll the element into view
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      
+      // Wait for scroll to complete, then position the popover
+      positionTimeoutRef.current = setTimeout(() => {
+        positionPopover(el);
+        setIsScrolling(false);
+      }, 600);
+    } else {
+      positionPopover(el);
+    }
+
+    // Also recalculate on scroll (in case user scrolls during tour)
+    const handleScroll = () => {
+      const currentEl = document.querySelector(step.selector);
+      if (currentEl) {
+        positionPopover(currentEl);
+      }
+    };
+
+    // Debounced scroll handler
+    let scrollTimeout: ReturnType<typeof setTimeout>;
+    const debouncedScroll = () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(handleScroll, 100);
+    };
+
+    window.addEventListener("scroll", debouncedScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", debouncedScroll);
+      clearTimeout(scrollTimeout);
+      if (positionTimeoutRef.current) {
+        clearTimeout(positionTimeoutRef.current);
+      }
+    };
+  }, [step, isCentered, positionPopover]);
 
   const progress = ((currentStep + 1) / totalSteps) * 100;
 
@@ -219,11 +285,18 @@ function TourOverlay({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose, onNext, onPrev]);
 
+  // Prevent backdrop click from closing during scroll animation
+  const handleBackdropClick = useCallback(() => {
+    if (!isScrolling) {
+      onClose();
+    }
+  }, [isScrolling, onClose]);
+
   return createPortal(
     <div className="tour-overlay-root" style={{ position: "fixed", inset: 0, zIndex: 10000 }}>
       {/* Backdrop */}
       <div
-        onClick={onClose}
+        onClick={handleBackdropClick}
         style={{
           position: "fixed",
           inset: 0,
@@ -240,10 +313,10 @@ function TourOverlay({
       <div
         style={{
           ...popoverStyle,
-          opacity: isAnimating ? 0 : 1,
+          opacity: isAnimating || isScrolling ? 0 : 1,
           transform: isCentered
             ? `translate(-50%, -50%) scale(${isAnimating ? 0.95 : 1})`
-            : `scale(${isAnimating ? 0.95 : 1})`,
+            : `scale(${isAnimating || isScrolling ? 0.95 : 1})`,
           transition: "opacity 0.3s ease, transform 0.3s ease",
         }}
       >
@@ -307,7 +380,6 @@ function TourOverlay({
                 cursor: "pointer",
                 color: "rgba(255,255,255,0.4)",
                 display: "flex",
-                alignItems: "center",
                 justifyContent: "center",
                 transition: "all 0.2s ease",
               }}

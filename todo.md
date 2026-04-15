@@ -793,5 +793,5 @@
 - [x] Rename site from "Onde Assistir" to "Stream Radar" in all user-facing text
 
 ## Bug Fixes (Onboarding Tour)
-- [ ] Fix onboarding tour step 6 of 8 - modal disappears and tour breaks
+- [x] Fix onboarding tour step 6 of 8 - modal disappears and tour breaks
 - [x] Fix mobile navigation not scrolling to top when navigating to a new page
