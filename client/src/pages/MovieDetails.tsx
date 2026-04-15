@@ -197,7 +197,8 @@ export default function MovieDetails() {
     
     // Handle deep linking with both localized and original title
     // Uses PWA-aware method that works in standalone mode
-    handleDeepLink(provider.provider_id, provider.provider_name, "movie", movieId, movie?.title, movie?.original_title);
+    // Pass clickType so Amazon Prime Video streaming goes to primevideo.com
+    handleDeepLink(provider.provider_id, provider.provider_name, "movie", movieId, movie?.title, movie?.original_title, clickType);
   };
 
   const getImageUrl = (path: string | null, size: string = "w500") => {
@@ -205,10 +206,10 @@ export default function MovieDetails() {
     return `https://image.tmdb.org/t/p/${size}${path}`;
   };
 
-  const getProviderUrl = (provider: any) => {
+  const getProviderUrl = (provider: any, clickType?: 'stream' | 'rent' | 'buy') => {
     // Provide real URL in href for PWA compatibility and accessibility
     // In PWA standalone mode, the native <a> tag behavior is more reliable
-    return getProviderDeepLink(provider.provider_id, "movie", movieId, movie?.title, movie?.original_title);
+    return getProviderDeepLink(provider.provider_id, "movie", movieId, movie?.title, movie?.original_title, clickType);
   };
 
   const formatRuntime = (minutes: number) => {
@@ -393,7 +394,7 @@ export default function MovieDetails() {
                     {deduplicateProviders(providers.flatrate).map((provider: any) => (
                       <a
                         key={provider.provider_id}
-                        href={getProviderUrl(provider)}
+                        href={getProviderUrl(provider, 'stream')}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => handleProviderClick(provider, 'stream', e)}
@@ -428,7 +429,7 @@ export default function MovieDetails() {
                     {deduplicateProviders(providers.rent).map((provider: any) => (
                       <a
                         key={provider.provider_id}
-                        href={getProviderUrl(provider)}
+                        href={getProviderUrl(provider, 'rent')}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => handleProviderClick(provider, 'rent', e)}
@@ -463,7 +464,7 @@ export default function MovieDetails() {
                     {deduplicateProviders(providers.buy).map((provider: any) => (
                       <a
                         key={provider.provider_id}
-                        href={getProviderUrl(provider)}
+                        href={getProviderUrl(provider, 'buy')}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => handleProviderClick(provider, 'buy', e)}

@@ -803,3 +803,6 @@
 - [x] Fix JustWatch link - JustWatch is data source, not streaming provider (expected behavior)
 - [x] Fix Google Play Movies link - changed to use Portuguese title
 - [x] Fix OG image not showing when sharing movie via mobile - made SITE_URL dynamic based on request host
+
+## Bug Fixes (Amazon Redirect)
+- [x] Fix Amazon Prime Video link - streaming goes to primevideo.com, buy/rent goes to amazon.com.br with affiliate tag

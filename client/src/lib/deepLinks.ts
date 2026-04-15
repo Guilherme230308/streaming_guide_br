@@ -11,6 +11,7 @@ export interface DeepLinkConfig {
   appScheme?: string; // Mobile app deep link scheme
   webUrlTemplate?: string; // Web URL template with placeholders
   searchUrlTemplate?: string; // Search URL template as fallback
+  streamingSearchUrl?: string; // Alternative URL for streaming (non-affiliate) context
   usesLocalTitle?: boolean; // Whether this provider works better with localized titles
 }
 
@@ -89,9 +90,10 @@ const DEEP_LINK_CONFIG: Record<number, DeepLinkConfig> = {
   119: { // Amazon Prime Video
     providerId: 119,
     providerName: "Amazon Prime Video",
-    // Use amazon.com.br/s?i=instant-video so Amazon Associates tracks the click
-    // primevideo.com does NOT register affiliate clicks
-    // /gp/video/search returns 404 on amazon.com.br
+    appScheme: "intent://www.primevideo.com/search?phrase={title}#Intent;scheme=https;package=com.amazon.avod.thirdpartyclient;end",
+    // For streaming: use primevideo.com (better UX, shows Prime Video interface)
+    streamingSearchUrl: "https://www.primevideo.com/search?phrase={title}",
+    // For buy/rent: use amazon.com.br so Amazon Associates tracks the click
     searchUrlTemplate: "https://www.amazon.com.br/s?k={title}&i=instant-video",
     usesLocalTitle: true,
   },
@@ -144,7 +146,7 @@ const DEEP_LINK_CONFIG: Record<number, DeepLinkConfig> = {
   10: { // Amazon Video (Buy/Rent)
     providerId: 10,
     providerName: "Amazon Video",
-    // Use amazon.com.br domain so Amazon Associates tracks the click
+    // Buy/Rent always uses amazon.com.br for affiliate tracking
     searchUrlTemplate: "https://www.amazon.com.br/s?k={title}&i=instant-video",
     usesLocalTitle: true,
   },
@@ -224,7 +226,8 @@ export function getProviderDeepLink(
   contentType: 'movie' | 'tv',
   tmdbId: number,
   title?: string,
-  originalTitle?: string
+  originalTitle?: string,
+  clickType?: 'stream' | 'rent' | 'buy'
 ): string {
   const config = DEEP_LINK_CONFIG[providerId];
   
@@ -240,6 +243,12 @@ export function getProviderDeepLink(
       return `https://www.google.com/search?q=${encodedTitle}+assistir+online`;
     }
     return `https://www.google.com/search?q=${contentType}+${tmdbId}+streaming+brasil`;
+  }
+
+  // For Amazon Prime Video streaming: use primevideo.com for better UX
+  // For buy/rent: use amazon.com.br to preserve affiliate tracking
+  if (config.streamingSearchUrl && clickType === 'stream' && bestTitle) {
+    return config.streamingSearchUrl.replace('{title}', encodedTitle);
   }
 
   // For mobile devices (NOT in PWA mode), try app scheme first
@@ -367,10 +376,11 @@ export function handleProviderClick(
   contentType: 'movie' | 'tv',
   tmdbId: number,
   title?: string,
-  originalTitle?: string
+  originalTitle?: string,
+  clickType?: 'stream' | 'rent' | 'buy'
 ): void {
   // Get the appropriate deep link URL FIRST (synchronous, within user gesture)
-  const url = getProviderDeepLink(providerId, contentType, tmdbId, title, originalTitle);
+  const url = getProviderDeepLink(providerId, contentType, tmdbId, title, originalTitle, clickType);
 
   // Open the link using PWA-aware method
   openExternalUrl(url);

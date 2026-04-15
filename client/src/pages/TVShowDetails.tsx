@@ -187,7 +187,7 @@ export default function TVShowDetails() {
       clickType,
     });
     
-    handleDeepLink(provider.provider_id, provider.provider_name, "tv", tvId, show?.name, show?.original_name);
+    handleDeepLink(provider.provider_id, provider.provider_name, "tv", tvId, show?.name, show?.original_name, clickType);
   };
 
   const getImageUrl = (path: string | null, size: string = "w500") => {
@@ -195,8 +195,8 @@ export default function TVShowDetails() {
     return `https://image.tmdb.org/t/p/${size}${path}`;
   };
 
-  const getProviderUrl = (provider: any) => {
-    return getProviderDeepLink(provider.provider_id, "tv", tvId, show?.name, show?.original_name);
+  const getProviderUrl = (provider: any, clickType?: 'stream' | 'rent' | 'buy') => {
+    return getProviderDeepLink(provider.provider_id, "tv", tvId, show?.name, show?.original_name, clickType);
   };
 
   if (isLoading) {
@@ -380,7 +380,7 @@ export default function TVShowDetails() {
                     {deduplicateProviders(providers.flatrate).map((provider: any) => (
                       <a
                         key={provider.provider_id}
-                        href={getProviderUrl(provider)}
+                        href={getProviderUrl(provider, 'stream')}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => handleProviderClick(provider, 'stream', e)}
@@ -415,7 +415,7 @@ export default function TVShowDetails() {
                     {deduplicateProviders(providers.rent).map((provider: any) => (
                       <a
                         key={provider.provider_id}
-                        href={getProviderUrl(provider)}
+                        href={getProviderUrl(provider, 'rent')}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => handleProviderClick(provider, 'rent', e)}
@@ -450,7 +450,7 @@ export default function TVShowDetails() {
                     {deduplicateProviders(providers.buy).map((provider: any) => (
                       <a
                         key={provider.provider_id}
-                        href={getProviderUrl(provider)}
+                        href={getProviderUrl(provider, 'buy')}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => handleProviderClick(provider, 'buy', e)}
