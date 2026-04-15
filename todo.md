@@ -795,3 +795,4 @@
 ## Bug Fixes (Onboarding Tour)
 - [x] Fix onboarding tour step 6 of 8 - modal disappears and tour breaks
 - [x] Fix mobile navigation not scrolling to top when navigating to a new page
+- [x] Fix onboarding tour step 6 - popover appears at wrong position (too high) and disappears on scroll

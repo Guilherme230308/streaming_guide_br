@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
-import { Search, Tv, ListVideo, Bell, BarChart3, ChevronRight, ChevronLeft, X, Sparkles, Film, SlidersHorizontal } from "lucide-react";
+import { Search, Tv, ListVideo, Bell, ChevronRight, ChevronLeft, X, Sparkles, Film, SlidersHorizontal } from "lucide-react";
 
 const TOUR_COMPLETED_KEY = "onboarding_tour_completed";
 
@@ -10,8 +10,6 @@ interface TourStep {
   title: string;
   description: string;
   side?: "top" | "bottom" | "left" | "right";
-  /** If true, only highlight the first visible child or a small portion of the element */
-  highlightFirstChild?: boolean;
 }
 
 const tourSteps: TourStep[] = [
@@ -51,12 +49,13 @@ const tourSteps: TourStep[] = [
     side: "bottom",
   },
   {
-    selector: "[data-tour='trending-movies']",
+    // Step 6: Show as centered modal — the trending section is too far down the page
+    // to reliably scroll + highlight without UX issues
+    selector: "body",
     icon: <Film className="h-6 w-6" />,
     title: "Filmes e Séries em Alta",
-    description: "Veja o que está bombando no momento! Navegue pelos filmes e séries mais populares e descubra onde assistir cada um.",
-    side: "top",
-    highlightFirstChild: true,
+    description: "Veja o que está bombando no momento! Na página principal, navegue pelos filmes e séries mais populares e descubra onde assistir cada um.",
+    side: "bottom",
   },
   {
     selector: "[data-tour='menu']",
@@ -73,21 +72,6 @@ const tourSteps: TourStep[] = [
     side: "bottom",
   },
 ];
-
-function getHighlightRect(el: Element, step: TourStep): DOMRect {
-  // For large sections, highlight just the heading area (first ~120px) instead of the whole section
-  if (step.highlightFirstChild) {
-    const heading = el.querySelector("h2, h3, .flex.items-center");
-    if (heading) {
-      return heading.getBoundingClientRect();
-    }
-    // Fallback: create a virtual rect for just the top portion
-    const fullRect = el.getBoundingClientRect();
-    const clampedHeight = Math.min(fullRect.height, 120);
-    return new DOMRect(fullRect.x, fullRect.y, fullRect.width, clampedHeight);
-  }
-  return el.getBoundingClientRect();
-}
 
 function TourOverlay({
   step,
@@ -108,34 +92,21 @@ function TourOverlay({
   const [highlightStyle, setHighlightStyle] = useState<React.CSSProperties>({});
   const [arrowStyle, setArrowStyle] = useState<React.CSSProperties>({});
   const [arrowDirection, setArrowDirection] = useState<"up" | "down">("up");
-  const [isAnimating, setIsAnimating] = useState(true);
-  const [isScrolling, setIsScrolling] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === totalSteps - 1;
   const isCentered = step.selector === "body";
-  const positionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rafRef = useRef<number>(0);
 
+  // Fade in on step change
   useEffect(() => {
-    setIsAnimating(true);
-    const timer = setTimeout(() => setIsAnimating(false), 300);
+    setIsVisible(false);
+    const timer = setTimeout(() => setIsVisible(true), 50);
     return () => clearTimeout(timer);
   }, [currentStep]);
 
-  const positionPopover = useCallback((el?: Element | null) => {
-    if (isCentered || !el) {
-      setHighlightStyle({ display: "none" });
-      setPopoverStyle({
-        position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        zIndex: 10002,
-      });
-      setArrowStyle({ display: "none" });
-      return;
-    }
-
-    const rect = getHighlightRect(el, step);
+  const positionForElement = useCallback((el: Element) => {
+    const rect = el.getBoundingClientRect();
     const padding = 8;
 
     // Highlight around the element
@@ -178,7 +149,6 @@ function TourOverlay({
         left: `${left}px`,
         width: `${popoverWidth}px`,
         zIndex: 10002,
-        transition: "all 0.3s ease",
       });
     } else {
       setPopoverStyle({
@@ -187,7 +157,6 @@ function TourOverlay({
         left: `${left}px`,
         width: `${popoverWidth}px`,
         zIndex: 10002,
-        transition: "all 0.3s ease",
       });
     }
 
@@ -206,71 +175,84 @@ function TourOverlay({
         left: `${Math.max(16, Math.min(arrowLeft, popoverWidth - 32))}px`,
       });
     }
-  }, [step, isCentered]);
+  }, []);
+
+  const positionCentered = useCallback(() => {
+    setHighlightStyle({ display: "none" });
+    setPopoverStyle({
+      position: "fixed",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      zIndex: 10002,
+    });
+    setArrowStyle({ display: "none" });
+  }, []);
 
   useEffect(() => {
-    // Clear any pending timeout
-    if (positionTimeoutRef.current) {
-      clearTimeout(positionTimeoutRef.current);
-    }
-
     if (isCentered) {
-      positionPopover();
+      // Scroll back to top for centered steps (welcome/final)
+      if (currentStep === 0 || isLastStep) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      positionCentered();
       return;
     }
 
     const el = document.querySelector(step.selector);
     if (!el) {
-      // Element not found — show centered fallback
-      positionPopover();
+      positionCentered();
       return;
     }
 
-    // Check if element is in viewport
+    // Check if element is reasonably in viewport
     const rect = el.getBoundingClientRect();
-    const isInViewport = rect.top >= -100 && rect.top <= window.innerHeight - 100;
+    const inView = rect.top >= -50 && rect.bottom <= window.innerHeight + 50;
 
-    if (!isInViewport) {
-      // Need to scroll — mark as scrolling to prevent accidental close
-      setIsScrolling(true);
-      
-      // Scroll the element into view
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
-      
-      // Wait for scroll to complete, then position the popover
-      positionTimeoutRef.current = setTimeout(() => {
-        positionPopover(el);
-        setIsScrolling(false);
-      }, 600);
+    if (inView) {
+      positionForElement(el);
     } else {
-      positionPopover(el);
+      // Scroll element into view first, then position after scroll settles
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+
+      // Poll until the element is stable in the viewport
+      let attempts = 0;
+      let lastTop = rect.top;
+      const pollInterval = setInterval(() => {
+        attempts++;
+        const newRect = el.getBoundingClientRect();
+        const settled = Math.abs(newRect.top - lastTop) < 2;
+        lastTop = newRect.top;
+
+        if (settled || attempts > 20) {
+          clearInterval(pollInterval);
+          positionForElement(el);
+        }
+      }, 100);
+
+      return () => clearInterval(pollInterval);
     }
+  }, [step, isCentered, currentStep, isLastStep, positionForElement, positionCentered]);
 
-    // Also recalculate on scroll (in case user scrolls during tour)
-    const handleScroll = () => {
-      const currentEl = document.querySelector(step.selector);
-      if (currentEl) {
-        positionPopover(currentEl);
-      }
+  // Reposition on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (isCentered) return;
+      const el = document.querySelector(step.selector);
+      if (el) positionForElement(el);
     };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [step, isCentered, positionForElement]);
 
-    // Debounced scroll handler
-    let scrollTimeout: ReturnType<typeof setTimeout>;
-    const debouncedScroll = () => {
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(handleScroll, 100);
-    };
-
-    window.addEventListener("scroll", debouncedScroll, { passive: true });
-
+  // Lock body scroll during tour to prevent user from scrolling away
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     return () => {
-      window.removeEventListener("scroll", debouncedScroll);
-      clearTimeout(scrollTimeout);
-      if (positionTimeoutRef.current) {
-        clearTimeout(positionTimeoutRef.current);
-      }
+      document.body.style.overflow = originalOverflow;
     };
-  }, [step, isCentered, positionPopover]);
+  }, []);
 
   const progress = ((currentStep + 1) / totalSteps) * 100;
 
@@ -285,18 +267,11 @@ function TourOverlay({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose, onNext, onPrev]);
 
-  // Prevent backdrop click from closing during scroll animation
-  const handleBackdropClick = useCallback(() => {
-    if (!isScrolling) {
-      onClose();
-    }
-  }, [isScrolling, onClose]);
-
   return createPortal(
     <div className="tour-overlay-root" style={{ position: "fixed", inset: 0, zIndex: 10000 }}>
-      {/* Backdrop */}
+      {/* Backdrop - clicking closes tour */}
       <div
-        onClick={handleBackdropClick}
+        onClick={onClose}
         style={{
           position: "fixed",
           inset: 0,
@@ -313,10 +288,10 @@ function TourOverlay({
       <div
         style={{
           ...popoverStyle,
-          opacity: isAnimating || isScrolling ? 0 : 1,
-          transform: isCentered
-            ? `translate(-50%, -50%) scale(${isAnimating ? 0.95 : 1})`
-            : `scale(${isAnimating || isScrolling ? 0.95 : 1})`,
+          opacity: isVisible ? 1 : 0,
+          ...(isCentered
+            ? { transform: `translate(-50%, -50%) scale(${isVisible ? 1 : 0.95})` }
+            : {}),
           transition: "opacity 0.3s ease, transform 0.3s ease",
         }}
       >
