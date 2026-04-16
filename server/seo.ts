@@ -271,6 +271,30 @@ function escapeHtml(str: string): string {
     .replace(/'/g, "&#039;");
 }
 
+/**
+ * Build a minimal but complete HTML page for bot crawlers.
+ * This page contains the correct OG meta tags and a noscript redirect.
+ * Bots don't execute JS, so they only see the meta tags.
+ * Real users with JS will be redirected to the SPA.
+ */
+function buildBotHtml(metaTags: string, canonicalUrl: string): string {
+  return `<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+${metaTags}
+  <link rel="canonical" href="${escapeHtml(canonicalUrl)}" />
+  <meta name="theme-color" content="#0d1117" />
+</head>
+<body>
+  <p>Redirecionando...</p>
+  <script>window.location.replace(window.location.href);</script>
+  <noscript><meta http-equiv="refresh" content="0;url=${escapeHtml(canonicalUrl)}" /></noscript>
+</body>
+</html>`;
+}
+
 // Register SEO routes on the Express app
 export function registerSEORoutes(app: Express) {
   // Sitemap endpoint
@@ -283,6 +307,83 @@ export function registerSEORoutes(app: Express) {
     } catch (e) {
       console.error("[SEO] Sitemap generation failed:", e);
       res.status(500).send("Internal Server Error");
+    }
+  });
+
+  // Dedicated bot routes that return complete HTML with OG tags
+  // These routes are registered BEFORE static serving, so they intercept bot requests
+  // in both development and production (including CDN/pre-renderer environments)
+
+  app.get("/movie/:id", async (req: Request, res: Response, next: Function) => {
+    const userAgent = req.headers["user-agent"] || "";
+    if (!isBot(userAgent)) return next();
+    try {
+      const movieId = parseInt(req.params.id);
+      if (isNaN(movieId)) return next();
+      const metaTags = await getMovieMetaTags(movieId, req);
+      if (!metaTags) return next();
+      const siteUrl = getSiteUrl(req);
+      const html = buildBotHtml(metaTags, `${siteUrl}/movie/${movieId}`);
+      res.set("Content-Type", "text/html; charset=utf-8");
+      res.set("Cache-Control", "public, max-age=3600");
+      res.send(html);
+    } catch (e) {
+      console.error("[SEO] Bot movie route failed:", e);
+      next();
+    }
+  });
+
+  app.get("/tv/:id", async (req: Request, res: Response, next: Function) => {
+    const userAgent = req.headers["user-agent"] || "";
+    if (!isBot(userAgent)) return next();
+    try {
+      const tvId = parseInt(req.params.id);
+      if (isNaN(tvId)) return next();
+      const metaTags = await getTVShowMetaTags(tvId, req);
+      if (!metaTags) return next();
+      const siteUrl = getSiteUrl(req);
+      const html = buildBotHtml(metaTags, `${siteUrl}/tv/${tvId}`);
+      res.set("Content-Type", "text/html; charset=utf-8");
+      res.set("Cache-Control", "public, max-age=3600");
+      res.send(html);
+    } catch (e) {
+      console.error("[SEO] Bot TV route failed:", e);
+      next();
+    }
+  });
+
+  app.get("/melhores", async (req: Request, res: Response, next: Function) => {
+    const userAgent = req.headers["user-agent"] || "";
+    if (!isBot(userAgent)) return next();
+    try {
+      const metaTags = getMelhoresIndexMetaTags(req);
+      if (!metaTags) return next();
+      const siteUrl = getSiteUrl(req);
+      const html = buildBotHtml(metaTags, `${siteUrl}/melhores`);
+      res.set("Content-Type", "text/html; charset=utf-8");
+      res.set("Cache-Control", "public, max-age=3600");
+      res.send(html);
+    } catch (e) {
+      console.error("[SEO] Bot melhores route failed:", e);
+      next();
+    }
+  });
+
+  app.get("/melhores/:slug", async (req: Request, res: Response, next: Function) => {
+    const userAgent = req.headers["user-agent"] || "";
+    if (!isBot(userAgent)) return next();
+    try {
+      const slug = req.params.slug;
+      const metaTags = getProviderMetaTags(slug, req);
+      if (!metaTags) return next();
+      const siteUrl = getSiteUrl(req);
+      const html = buildBotHtml(metaTags, `${siteUrl}/melhores/${slug}`);
+      res.set("Content-Type", "text/html; charset=utf-8");
+      res.set("Cache-Control", "public, max-age=3600");
+      res.send(html);
+    } catch (e) {
+      console.error("[SEO] Bot melhores provider route failed:", e);
+      next();
     }
   });
 }

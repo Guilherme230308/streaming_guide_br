@@ -806,3 +806,6 @@
 
 ## Bug Fixes (Amazon Redirect)
 - [x] Fix Amazon Prime Video link - streaming goes to primevideo.com, buy/rent goes to amazon.com.br with affiliate tag
+
+## Bug Fixes (Production OG Image)
+- [x] Fix OG image in production - created dedicated bot routes that return complete HTML with OG tags, bypassing CDN/pre-renderer
