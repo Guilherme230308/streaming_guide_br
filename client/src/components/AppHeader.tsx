@@ -44,6 +44,9 @@ export function AppHeader() {
             <div className="flex items-center gap-2 cursor-pointer flex-shrink-0">
               <Film className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
               <span className="text-lg sm:text-2xl font-bold text-foreground whitespace-nowrap">Stream Radar</span>
+              <span className="rounded border border-primary/50 bg-primary/10 px-1 py-px text-[9px] sm:text-[10px] font-bold tracking-widest text-primary leading-none">
+                BETA
+              </span>
             </div>
           </Link>
 
