@@ -823,3 +823,10 @@
 - [x] Implementar cache em memória para chamadas TMDB (trending, popular, detalhes, providers)
 - [x] Restringir feature de IA (identifyContent) apenas para usuários autenticados
 - [x] Aumentar cache do sitemap de 1h para 24h
+
+## SEO Fixes - Google Search Console (Julho 2026)
+- [x] Fix canonical tags: force canonical to always use streamradar.com.br (not dynamic host)
+- [x] Fix soft 404s: return HTTP 404 status for unknown routes on server-side
+- [x] Add noindex to search pages with filter params (prevent duplicate indexing)
+- [x] Block crawling of old domain streamguide.click via robots.txt or 301 redirect
+- [x] Reduce crawled-not-indexed: improve page content signals for Googlebot

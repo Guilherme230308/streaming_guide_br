@@ -10,6 +10,18 @@ Disallow: /lists
 Disallow: /list/
 Disallow: /affiliate-analytics
 Disallow: /streaming-analysis
+Disallow: /404
+
+# Block search pages with filter parameters to prevent duplicate indexing
+Disallow: /search?*genres=
+Disallow: /search?*yearMin=
+Disallow: /search?*yearMax=
+Disallow: /search?*ratingMin=
+Disallow: /search?*providers=
+Disallow: /search?*page=
 
 # Sitemap
 Sitemap: https://streamradar.com.br/sitemap.xml
+
+# Canonical domain is streamradar.com.br
+# All other domains should 301 redirect to this one

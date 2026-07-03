@@ -31,6 +31,29 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 async function startServer() {
   const app = express();
   const server = createServer(app);
+
+  // 301 redirect non-canonical domains to streamradar.com.br
+  // This fixes "Duplicate without user-selected canonical" in Google Search Console
+  const CANONICAL_DOMAIN = "streamradar.com.br";
+  app.use((req, res, next) => {
+    const host = req.get("host") || "";
+    // Skip in development and for health checks
+    if (process.env.NODE_ENV === "development" || !host || host.includes("localhost")) {
+      return next();
+    }
+    // Redirect non-canonical domains (streamguide.click, manus.space, www variants)
+    if (host !== CANONICAL_DOMAIN && host !== `www.${CANONICAL_DOMAIN}`) {
+      const protocol = req.get("x-forwarded-proto") || req.protocol || "https";
+      return res.redirect(301, `${protocol}://${CANONICAL_DOMAIN}${req.originalUrl}`);
+    }
+    // Redirect www to non-www
+    if (host === `www.${CANONICAL_DOMAIN}`) {
+      const protocol = req.get("x-forwarded-proto") || req.protocol || "https";
+      return res.redirect(301, `${protocol}://${CANONICAL_DOMAIN}${req.originalUrl}`);
+    }
+    next();
+  });
+
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));

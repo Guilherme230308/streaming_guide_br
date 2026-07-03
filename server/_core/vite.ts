@@ -42,6 +42,34 @@ export async function setupVite(app: Express, server: Server) {
   });
 
   app.use(vite.middlewares);
+
+  // Known client-side routes for dev mode - must match App.tsx Router
+  const KNOWN_ROUTES_DEV = [
+    /^\/$/,
+    /^\/search/,
+    /^\/movie\/\d+$/,
+    /^\/tv\/\d+$/,
+    /^\/watchlist$/,
+    /^\/subscriptions$/,
+    /^\/alerts$/,
+    /^\/upcoming$/,
+    /^\/genres$/,
+    /^\/history$/,
+    /^\/lists$/,
+    /^\/list\/[^/]+$/,
+    /^\/about$/,
+    /^\/streaming-prices$/,
+    /^\/affiliate-analytics$/,
+    /^\/streaming-analysis$/,
+    /^\/melhores$/,
+    /^\/melhores\/[a-z0-9-]+$/,
+    /^\/404$/,
+  ];
+
+  function isKnownRouteDev(pathname: string): boolean {
+    return KNOWN_ROUTES_DEV.some(pattern => pattern.test(pathname));
+  }
+
   app.use("*", async (req, res, next) => {
     const url = req.originalUrl;
 
@@ -66,7 +94,10 @@ export async function setupVite(app: Express, server: Server) {
         template = template.replace('</head>', `${seoMetaTags}\n  </head>`);
       }
       const page = await vite.transformIndexHtml(url, template);
-      res.status(200).set({ "Content-Type": "text/html" }).end(page);
+      // Return 404 status for unknown routes to fix soft 404 issues
+      const pathname = new URL(url, 'http://localhost').pathname;
+      const statusCode = isKnownRouteDev(pathname) ? 200 : 404;
+      res.status(statusCode).set({ "Content-Type": "text/html" }).end(page);
     } catch (e) {
       vite.ssrFixStacktrace(e as Error);
       next(e);
@@ -87,19 +118,50 @@ export function serveStatic(app: Express) {
 
   app.use(express.static(distPath));
 
+  // Known client-side routes - must match App.tsx Router
+  const KNOWN_ROUTES = [
+    /^\/$/,
+    /^\/search$/,
+    /^\/movie\/\d+$/,
+    /^\/tv\/\d+$/,
+    /^\/watchlist$/,
+    /^\/subscriptions$/,
+    /^\/alerts$/,
+    /^\/upcoming$/,
+    /^\/genres$/,
+    /^\/history$/,
+    /^\/lists$/,
+    /^\/list\/[^/]+$/,
+    /^\/about$/,
+    /^\/streaming-prices$/,
+    /^\/affiliate-analytics$/,
+    /^\/streaming-analysis$/,
+    /^\/melhores$/,
+    /^\/melhores\/[a-z0-9-]+$/,
+    /^\/404$/,
+  ];
+
+  function isKnownRoute(pathname: string): boolean {
+    return KNOWN_ROUTES.some(pattern => pattern.test(pathname));
+  }
+
   // fall through to index.html if the file doesn't exist (but not for API routes)
-  // Use a more specific pattern that excludes /api/ routes
+  // Returns 404 status for unknown routes to prevent soft 404 issues with Google
   app.get(/^(?!\/api\/).*/, (req, res) => {
+    const pathname = req.path;
     const seoMetaTags = (req as any).__seoMetaTags;
+    const indexPath = path.resolve(distPath, "index.html");
+    const isKnown = isKnownRoute(pathname);
+    const statusCode = isKnown ? 200 : 404;
+
     if (seoMetaTags) {
       // For bot requests, replace default meta tags with dynamic ones
-      const indexPath = path.resolve(distPath, "index.html");
       let html = fs.readFileSync(indexPath, "utf-8");
       html = stripDefaultMetaTags(html);
       html = html.replace('</head>', `${seoMetaTags}\n  </head>`);
-      res.set("Content-Type", "text/html").send(html);
+      res.status(statusCode).set("Content-Type", "text/html").send(html);
     } else {
-      res.sendFile(path.resolve(distPath, "index.html"));
+      res.status(statusCode).sendFile(path.resolve(distPath, "index.html"));
     }
   });
 }

@@ -1,13 +1,9 @@
 import { type Express, type Request, type Response } from "express";
 import * as tmdb from "./tmdb";
 
-// Use the request host dynamically so OG URLs match the domain being accessed
-function getSiteUrl(req?: import("express").Request): string {
-  if (req) {
-    const host = req.get("host") || "streamradar.com.br";
-    const protocol = req.get("x-forwarded-proto") || req.protocol || "https";
-    return `${protocol}://${host}`;
-  }
+// Always use the canonical domain for SEO URLs to prevent duplicate content issues
+// across multiple domains (streamguide.click, streamradar.com.br, manus.space)
+function getSiteUrl(_req?: import("express").Request): string {
   return "https://streamradar.com.br";
 }
 const SITE_URL = "https://streamradar.com.br"; // fallback for sitemap
