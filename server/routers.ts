@@ -31,6 +31,8 @@ export const appRouter = router({
         page: z.number().default(1),
       }))
       .query(async ({ input }) => {
+        const { trackMetric } = await import("./metricsTracker");
+        trackMetric("search_request");
         const results = await tmdb.searchMulti(input.query, input.page);
         return results;
       }),
@@ -1229,6 +1231,8 @@ IMPORTANTE: Quando identificar filmes ou séries, SEMPRE inclua o título origin
         messages.push({ role: 'user', content: input.description });
 
         try {
+          const { trackMetric } = await import("./metricsTracker");
+          trackMetric("ai_usage");
           const response = await invokeLLM({ messages });
           const assistantMessage = response.choices[0]?.message?.content;
           
@@ -1563,6 +1567,94 @@ IMPORTANTE: Quando identificar filmes ou séries, SEMPRE inclua o título origin
       }).optional())
       .query(async ({ input }) => {
         return await db.getAvailabilityReports(input?.status);
+      }),
+  }),
+
+  metrics: router({
+    getDashboard: protectedProcedure
+      .input(z.object({
+        startDate: z.string(),
+        endDate: z.string(),
+      }))
+      .query(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') {
+          throw new Error('Unauthorized: Admin access required');
+        }
+        const { getDailyMetrics, getCacheHitRate, getTodayMetrics } = await import("./metricsTracker");
+        const { getCacheStats } = await import("./tmdb");
+
+        const [dailyMetrics, cacheHitRate, todayMetrics] = await Promise.all([
+          getDailyMetrics(input.startDate, input.endDate),
+          getCacheHitRate(input.startDate, input.endDate),
+          getTodayMetrics(),
+        ]);
+
+        const cacheStats = getCacheStats();
+
+        return {
+          dailyMetrics,
+          cacheHitRate,
+          todayMetrics,
+          cacheStats,
+        };
+      }),
+
+    getSummary: protectedProcedure
+      .query(async ({ ctx }) => {
+        if (ctx.user.role !== 'admin') {
+          throw new Error('Unauthorized: Admin access required');
+        }
+        const { getMetrics, getCacheHitRate } = await import("./metricsTracker");
+        const { getCacheStats } = await import("./tmdb");
+
+        const today = new Date().toISOString().split("T")[0];
+        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+
+        const [weekMetrics, monthMetrics, weekCacheRate] = await Promise.all([
+          getMetrics(sevenDaysAgo, today),
+          getMetrics(thirtyDaysAgo, today),
+          getCacheHitRate(sevenDaysAgo, today),
+        ]);
+
+        const cacheStats = getCacheStats();
+
+        // Aggregate week metrics by type
+        const weekSummary: Record<string, number> = {};
+        for (const m of weekMetrics) {
+          weekSummary[m.metricType] = (weekSummary[m.metricType] || 0) + m.count;
+        }
+
+        // Aggregate month metrics by type
+        const monthSummary: Record<string, number> = {};
+        for (const m of monthMetrics) {
+          monthSummary[m.metricType] = (monthSummary[m.metricType] || 0) + m.count;
+        }
+
+        // Estimate costs based on Autoscale pricing
+        // Autoscale: ~$0.000016 per vCPU-second, ~$0.0000018 per GiB-second
+        // Estimate: each API call ~0.1s CPU, each page view ~0.05s CPU
+        const monthApiCalls = monthSummary['tmdb_api_call'] || 0;
+        const monthPageViews = monthSummary['page_view'] || 0;
+        const monthAiUsage = monthSummary['ai_usage'] || 0;
+        const monthSearches = monthSummary['search_request'] || 0;
+
+        const estimatedCpuSeconds = (monthApiCalls * 0.1) + (monthPageViews * 0.05) + (monthAiUsage * 2) + (monthSearches * 0.1);
+        const estimatedCloudCost = estimatedCpuSeconds * 0.000016 * 1; // 1 vCPU
+        const estimatedMemoryCost = estimatedCpuSeconds * 0.0000018 * 0.5; // 512MiB
+        const estimatedAiCost = monthAiUsage * 0.003; // ~$0.003 per LLM call
+
+        return {
+          weekSummary,
+          monthSummary,
+          weekCacheRate,
+          cacheStats,
+          costEstimate: {
+            cloud: Number((estimatedCloudCost + estimatedMemoryCost).toFixed(4)),
+            ai: Number(estimatedAiCost.toFixed(4)),
+            total: Number((estimatedCloudCost + estimatedMemoryCost + estimatedAiCost).toFixed(4)),
+          },
+        };
       }),
   }),
 });

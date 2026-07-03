@@ -25,6 +25,7 @@ import AffiliateAnalytics from "./pages/AffiliateAnalytics";
 import StreamingAnalysis from "./pages/StreamingAnalysis";
 import ProviderIndex from "./pages/ProviderIndex";
 import ProviderContent from "./pages/ProviderContent";
+import UsageMetrics from "./pages/UsageMetrics";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -57,6 +58,7 @@ function Router() {
       <Route path={"/streaming-analysis"} component={StreamingAnalysis} />
       <Route path={"/melhores"} component={ProviderIndex} />
       <Route path={"/melhores/:slug"} component={ProviderContent} />
+      <Route path={"/admin/metricas"} component={UsageMetrics} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

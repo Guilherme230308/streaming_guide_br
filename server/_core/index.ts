@@ -57,6 +57,23 @@ async function startServer() {
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
+  // Track page views (only HTML page requests, not API/assets)
+  app.use(async (req, res, next) => {
+    if (
+      req.method === "GET" &&
+      !req.path.startsWith("/api/") &&
+      !req.path.startsWith("/assets/") &&
+      !req.path.includes(".") &&
+      req.path !== "/favicon.ico"
+    ) {
+      try {
+        const { trackMetric } = await import("../metricsTracker");
+        trackMetric("page_view");
+      } catch {}
+    }
+    next();
+  });
+
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
   // SEO: sitemap.xml endpoint

@@ -274,3 +274,29 @@ export const availabilityReports = mysqlTable("availability_reports", {
 
 export type AvailabilityReport = typeof availabilityReports.$inferSelect;
 export type InsertAvailabilityReport = typeof availabilityReports.$inferInsert;
+
+/**
+ * Usage metrics - tracks API calls, cache performance, and resource consumption
+ * Aggregated hourly to keep table size manageable
+ */
+export const usageMetrics = mysqlTable("usage_metrics", {
+  id: int("id").autoincrement().primaryKey(),
+  date: varchar("date", { length: 10 }).notNull(), // YYYY-MM-DD
+  hour: int("hour").notNull(), // 0-23
+  metricType: mysqlEnum("metricType", [
+    "tmdb_api_call",
+    "tmdb_cache_hit",
+    "ai_usage",
+    "page_view",
+    "search_request"
+  ]).notNull(),
+  count: int("count").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  dateHourTypeIdx: unique("dateHourTypeIdx").on(table.date, table.hour, table.metricType),
+  dateIdx: index("dateIdx").on(table.date),
+}));
+
+export type UsageMetric = typeof usageMetrics.$inferSelect;
+export type InsertUsageMetric = typeof usageMetrics.$inferInsert;

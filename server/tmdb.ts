@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+import { trackMetric } from "./metricsTracker";
+
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p';
 
@@ -32,6 +34,7 @@ function getCached<T>(key: string): T | null {
     cache.delete(key);
     return null;
   }
+  trackMetric("tmdb_cache_hit");
   return entry.data as T;
 }
 
@@ -73,6 +76,18 @@ const tmdbApi = axios.create({
     api_key: getApiKey(),
   },
 });
+
+// Track every actual API call made to TMDB
+tmdbApi.interceptors.response.use(
+  (response) => {
+    trackMetric("tmdb_api_call");
+    return response;
+  },
+  (error) => {
+    trackMetric("tmdb_api_call");
+    return Promise.reject(error);
+  }
+);
 
 export interface TMDBMovie {
   id: number;

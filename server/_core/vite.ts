@@ -63,6 +63,7 @@ export async function setupVite(app: Express, server: Server) {
     /^\/streaming-analysis$/,
     /^\/melhores$/,
     /^\/melhores\/[a-z0-9-]+$/,
+    /^\/admin\/metricas$/,
     /^\/404$/,
   ];
 
@@ -138,6 +139,7 @@ export function serveStatic(app: Express) {
     /^\/streaming-analysis$/,
     /^\/melhores$/,
     /^\/melhores\/[a-z0-9-]+$/,
+    /^\/admin\/metricas$/,
     /^\/404$/,
   ];
 

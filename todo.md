@@ -835,3 +835,11 @@
 - [x] Página 404 com barra de pesquisa e sugestões de filmes populares
 - [x] Sitemap.xml com categorias e mais filmes/séries para melhor indexação
 - [x] Breadcrumbs (trilhas de navegação) nas páginas de detalhes de filmes e séries
+
+## Painel de Métricas de Uso (Julho 2026)
+- [x] Schema de banco para armazenar métricas de uso (chamadas TMDB, IA, page views, cache hits)
+- [x] Middleware de tracking para contabilizar chamadas TMDB e cache hit/miss
+- [x] Tracking de uso da IA (identifyContent)
+- [x] Página admin com dashboard de métricas e gráficos
+- [x] Estimativa de custo baseada no volume de requisições e valores do Autoscale
+- [x] Mostrar impacto do cache nas respostas TMDB
