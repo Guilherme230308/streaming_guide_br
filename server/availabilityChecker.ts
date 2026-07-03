@@ -6,7 +6,7 @@ import webpush from "web-push";
 // Configure VAPID keys for push notifications
 if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
   webpush.setVapidDetails(
-    'mailto:admin@ondeassistir.com',
+    'mailto:admin@streamradar.com.br',
     process.env.VAPID_PUBLIC_KEY,
     process.env.VAPID_PRIVATE_KEY
   );

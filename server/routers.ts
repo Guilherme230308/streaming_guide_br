@@ -1142,7 +1142,7 @@ export const appRouter = router({
         
         const webpush = await import('web-push');
         webpush.setVapidDetails(
-          'mailto:admin@ondeassistir.com',
+          'mailto:admin@streamradar.com.br',
           process.env.VAPID_PUBLIC_KEY!,
           process.env.VAPID_PRIVATE_KEY!
         );

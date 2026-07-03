@@ -4,18 +4,18 @@ import * as tmdb from "./tmdb";
 // Use the request host dynamically so OG URLs match the domain being accessed
 function getSiteUrl(req?: import("express").Request): string {
   if (req) {
-    const host = req.get("host") || "streamguide.click";
+    const host = req.get("host") || "streamradar.com.br";
     const protocol = req.get("x-forwarded-proto") || req.protocol || "https";
     return `${protocol}://${host}`;
   }
-  return "https://streamguide.click";
+  return "https://streamradar.com.br";
 }
-const SITE_URL = "https://streamguide.click"; // fallback for sitemap
+const SITE_URL = "https://streamradar.com.br"; // fallback for sitemap
 
 // Static pages for sitemap
 const PROVIDER_SLUGS = [
   "netflix", "amazon-prime-video", "disney-plus", "hbo-max",
-  "paramount-plus", "crunchyroll", "globoplay", "apple-tv-plus", "star-plus",
+  "paramount-plus", "crunchyroll", "globoplay", "apple-tv-plus",
 ];
 
 const STATIC_PAGES = [
@@ -199,7 +199,7 @@ const PROVIDER_META: Record<string, { name: string; description: string; color: 
   "crunchyroll": { name: "Crunchyroll", description: "Explore os melhores animes disponíveis no Crunchyroll no Brasil. O maior catálogo de anime do mundo atualizado.", color: "#F47521", ogImage: "https://d2xsxph8kpxj0f.cloudfront.net/310419663029229201/Cvg8278ofufQzThj4s4h83/og-crunchyroll-VNd2jg8WZUa6KXMRsBnR5w.png" },
   "globoplay": { name: "Globoplay", description: "Veja os melhores filmes, séries e novelas do Globoplay. Conteúdo nacional da Globo e produções originais.", color: "#F72B2B", ogImage: "https://d2xsxph8kpxj0f.cloudfront.net/310419663029229201/Cvg8278ofufQzThj4s4h83/og-globoplay-G7ptPJxAmdeJzdkJXJZGme.png" },
   "apple-tv-plus": { name: "Apple TV+", description: "Confira os melhores filmes e séries do Apple TV+ no Brasil. Produções originais Apple premiadas e aclamadas pela crítica.", color: "#000000", ogImage: "https://d2xsxph8kpxj0f.cloudfront.net/310419663029229201/Cvg8278ofufQzThj4s4h83/og-apple-tv-plus-A9GUXBBFH7NN6Ab7xCgYKY.png" },
-  "star-plus": { name: "Star+", description: "Descubra os melhores filmes, séries e esportes do Star+ no Brasil. ESPN, séries e filmes para adultos.", color: "#02C8C8", ogImage: "https://d2xsxph8kpxj0f.cloudfront.net/310419663029229201/Cvg8278ofufQzThj4s4h83/og-star-plus-FEJesfieQKUvHfiNSddH8C.png" },
+
 };
 
 function getMelhoresIndexMetaTags(req?: import("express").Request): string {

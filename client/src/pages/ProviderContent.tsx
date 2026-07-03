@@ -17,7 +17,7 @@ const PROVIDERS = [
   { id: 283, slug: "crunchyroll", name: "Crunchyroll", color: "#F47521" },
   { id: 307, slug: "globoplay", name: "Globoplay", color: "#F72B2B" },
   { id: 350, slug: "apple-tv-plus", name: "Apple TV+", color: "#000000" },
-  { id: 484, slug: "star-plus", name: "Star+", color: "#02C8C8" },
+
 ] as const;
 
 type MediaTab = "movie" | "tv";
@@ -28,7 +28,6 @@ function getImageUrl(path: string | null, size: string = "w500") {
 }
 
 function getProviderLogoUrl(providerId: number) {
-  // Use TMDB provider logos (Star+ uses CDN since TMDB removed it)
   const tmdbLogoMap: Record<number, string> = {
     8: "/t/p/w92/pbpMk2JmcoNnQwx5JGpXngfoWtp.jpg",
     119: "/t/p/w92/pvske1MyAoymrs5bguRfVqYiM9a.jpg",
@@ -39,10 +38,7 @@ function getProviderLogoUrl(providerId: number) {
     307: "/t/p/w92/7Cg8esVVXOijXAm1f1vrS7jVjcN.jpg",
     350: "/t/p/w92/6uhKBfmtzFqOcLousHwZuzcrScK.jpg",
   };
-  const cdnLogoMap: Record<number, string> = {
-    484: "https://d2xsxph8kpxj0f.cloudfront.net/310519663332642038/6zRbVUcmsbK5sCwMQ2CbCm/star-plus-logo_13598112.png",
-  };
-  if (cdnLogoMap[providerId]) return cdnLogoMap[providerId];
+
   const path = tmdbLogoMap[providerId];
   return path ? `https://image.tmdb.org${path}` : null;
 }
@@ -112,7 +108,7 @@ export default function ProviderContent() {
     itemListElement: content.results.slice(0, 10).map((item: any, index: number) => ({
       "@type": "ListItem",
       position: index + 1,
-      url: `https://streamguide.click/${mediaTab === "movie" ? "movie" : "tv"}/${item.id}`,
+      url: `https://streamradar.com.br/${mediaTab === "movie" ? "movie" : "tv"}/${item.id}`,
       name: mediaTab === "movie" ? item.title : item.name,
     })),
   } : undefined;

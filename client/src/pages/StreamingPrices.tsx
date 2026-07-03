@@ -132,16 +132,26 @@ const STREAMING_SERVICES: StreamingService[] = [
     ]
   },
   {
-    name: "Star+",
-    logo: "⭐",
-    color: "from-purple-700 to-pink-800",
-    website: "https://www.starplus.com/pt-br",
+    name: "Crunchyroll",
+    logo: "🌟",
+    color: "from-orange-700 to-orange-900",
+    website: "https://www.crunchyroll.com/pt-br/",
     plans: [
       {
-        name: "Mensal",
-        price: 32.90,
-        features: ["4K", "4 dispositivos simultâneos", "ESPN, FX, séries adultas"],
+        name: "Fan",
+        price: 19.90,
+        features: ["Full HD", "1 dispositivo", "Sem anúncios"]
+      },
+      {
+        name: "Mega Fan",
+        price: 24.90,
+        features: ["Full HD", "4 dispositivos simultâneos", "Download offline"],
         popular: true
+      },
+      {
+        name: "Ultimate Fan",
+        price: 34.90,
+        features: ["Full HD", "6 dispositivos simultâneos", "Game Vault + Merch"]
       }
     ]
   }
@@ -164,7 +174,7 @@ export default function StreamingPrices() {
     <div className="min-h-screen bg-background pt-16">
       <SEO
         title="Preços de Streaming no Brasil 2026"
-        description="Compare preços de todos os serviços de streaming no Brasil: Netflix, Prime Video, Disney+, HBO Max, Globoplay, Star+, Paramount+ e mais. Atualizado em 2026."
+        description="Compare preços de todos os serviços de streaming no Brasil: Netflix, Prime Video, Disney+, HBO Max, Globoplay, Crunchyroll, Paramount+ e mais. Atualizado em 2026."
         url="/streaming-prices"
       />
       <div className="container py-12">
@@ -223,7 +233,7 @@ export default function StreamingPrices() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-foreground mb-1">
-                Fev/2026
+                Jul/2026
               </div>
               <p className="text-sm text-muted-foreground">
                 Preços sujeitos a alteração
@@ -383,7 +393,7 @@ export default function StreamingPrices() {
       {/* Footer */}
       <footer className="border-t border-border/40 py-8 mt-12">
         <div className="container text-center text-sm text-muted-foreground">
-          <p>© 2026 Stream Radar. Preços atualizados em Fevereiro de 2026.</p>
+          <p>© 2026 Stream Radar. Preços atualizados em Julho de 2026.</p>
         </div>
       </footer>
     </div>

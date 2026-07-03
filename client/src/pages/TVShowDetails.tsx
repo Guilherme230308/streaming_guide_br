@@ -646,7 +646,10 @@ export default function TVShowDetails() {
         <div className="container py-12">
           <h2 className="text-2xl font-bold text-foreground mb-6">Séries Similares</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-            {similarShows.results.slice(0, 12).map((similarShow: any) => (
+            {similarShows.results
+              .filter((s: any) => s.name && /^[\x20-\x7E\u00C0-\u024F\u1E00-\u1EFF]+$/.test(s.name))
+              .slice(0, 12)
+              .map((similarShow: any) => (
               <SimilarContentCard
                 key={similarShow.id}
                 id={similarShow.id}

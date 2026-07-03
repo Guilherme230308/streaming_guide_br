@@ -660,7 +660,10 @@ export default function MovieDetails() {
         <div className="container py-12">
           <h2 className="text-2xl font-bold text-foreground mb-6">Filmes Similares</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-            {similarMovies.results.slice(0, 12).map((similarMovie: any) => (
+            {similarMovies.results
+              .filter((m: any) => m.title && /^[\x20-\x7E\u00C0-\u024F\u1E00-\u1EFF]+$/.test(m.title))
+              .slice(0, 12)
+              .map((similarMovie: any) => (
               <SimilarContentCard
                 key={similarMovie.id}
                 id={similarMovie.id}

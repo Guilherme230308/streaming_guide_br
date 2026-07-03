@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Link2 } from "lucide-react";
 
-const SITE_URL = "https://streamguide.click";
+const SITE_URL = "https://streamradar.com.br";
 
 interface ShareButtonsProps {
   title: string;

@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ContentCard } from "@/components/ContentCard";
 import { Badge } from "@/components/ui/badge";
 import { Search as SearchIcon, Film, Tv, ArrowLeft } from "lucide-react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation, useSearch } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Switch } from "@/components/ui/switch";
@@ -278,13 +278,12 @@ export default function Search() {
                   const releaseDate = isMovie ? item.release_date : item.first_air_date;
 
                   return (
-                    <>
+                    <React.Fragment key={`${item.media_type}-${item.id}`}>
                       {/* Insert ad after every 6 results */}
                       {index > 0 && index % 6 === 0 && (
-                        <InFeedAd key={`ad-${index}`} />
+                        <InFeedAd />
                       )}
                       <ContentCard
-                        key={`${item.media_type}-${item.id}`}
                         id={item.id}
                         title={title}
                         posterPath={item.poster_path}
@@ -292,7 +291,7 @@ export default function Search() {
                         releaseDate={releaseDate}
                         voteAverage={item.vote_average}
                       />
-                    </>
+                    </React.Fragment>
                   );
                 })}
             </div>

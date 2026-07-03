@@ -176,10 +176,8 @@ export default function About() {
           <p className="text-muted-foreground mb-6">
             Estamos sempre trabalhando para melhorar o Stream Radar. Se você encontrou algum problema ou tem sugestões de novos recursos, adoraríamos ouvir!
           </p>
-          <Link href="/">
-            <a className="text-primary hover:underline font-medium">
-              Voltar para a página inicial →
-            </a>
+          <Link href="/" className="text-primary hover:underline font-medium">
+            Voltar para a página inicial →
           </Link>
         </div>
       </div>

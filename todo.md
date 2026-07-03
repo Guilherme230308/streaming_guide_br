@@ -809,3 +809,12 @@
 
 ## Bug Fixes (Production OG Image)
 - [x] Fix OG image in production - created dedicated bot routes that return complete HTML with OG tags, bypassing CDN/pre-renderer
+## Bug Fixes (Revisão Julho 2026)
+- [x] Replace all streamguide.click references with streamradar.com.br
+- [x] Replace ondeassistir.com email references with streamradar.com.br
+- [x] Fix nested anchor tag in About.tsx (Link wrapping <a>)
+- [x] Fix missing key prop in Search.tsx (React Fragment without key)
+- [x] Add favicon link to index.html
+- [x] Update Star+ info (merged into Disney+ in 2023)
+- [x] Add Crunchyroll pricing to StreamingPrices page
+- [x] Filter similar content with non-Portuguese titles

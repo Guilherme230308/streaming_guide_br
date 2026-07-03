@@ -11,7 +11,7 @@ const PROVIDERS = [
   { id: 283, slug: "crunchyroll", name: "Crunchyroll", description: "O maior catálogo de anime do mundo", color: "#F47521" },
   { id: 307, slug: "globoplay", name: "Globoplay", description: "Novelas, séries e jornalismo da Globo", color: "#F72B2B" },
   { id: 350, slug: "apple-tv-plus", name: "Apple TV+", description: "Séries e filmes originais Apple premiados", color: "#000000" },
-  { id: 484, slug: "star-plus", name: "Star+", description: "Esportes ESPN, séries e filmes para adultos", color: "#02C8C8" },
+
 ];
 
 function getProviderLogoUrl(providerId: number) {
@@ -25,10 +25,7 @@ function getProviderLogoUrl(providerId: number) {
     307: "/t/p/w92/7Cg8esVVXOijXAm1f1vrS7jVjcN.jpg",
     350: "/t/p/w92/6uhKBfmtzFqOcLousHwZuzcrScK.jpg",
   };
-  const cdnLogoMap: Record<number, string> = {
-    484: "https://d2xsxph8kpxj0f.cloudfront.net/310519663332642038/6zRbVUcmsbK5sCwMQ2CbCm/star-plus-logo_13598112.png",
-  };
-  if (cdnLogoMap[providerId]) return cdnLogoMap[providerId];
+
   const path = tmdbLogoMap[providerId];
   return path ? `https://image.tmdb.org${path}` : null;
 }
