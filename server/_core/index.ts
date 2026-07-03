@@ -36,20 +36,25 @@ async function startServer() {
   // This fixes "Duplicate without user-selected canonical" in Google Search Console
   const CANONICAL_DOMAIN = "streamradar.com.br";
   app.use((req, res, next) => {
-    const host = req.get("host") || "";
-    // Skip in development and for health checks
-    if (process.env.NODE_ENV === "development" || !host || host.includes("localhost")) {
+    const host = (req.get("x-forwarded-host") || req.get("host") || "").split(":")[0].toLowerCase();
+    // Skip in development, health checks, and when host is already canonical
+    if (
+      process.env.NODE_ENV === "development" ||
+      !host ||
+      host.includes("localhost") ||
+      host === CANONICAL_DOMAIN
+    ) {
       return next();
     }
-    // Redirect non-canonical domains (streamguide.click, manus.space, www variants)
-    if (host !== CANONICAL_DOMAIN && host !== `www.${CANONICAL_DOMAIN}`) {
-      const protocol = req.get("x-forwarded-proto") || req.protocol || "https";
-      return res.redirect(301, `${protocol}://${CANONICAL_DOMAIN}${req.originalUrl}`);
-    }
-    // Redirect www to non-www
-    if (host === `www.${CANONICAL_DOMAIN}`) {
-      const protocol = req.get("x-forwarded-proto") || req.protocol || "https";
-      return res.redirect(301, `${protocol}://${CANONICAL_DOMAIN}${req.originalUrl}`);
+    // Only redirect known non-canonical domains to avoid loops
+    const NON_CANONICAL_DOMAINS = [
+      `www.${CANONICAL_DOMAIN}`,
+      "streamguide.click",
+      "www.streamguide.click",
+    ];
+    // Also match manus.space subdomains
+    if (NON_CANONICAL_DOMAINS.includes(host) || host.endsWith(".manus.space")) {
+      return res.redirect(301, `https://${CANONICAL_DOMAIN}${req.originalUrl}`);
     }
     next();
   });
