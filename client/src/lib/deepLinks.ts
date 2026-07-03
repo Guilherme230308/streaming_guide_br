@@ -97,11 +97,11 @@ const DEEP_LINK_CONFIG: Record<number, DeepLinkConfig> = {
     searchUrlTemplate: "https://www.amazon.com.br/s?k={title}&i=instant-video",
     usesLocalTitle: true,
   },
-  1899: { // HBO Max (now Max)
+  1899: { // HBO Max
     providerId: 1899,
     providerName: "HBO Max",
     appScheme: "hbomax://",
-    searchUrlTemplate: "https://www.max.com/br/pt/search?q={title}",
+    searchUrlTemplate: "https://play.hbomax.com/search?q={title}",
     usesLocalTitle: true,
   },
   337: { // Disney Plus
