@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Film, Search, Bell, List, TrendingUp, CheckCircle, Sparkles, Clock, ChevronRight, BarChart3, Smartphone } from "lucide-react";
+import { Film, Search, Bell, List, TrendingUp, CheckCircle, Clock, ChevronRight, BarChart3, Smartphone } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 import { useState, useRef, useEffect } from "react";
@@ -91,11 +91,7 @@ export default function LandingPage() {
 
         <div className="container relative z-10 py-20 md:py-32">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 text-primary mb-6 backdrop-blur-sm">
-              <Sparkles className="h-4 w-4" />
-              <span className="text-sm font-medium">Grátis para sempre</span>
-            </div>
-            
+
             <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
               Descubra onde assistir <span className="text-primary">qualquer filme ou série</span> no Brasil
             </h1>
