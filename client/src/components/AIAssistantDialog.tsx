@@ -4,9 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { trpc } from '@/lib/trpc';
-import { Sparkles, Send, Loader2, User, Bot, ExternalLink } from 'lucide-react';
+import { Sparkles, Send, Loader2, User, Bot, ExternalLink, LogIn } from 'lucide-react';
 import { Streamdown } from 'streamdown';
 import { useLocation } from 'wouter';
+import { useAuth } from '@/_core/hooks/useAuth';
+import { getLoginUrl } from '@/const';
 
 interface IdentifiedContent {
   title: string;
@@ -32,6 +34,7 @@ export function AIAssistantDialog({ open, onOpenChange }: AIAssistantDialogProps
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [, setLocation] = useLocation();
+  const { isAuthenticated, loading: authLoading } = useAuth();
 
   const identifyMutation = trpc.ai.identifyContent.useMutation({
     onSuccess: (data) => {
@@ -104,6 +107,24 @@ export function AIAssistantDialog({ open, onOpenChange }: AIAssistantDialogProps
           </DialogTitle>
         </DialogHeader>
 
+        {!isAuthenticated && !authLoading ? (
+          <div className="flex-1 flex items-center justify-center px-4">
+            <div className="text-center py-8">
+              <LogIn className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+              <p className="text-sm text-muted-foreground mb-2">
+                Faça login para usar o assistente de IA.
+              </p>
+              <p className="text-xs text-muted-foreground mb-4">
+                Este recurso está disponível apenas para usuários cadastrados.
+              </p>
+              <Button onClick={() => { window.location.href = getLoginUrl(); }}>
+                <LogIn className="h-4 w-4 mr-2" />
+                Entrar
+              </Button>
+            </div>
+          </div>
+        ) : (
+        <>
         <ScrollArea ref={scrollAreaRef} className="flex-1 px-4 overflow-y-auto" style={{ minHeight: 0 }}>
           <div className="py-4 space-y-4 pb-2">
             {messages.length === 0 && (
@@ -241,6 +262,8 @@ export function AIAssistantDialog({ open, onOpenChange }: AIAssistantDialogProps
             </Button>
           </form>
         </div>
+        </>
+        )}
       </DialogContent>
     </Dialog>
   );

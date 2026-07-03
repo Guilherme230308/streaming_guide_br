@@ -818,3 +818,8 @@
 - [x] Update Star+ info (merged into Disney+ in 2023)
 - [x] Add Crunchyroll pricing to StreamingPrices page
 - [x] Filter similar content with non-Portuguese titles
+
+## Otimização de Custos (Julho 2026)
+- [x] Implementar cache em memória para chamadas TMDB (trending, popular, detalhes, providers)
+- [x] Restringir feature de IA (identifyContent) apenas para usuários autenticados
+- [x] Aumentar cache do sitemap de 1h para 24h

@@ -1177,7 +1177,7 @@ export const appRouter = router({
   }),
 
   ai: router({
-    identifyContent: publicProcedure
+    identifyContent: protectedProcedure
       .input(z.object({
         description: z.string().min(3).max(1000),
         conversationHistory: z.array(z.object({

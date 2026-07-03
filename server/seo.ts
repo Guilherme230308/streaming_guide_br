@@ -112,7 +112,7 @@ ${uniqueUrls.join("")}
 
 // Cache sitemap for 1 hour
 let sitemapCache: { xml: string; timestamp: number } | null = null;
-const SITEMAP_CACHE_TTL = 60 * 60 * 1000; // 1 hour
+const SITEMAP_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
 async function getCachedSitemap(): Promise<string> {
   const now = Date.now();
