@@ -19,6 +19,7 @@ import {
   LogOut,
   Sparkles,
   BarChart3,
+  Activity,
   Lock,
   UserPlus,
   LogIn,
@@ -127,7 +128,10 @@ export function MobileMenu() {
   const menuItems = [
     ...ALL_MENU_ITEMS,
     ...(isAuthenticated && user?.role === 'admin'
-      ? [{ href: "/affiliate-analytics", icon: BarChart3, label: "Receita", tour: "", requiresAuth: true, isAdmin: true }]
+      ? [
+          { href: "/affiliate-analytics", icon: BarChart3, label: "Receita", tour: "", requiresAuth: true, isAdmin: true },
+          { href: "/admin/metricas", icon: Activity, label: "Métricas", tour: "", requiresAuth: true, isAdmin: true },
+        ]
       : []),
   ];
 

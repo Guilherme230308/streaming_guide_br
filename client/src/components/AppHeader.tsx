@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Film, List, Bell, DollarSign, Sparkles, BarChart3, ArrowLeft, Lock } from "lucide-react";
+import { Film, List, Bell, DollarSign, Sparkles, BarChart3, Activity, ArrowLeft, Lock } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
@@ -96,14 +96,22 @@ export function AppHeader() {
                       </Link>
                     );
                   })}
-                  {/* Admin-only: Receita */}
+                  {/* Admin-only: Receita & Métricas */}
                   {isAuthenticated && user?.role === 'admin' && (
-                    <Link href="/affiliate-analytics">
-                      <Button variant="ghost" size="sm" className="gap-2 px-3 text-amber-400 hover:text-amber-300">
-                        <BarChart3 className="h-4 w-4" />
-                        <span className="text-sm">Receita</span>
-                      </Button>
-                    </Link>
+                    <>
+                      <Link href="/affiliate-analytics">
+                        <Button variant="ghost" size="sm" className="gap-2 px-3 text-amber-400 hover:text-amber-300">
+                          <BarChart3 className="h-4 w-4" />
+                          <span className="text-sm">Receita</span>
+                        </Button>
+                      </Link>
+                      <Link href="/admin/metricas">
+                        <Button variant="ghost" size="sm" className="gap-2 px-3 text-amber-400 hover:text-amber-300">
+                          <Activity className="h-4 w-4" />
+                          <span className="text-sm">Métricas</span>
+                        </Button>
+                      </Link>
+                    </>
                   )}
                 </>
               )}
