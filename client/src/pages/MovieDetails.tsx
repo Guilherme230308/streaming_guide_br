@@ -41,6 +41,7 @@ import { ReviewSectionPreview } from "@/components/BlurredPreviews";
 import { InArticleAd } from "@/components/AdBanner";
 import { SEO, buildMovieJsonLd, buildBreadcrumbJsonLd } from "@/components/SEO";
 import { ShareButtons } from "@/components/ShareButtons";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 export default function MovieDetails() {
   const { id } = useParams();
@@ -263,6 +264,15 @@ export default function MovieDetails() {
         type="video.movie"
         jsonLd={[movieJsonLd, breadcrumbJsonLd]}
       />
+      {/* Breadcrumbs */}
+      <div className="container py-3">
+        <Breadcrumbs items={[
+          { label: "Filmes", href: "/search?q=" },
+          ...(movie.genres && movie.genres.length > 0 ? [{ label: movie.genres[0].name, href: `/genres` }] : []),
+          { label: movie.title }
+        ]} />
+      </div>
+
       {/* Hero Section with Backdrop */}
       <div className="relative">
         <div className="absolute inset-0 overflow-hidden">

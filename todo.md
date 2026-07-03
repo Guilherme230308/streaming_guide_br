@@ -830,3 +830,8 @@
 - [x] Add noindex to search pages with filter params (prevent duplicate indexing)
 - [x] Block crawling of old domain streamguide.click via robots.txt or 301 redirect
 - [x] Reduce crawled-not-indexed: improve page content signals for Googlebot
+
+## Melhorias SEO e Retenção (Julho 2026)
+- [x] Página 404 com barra de pesquisa e sugestões de filmes populares
+- [x] Sitemap.xml com categorias e mais filmes/séries para melhor indexação
+- [x] Breadcrumbs (trilhas de navegação) nas páginas de detalhes de filmes e séries

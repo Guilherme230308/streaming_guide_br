@@ -34,6 +34,7 @@ import { ReviewSectionPreview } from "@/components/BlurredPreviews";
 import { InArticleAd } from "@/components/AdBanner";
 import { SEO, buildTVShowJsonLd, buildBreadcrumbJsonLd } from "@/components/SEO";
 import { ShareButtons } from "@/components/ShareButtons";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 export default function TVShowDetails() {
   const { id } = useParams();
@@ -244,6 +245,15 @@ export default function TVShowDetails() {
         type="video.tv_show"
         jsonLd={[showJsonLd, breadcrumbJsonLd]}
       />
+      {/* Breadcrumbs */}
+      <div className="container py-3">
+        <Breadcrumbs items={[
+          { label: "Séries", href: "/search?q=" },
+          ...(show.genres && show.genres.length > 0 ? [{ label: show.genres[0].name, href: `/genres` }] : []),
+          { label: show.name }
+        ]} />
+      </div>
+
       {/* Hero Section */}
       <div className="relative">
         <div className="absolute inset-0 overflow-hidden">

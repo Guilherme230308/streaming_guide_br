@@ -23,9 +23,32 @@ const STATIC_PAGES = [
   { url: "/about", changefreq: "monthly", priority: 0.3 },
 ];
 
-// Generate XML sitemap
+// Generate XML sitemap with comprehensive content coverage
 async function generateSitemap(): Promise<string> {
   const urls: string[] = [];
+  const addedIds = { movies: new Set<number>(), tv: new Set<number>() };
+
+  function addMovieUrl(id: number, priority: number, changefreq: string) {
+    if (addedIds.movies.has(id)) return;
+    addedIds.movies.add(id);
+    urls.push(`
+    <url>
+      <loc>${SITE_URL}/movie/${id}</loc>
+      <changefreq>${changefreq}</changefreq>
+      <priority>${priority}</priority>
+    </url>`);
+  }
+
+  function addTVUrl(id: number, priority: number, changefreq: string) {
+    if (addedIds.tv.has(id)) return;
+    addedIds.tv.add(id);
+    urls.push(`
+    <url>
+      <loc>${SITE_URL}/tv/${id}</loc>
+      <changefreq>${changefreq}</changefreq>
+      <priority>${priority}</priority>
+    </url>`);
+  }
 
   // Add static pages
   for (const page of STATIC_PAGES) {
@@ -37,16 +60,11 @@ async function generateSitemap(): Promise<string> {
     </url>`);
   }
 
-  // Add trending movies
+  // Add trending movies (high priority - these are what people search for)
   try {
     const trendingMovies = await tmdb.getTrendingMovies("week");
-    for (const movie of trendingMovies.results.slice(0, 20)) {
-      urls.push(`
-    <url>
-      <loc>${SITE_URL}/movie/${movie.id}</loc>
-      <changefreq>weekly</changefreq>
-      <priority>0.8</priority>
-    </url>`);
+    for (const movie of trendingMovies.results) {
+      addMovieUrl(movie.id, 0.9, "daily");
     }
   } catch (e) {
     console.error("[SEO] Failed to fetch trending movies for sitemap:", e);
@@ -55,54 +73,91 @@ async function generateSitemap(): Promise<string> {
   // Add trending TV shows
   try {
     const trendingTV = await tmdb.getTrendingTVShows("week");
-    for (const show of trendingTV.results.slice(0, 20)) {
-      urls.push(`
-    <url>
-      <loc>${SITE_URL}/tv/${show.id}</loc>
-      <changefreq>weekly</changefreq>
-      <priority>0.8</priority>
-    </url>`);
+    for (const show of trendingTV.results) {
+      addTVUrl(show.id, 0.9, "daily");
     }
   } catch (e) {
     console.error("[SEO] Failed to fetch trending TV shows for sitemap:", e);
   }
 
-  // Add popular movies
-  try {
-    const popularMovies = await tmdb.getPopularMovies(1);
-    for (const movie of popularMovies.results.slice(0, 20)) {
-      urls.push(`
-    <url>
-      <loc>${SITE_URL}/movie/${movie.id}</loc>
-      <changefreq>weekly</changefreq>
-      <priority>0.6</priority>
-    </url>`);
+  // Add popular movies (multiple pages for broader coverage)
+  for (let page = 1; page <= 5; page++) {
+    try {
+      const popularMovies = await tmdb.getPopularMovies(page);
+      for (const movie of popularMovies.results) {
+        addMovieUrl(movie.id, 0.7, "weekly");
+      }
+    } catch (e) {
+      console.error(`[SEO] Failed to fetch popular movies page ${page}:`, e);
+      break;
     }
-  } catch (e) {
-    console.error("[SEO] Failed to fetch popular movies for sitemap:", e);
   }
 
-  // Add popular TV shows
-  try {
-    const popularTV = await tmdb.getPopularTVShows(1);
-    for (const show of popularTV.results.slice(0, 20)) {
-      urls.push(`
-    <url>
-      <loc>${SITE_URL}/tv/${show.id}</loc>
-      <changefreq>weekly</changefreq>
-      <priority>0.6</priority>
-    </url>`);
+  // Add popular TV shows (multiple pages)
+  for (let page = 1; page <= 5; page++) {
+    try {
+      const popularTV = await tmdb.getPopularTVShows(page);
+      for (const show of popularTV.results) {
+        addTVUrl(show.id, 0.7, "weekly");
+      }
+    } catch (e) {
+      console.error(`[SEO] Failed to fetch popular TV shows page ${page}:`, e);
+      break;
     }
-  } catch (e) {
-    console.error("[SEO] Failed to fetch popular TV shows for sitemap:", e);
   }
 
-  // Deduplicate URLs
-  const uniqueUrls = Array.from(new Set(urls));
+  // Add upcoming movies
+  try {
+    const upcoming = await tmdb.getUpcomingMovies(1);
+    for (const movie of upcoming.results) {
+      addMovieUrl(movie.id, 0.6, "daily");
+    }
+  } catch (e) {
+    console.error("[SEO] Failed to fetch upcoming movies for sitemap:", e);
+  }
+
+  // Add movies by genre (top genres for Brazilian audience)
+  const topGenreIds = [28, 12, 35, 18, 27, 878, 53, 10749, 16, 80]; // Action, Adventure, Comedy, Drama, Horror, Sci-Fi, Thriller, Romance, Animation, Crime
+  for (const genreId of topGenreIds) {
+    try {
+      const genreMovies = await tmdb.discoverMoviesByGenre(genreId, 1);
+      for (const movie of genreMovies.results.slice(0, 10)) {
+        addMovieUrl(movie.id, 0.5, "weekly");
+      }
+    } catch (e) {
+      // Silently skip failed genre fetches
+    }
+  }
+
+  // Add TV shows by genre
+  const topTVGenreIds = [10759, 35, 18, 80, 10765, 10768, 16, 10766]; // Action/Adventure, Comedy, Drama, Crime, Sci-Fi/Fantasy, War, Animation, Soap
+  for (const genreId of topTVGenreIds) {
+    try {
+      const genreShows = await tmdb.discoverTVShowsByGenre(genreId, 1);
+      for (const show of genreShows.results.slice(0, 10)) {
+        addTVUrl(show.id, 0.5, "weekly");
+      }
+    } catch (e) {
+      // Silently skip failed genre fetches
+    }
+  }
+
+  // Add content by streaming provider (Netflix, Prime, Disney+, etc.)
+  const providerIds = [8, 119, 337, 384, 531, 2, 307]; // Netflix, Prime, Disney+, HBO Max, Paramount+, Apple TV+, Globoplay
+  for (const providerId of providerIds) {
+    try {
+      const providerMovies = await tmdb.discoverMoviesByProvider(providerId, 1);
+      for (const movie of providerMovies.results.slice(0, 10)) {
+        addMovieUrl(movie.id, 0.5, "weekly");
+      }
+    } catch (e) {
+      // Silently skip
+    }
+  }
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${uniqueUrls.join("")}
+${urls.join("")}
 </urlset>`;
 }
 
