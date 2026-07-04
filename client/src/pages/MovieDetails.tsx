@@ -243,9 +243,14 @@ export default function MovieDetails() {
 
   const providers = movie.watchProviders;
 
-  const movieSeoDescription = movie.overview
-    ? `${movie.overview.substring(0, 155)}...`
-    : `Descubra onde assistir ${movie.title} no Brasil. Veja preços e plataformas de streaming.`;
+  // Build a more compelling meta description with streaming info
+  const providerNames = providers?.flatrate?.map((p: any) => p.provider_name).slice(0, 3).join(", ");
+  const movieYear = movie.release_date ? ` (${movie.release_date.substring(0, 4)})` : "";
+  const movieSeoDescription = providerNames
+    ? `Assista ${movie.title}${movieYear} online no Brasil. Disponível em ${providerNames}. Veja onde assistir, preços de aluguel e compra.`
+    : movie.overview
+      ? `${movie.title}${movieYear} - ${movie.overview.substring(0, 120)}. Descubra onde assistir no Brasil.`
+      : `Descubra onde assistir ${movie.title}${movieYear} no Brasil. Compare streaming, aluguel e compra.`;
 
   const movieJsonLd = buildMovieJsonLd(movie);
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([

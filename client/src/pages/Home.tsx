@@ -20,7 +20,7 @@ import { SearchFilters, type SearchFiltersType, loadSavedFilters } from "@/compo
 import { PersonalizedRecommendations } from "@/components/PersonalizedRecommendations";
 import { AIAssistantDialog } from "@/components/AIAssistantDialog";
 import { SectionAd } from "@/components/AdBanner";
-import { SEO, buildWebSiteJsonLd } from "@/components/SEO";
+import { SEO, buildWebSiteJsonLd, buildOrganizationJsonLd, buildSiteNavigationJsonLd, buildItemListJsonLd } from "@/components/SEO";
 
 const RECENT_SEARCHES_KEY = "recentSearches";
 const MAX_RECENT_SEARCHES = 5;
@@ -210,11 +210,25 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden pt-16">
       <SEO
-        title="Filmes e Séries nos Streamings do Brasil"
-        description="Descubra onde assistir filmes e séries no Brasil. Compare preços de Netflix, Prime Video, Disney+, HBO Max e Globoplay. Grátis!"
+        title="Onde Assistir Filmes e Séries Online"
+        description="Encontre onde assistir qualquer filme ou série no Brasil. Compare Netflix, Prime Video, Disney+, HBO Max e Globoplay em um só lugar. Busque agora!"
         keywords="onde assistir, streaming brasil, filmes online, séries online, netflix brasil, prime video, disney plus, hbo max, globoplay, comparar streaming, preços streaming, onde ver filmes"
         url="/"
-        jsonLd={buildWebSiteJsonLd()}
+        jsonLd={[
+          buildWebSiteJsonLd(),
+          buildOrganizationJsonLd(),
+          buildSiteNavigationJsonLd(),
+          ...(trendingMovies?.results ? [buildItemListJsonLd(
+            "Filmes em Alta no Brasil",
+            "Os filmes mais populares nas plataformas de streaming do Brasil esta semana",
+            trendingMovies.results.slice(0, 10).map((m: any) => ({ id: m.id, title: m.title, type: "movie" as const }))
+          )] : []),
+          ...(trendingTV?.results ? [buildItemListJsonLd(
+            "Séries em Alta no Brasil",
+            "As séries mais populares nas plataformas de streaming do Brasil esta semana",
+            trendingTV.results.slice(0, 10).map((s: any) => ({ id: s.id, title: s.name, type: "tv" as const }))
+          )] : []),
+        ]}
       />
       {TourComponent}
       <SwipeEdgeIndicator />

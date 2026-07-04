@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { SEO, buildBreadcrumbJsonLd } from "@/components/SEO";
+import { SEO, buildBreadcrumbJsonLd, buildCollectionPageJsonLd } from "@/components/SEO";
 import { useMemo } from "react";
 
 const PROVIDERS = [
@@ -45,6 +45,13 @@ export default function ProviderIndex() {
     { name: "Melhores por Streaming", url: "/melhores" },
   ]);
 
+  const collectionPage = buildCollectionPageJsonLd(
+    `Melhores Filmes e Séries por Streaming - ${currentMonth}`,
+    `Compare os melhores conteúdos de cada plataforma de streaming no Brasil em ${currentMonth}`,
+    "/melhores",
+    PROVIDERS.map(p => ({ name: `Melhores na ${p.name}`, url: `/melhores/${p.slug}` }))
+  );
+
   const seoDescription = `Descubra os melhores filmes e séries em cada plataforma de streaming no Brasil em ${currentMonth}. Compare catálogos de Netflix, Prime Video, Disney+, HBO Max e mais.`;
 
   return (
@@ -54,7 +61,7 @@ export default function ProviderIndex() {
         description={seoDescription}
         keywords="melhores filmes streaming, melhores séries streaming, catálogo netflix, catálogo disney plus, catálogo hbo max, catálogo prime video, streaming brasil"
         url="/melhores"
-        jsonLd={breadcrumbs}
+        jsonLd={[breadcrumbs, collectionPage]}
       />
 
       <div className="container py-8">

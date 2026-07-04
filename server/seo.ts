@@ -328,7 +328,10 @@ function escapeHtml(str: string): string {
  * Bots don't execute JS, so they only see the meta tags.
  * Real users with JS will be redirected to the SPA.
  */
-function buildBotHtml(metaTags: string, canonicalUrl: string): string {
+function buildBotHtml(metaTags: string, canonicalUrl: string, jsonLd?: Record<string, unknown> | Record<string, unknown>[]): string {
+  const jsonLdScript = jsonLd
+    ? `\n  <script type="application/ld+json">${JSON.stringify(Array.isArray(jsonLd) ? jsonLd : [jsonLd])}</script>`
+    : "";
   return `<!doctype html>
 <html lang="pt-BR">
 <head>
@@ -336,7 +339,7 @@ function buildBotHtml(metaTags: string, canonicalUrl: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 ${metaTags}
   <link rel="canonical" href="${escapeHtml(canonicalUrl)}" />
-  <meta name="theme-color" content="#0d1117" />
+  <meta name="theme-color" content="#0d1117" />${jsonLdScript}
 </head>
 <body>
   <p>Redirecionando...</p>
@@ -344,6 +347,104 @@ ${metaTags}
   <noscript><meta http-equiv="refresh" content="0;url=${escapeHtml(canonicalUrl)}" /></noscript>
 </body>
 </html>`;
+}
+
+// Server-side JSON-LD builders (mirror client-side but run on server for bots)
+function buildMovieJsonLdServer(movie: any, siteUrl: string): Record<string, unknown> {
+  const jsonLd: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "Movie",
+    name: movie.title,
+    description: movie.overview || "",
+    url: `${siteUrl}/movie/${movie.id}`,
+    datePublished: movie.release_date,
+    inLanguage: "pt-BR",
+  };
+  if (movie.poster_path) {
+    jsonLd.image = [
+      `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
+      `https://image.tmdb.org/t/p/w780${movie.poster_path}`,
+    ];
+  }
+  if (movie.vote_average > 0 && movie.vote_count > 0) {
+    jsonLd.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: movie.vote_average.toFixed(1),
+      bestRating: "10",
+      worstRating: "1",
+      ratingCount: movie.vote_count,
+    };
+  }
+  if (movie.genres?.length > 0) {
+    jsonLd.genre = movie.genres.map((g: any) => g.name);
+  }
+  if (movie.runtime) {
+    const hours = Math.floor(movie.runtime / 60);
+    const mins = movie.runtime % 60;
+    jsonLd.duration = `PT${hours}H${mins}M`;
+  }
+  if (movie.credits?.crew) {
+    const director = movie.credits.crew.find((c: any) => c.job === "Director");
+    if (director) {
+      jsonLd.director = { "@type": "Person", name: director.name };
+    }
+  }
+  if (movie.credits?.cast?.length > 0) {
+    jsonLd.actor = movie.credits.cast.slice(0, 5).map((a: any) => ({
+      "@type": "Person",
+      name: a.name,
+    }));
+  }
+  return jsonLd;
+}
+
+function buildTVShowJsonLdServer(show: any, siteUrl: string): Record<string, unknown> {
+  const jsonLd: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "TVSeries",
+    name: show.name,
+    description: show.overview || "",
+    url: `${siteUrl}/tv/${show.id}`,
+    datePublished: show.first_air_date,
+    inLanguage: "pt-BR",
+  };
+  if (show.poster_path) {
+    jsonLd.image = [
+      `https://image.tmdb.org/t/p/w500${show.poster_path}`,
+      `https://image.tmdb.org/t/p/w780${show.poster_path}`,
+    ];
+  }
+  if (show.vote_average > 0 && show.vote_count > 0) {
+    jsonLd.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: show.vote_average.toFixed(1),
+      bestRating: "10",
+      worstRating: "1",
+      ratingCount: show.vote_count,
+    };
+  }
+  if (show.genres?.length > 0) {
+    jsonLd.genre = show.genres.map((g: any) => g.name);
+  }
+  if (show.number_of_seasons) {
+    jsonLd.numberOfSeasons = show.number_of_seasons;
+  }
+  if (show.number_of_episodes) {
+    jsonLd.numberOfEpisodes = show.number_of_episodes;
+  }
+  if (show.created_by?.length > 0) {
+    jsonLd.creator = show.created_by.map((c: any) => ({
+      "@type": "Person",
+      name: c.name,
+    }));
+  }
+  if (show.credits?.cast?.length > 0) {
+    jsonLd.actor = show.credits.cast.slice(0, 5).map((a: any) => ({
+      "@type": "Person",
+      name: a.name,
+    }));
+  }
+  return jsonLd;
 }
 
 // Register SEO routes on the Express app
@@ -365,6 +466,64 @@ export function registerSEORoutes(app: Express) {
   // These routes are registered BEFORE static serving, so they intercept bot requests
   // in both development and production (including CDN/pre-renderer environments)
 
+  // Homepage bot route with WebSite + Organization JSON-LD
+  app.get("/", async (req: Request, res: Response, next: Function) => {
+    const userAgent = req.headers["user-agent"] || "";
+    if (!isBot(userAgent)) return next();
+    try {
+      const siteUrl = getSiteUrl(req);
+      const metaTags = buildMetaTags({
+        title: "Stream Radar: Onde Assistir Filmes e S\u00e9ries no Brasil",
+        description: "Encontre onde assistir qualquer filme ou s\u00e9rie no Brasil. Compare Netflix, Prime Video, Disney+, HBO Max e Globoplay em um s\u00f3 lugar. Busque agora!",
+        image: `${siteUrl}/og-default.png`,
+        url: siteUrl,
+        type: "website",
+      });
+      const jsonLd = [
+        {
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "Stream Radar",
+          alternateName: "Stream Radar Brasil",
+          url: siteUrl,
+          description: "Encontre onde assistir qualquer filme ou s\u00e9rie no Brasil. Compare Netflix, Prime Video, Disney+, HBO Max e Globoplay em um s\u00f3 lugar.",
+          inLanguage: "pt-BR",
+          publisher: {
+            "@type": "Organization",
+            name: "Stream Radar",
+            logo: { "@type": "ImageObject", url: `${siteUrl}/icon-512.png` },
+          },
+          potentialAction: {
+            "@type": "SearchAction",
+            target: { "@type": "EntryPoint", urlTemplate: `${siteUrl}/search?q={search_term_string}` },
+            "query-input": "required name=search_term_string",
+          },
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Stream Radar",
+          url: siteUrl,
+          logo: `${siteUrl}/icon-512.png`,
+          description: "Guia de streaming brasileiro que ajuda voc\u00ea a encontrar onde assistir filmes e s\u00e9ries nas principais plataformas do Brasil.",
+          contactPoint: {
+            "@type": "ContactPoint",
+            contactType: "customer support",
+            url: `${siteUrl}/about`,
+            availableLanguage: "Portuguese",
+          },
+        },
+      ];
+      const html = buildBotHtml(metaTags, siteUrl, jsonLd);
+      res.set("Content-Type", "text/html; charset=utf-8");
+      res.set("Cache-Control", "public, max-age=3600");
+      res.send(html);
+    } catch (e) {
+      console.error("[SEO] Bot homepage route failed:", e);
+      next();
+    }
+  });
+
   app.get("/movie/:id", async (req: Request, res: Response, next: Function) => {
     const userAgent = req.headers["user-agent"] || "";
     if (!isBot(userAgent)) return next();
@@ -374,7 +533,19 @@ export function registerSEORoutes(app: Express) {
       const metaTags = await getMovieMetaTags(movieId, req);
       if (!metaTags) return next();
       const siteUrl = getSiteUrl(req);
-      const html = buildBotHtml(metaTags, `${siteUrl}/movie/${movieId}`);
+      // Build JSON-LD for the movie
+      const movie = await tmdb.getMovieDetails(movieId);
+      const jsonLd = buildMovieJsonLdServer(movie, siteUrl);
+      const breadcrumbs = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "In\u00edcio", item: siteUrl },
+          { "@type": "ListItem", position: 2, name: "Filmes", item: `${siteUrl}/search?type=movie` },
+          { "@type": "ListItem", position: 3, name: movie.title, item: `${siteUrl}/movie/${movieId}` },
+        ],
+      };
+      const html = buildBotHtml(metaTags, `${siteUrl}/movie/${movieId}`, [jsonLd, breadcrumbs]);
       res.set("Content-Type", "text/html; charset=utf-8");
       res.set("Cache-Control", "public, max-age=3600");
       res.send(html);
@@ -393,7 +564,19 @@ export function registerSEORoutes(app: Express) {
       const metaTags = await getTVShowMetaTags(tvId, req);
       if (!metaTags) return next();
       const siteUrl = getSiteUrl(req);
-      const html = buildBotHtml(metaTags, `${siteUrl}/tv/${tvId}`);
+      // Build JSON-LD for the TV show
+      const show = await tmdb.getTVShowDetails(tvId);
+      const jsonLd = buildTVShowJsonLdServer(show, siteUrl);
+      const breadcrumbs = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "In\u00edcio", item: siteUrl },
+          { "@type": "ListItem", position: 2, name: "S\u00e9ries", item: `${siteUrl}/search?type=tv` },
+          { "@type": "ListItem", position: 3, name: show.name, item: `${siteUrl}/tv/${tvId}` },
+        ],
+      };
+      const html = buildBotHtml(metaTags, `${siteUrl}/tv/${tvId}`, [jsonLd, breadcrumbs]);
       res.set("Content-Type", "text/html; charset=utf-8");
       res.set("Cache-Control", "public, max-age=3600");
       res.send(html);

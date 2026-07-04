@@ -843,3 +843,15 @@
 - [x] Página admin com dashboard de métricas e gráficos
 - [x] Estimativa de custo baseada no volume de requisições e valores do Autoscale
 - [x] Mostrar impacto do cache nas respostas TMDB
+
+## Phase 12: Google Search Appearance Improvements (Rich Snippets)
+- [x] Add Organization JSON-LD schema to homepage (logo, name, sameAs)
+- [x] Enhance WebSite JSON-LD with Organization reference
+- [x] Add FAQ schema to StreamingPrices page for rich FAQ snippets
+- [x] Add ItemList schema to homepage trending sections
+- [x] Improve meta descriptions with CTAs and unique value propositions
+- [x] Add server-side JSON-LD injection for bot crawlers (Movie, TVSeries, BreadcrumbList)
+- [x] Add homepage bot route with WebSite + Organization JSON-LD
+- [x] Enhance Movie JSON-LD with director, actors, contentRating fields
+- [x] Enhance TVSeries JSON-LD with creator, actor, numberOfSeasons
+- [x] Add SiteNavigationElement schema for sitelinks

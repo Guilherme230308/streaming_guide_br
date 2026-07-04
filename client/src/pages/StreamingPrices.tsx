@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { DollarSign, TrendingUp, Info, ExternalLink } from "lucide-react";
 import { Link } from "wouter";
-import { SEO } from "@/components/SEO";
+import { SEO, buildFAQJsonLd, buildBreadcrumbJsonLd } from "@/components/SEO";
 
 interface StreamingService {
   name: string;
@@ -173,9 +173,33 @@ export default function StreamingPrices() {
   return (
     <div className="min-h-screen bg-background pt-16">
       <SEO
-        title="Preços de Streaming no Brasil 2026"
-        description="Compare preços de todos os serviços de streaming no Brasil: Netflix, Prime Video, Disney+, HBO Max, Globoplay, Crunchyroll, Paramount+ e mais. Atualizado em 2026."
+        title="Preços de Streaming no Brasil 2026 - Comparativo Completo"
+        description="Compare preços de Netflix (R$20,90-R$55,90), Prime Video (R$19,90), Disney+ (R$33,90-R$62,90), HBO Max e mais. Tabela atualizada em Julho 2026."
         url="/streaming-prices"
+        jsonLd={[
+          buildBreadcrumbJsonLd([
+            { name: "Início", url: "/" },
+            { name: "Preços de Streaming", url: "/streaming-prices" },
+          ]),
+          buildFAQJsonLd([
+            {
+              question: "Qual o streaming mais barato no Brasil em 2026?",
+              answer: "O Amazon Prime Video é o streaming mais barato no Brasil em 2026, custando R$19,90/mês com acesso completo ao catálogo. O plano básico da Netflix com anúncios custa R$20,90/mês."
+            },
+            {
+              question: "Quanto custa a Netflix no Brasil em 2026?",
+              answer: "A Netflix oferece 3 planos no Brasil: Padrão com Anúncios (R$20,90/mês), Padrão (R$39,90/mês) e Premium (R$55,90/mês com 4K e 4 telas)."
+            },
+            {
+              question: "Qual streaming tem o melhor custo-benefício?",
+              answer: "O Amazon Prime Video (R$19,90/mês) oferece o melhor custo-benefício, incluindo streaming de vídeo, música, e-books e frete grátis na Amazon. O Disney+ (R$33,90/mês) também é competitivo com conteúdo Disney, Marvel, Star Wars e National Geographic."
+            },
+            {
+              question: "Quantos serviços de streaming existem no Brasil?",
+              answer: "Os principais serviços de streaming no Brasil incluem Netflix, Amazon Prime Video, Disney+, HBO Max (Max), Globoplay, Paramount+, Crunchyroll e Apple TV+, totalizando mais de 8 plataformas com conteúdo variado."
+            },
+          ]),
+        ]}
       />
       <div className="container py-12">
         {/* Hero Section */}

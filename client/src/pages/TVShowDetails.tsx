@@ -224,9 +224,15 @@ export default function TVShowDetails() {
 
   const providers = show.watchProviders;
 
-  const showSeoDescription = show.overview
-    ? `${show.overview.substring(0, 155)}...`
-    : `Descubra onde assistir ${show.name} no Brasil. Veja preços e plataformas de streaming.`;
+  // Build a more compelling meta description with streaming info
+  const providerNames = providers?.flatrate?.map((p: any) => p.provider_name).slice(0, 3).join(", ");
+  const showYear = show.first_air_date ? ` (${show.first_air_date.substring(0, 4)})` : "";
+  const seasonInfo = show.number_of_seasons ? ` ${show.number_of_seasons} temporada${show.number_of_seasons > 1 ? 's' : ''}.` : "";
+  const showSeoDescription = providerNames
+    ? `Assista ${show.name}${showYear} online no Brasil.${seasonInfo} Disponível em ${providerNames}. Veja onde assistir.`
+    : show.overview
+      ? `${show.name}${showYear} -${seasonInfo} ${show.overview.substring(0, 110)}. Descubra onde assistir no Brasil.`
+      : `Descubra onde assistir ${show.name}${showYear} no Brasil.${seasonInfo} Compare plataformas de streaming.`;
 
   const showJsonLd = buildTVShowJsonLd(show);
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([

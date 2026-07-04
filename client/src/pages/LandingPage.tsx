@@ -6,7 +6,7 @@ import { Link, useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 import { useState, useRef, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
-import { SEO, buildWebSiteJsonLd } from "@/components/SEO";
+import { SEO, buildWebSiteJsonLd, buildOrganizationJsonLd, buildSiteNavigationJsonLd } from "@/components/SEO";
 
 const HERO_IMG = "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029229201/cgGBWpLKRuMgKbls.jpg";
 const PHONE_IMG = "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029229201/dVPxUTQUbCSVnCSG.webp";
@@ -70,11 +70,15 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background pt-16">
       <SEO
-        title="Filmes e Séries nos Streamings do Brasil"
-        description="Descubra onde assistir filmes e séries no Brasil. Compare preços de Netflix, Prime Video, Disney+, HBO Max e Globoplay. Grátis!"
+        title="Onde Assistir Filmes e Séries Online"
+        description="Encontre onde assistir qualquer filme ou série no Brasil. Compare Netflix, Prime Video, Disney+, HBO Max e Globoplay em um só lugar. Busque agora!"
         keywords="onde assistir, streaming brasil, filmes online, séries online, netflix brasil, prime video, disney plus, hbo max, globoplay, comparar streaming, preços streaming, onde ver filmes"
         url="/"
-        jsonLd={buildWebSiteJsonLd()}
+        jsonLd={[
+          buildWebSiteJsonLd(),
+          buildOrganizationJsonLd(),
+          buildSiteNavigationJsonLd(),
+        ]}
       />
       {/* Hero Section with Background Image */}
       <section className="relative overflow-hidden">

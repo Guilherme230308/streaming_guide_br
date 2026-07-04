@@ -221,6 +221,7 @@ export async function getMovieDetails(movieId: number) {
   const response = await tmdbApi.get(`/movie/${movieId}`, {
     params: {
       language: 'pt-BR',
+      append_to_response: 'credits',
     },
   });
   setCache(cacheKey, response.data, TTL.DETAILS);
@@ -237,6 +238,7 @@ export async function getTVShowDetails(tvId: number) {
   const response = await tmdbApi.get(`/tv/${tvId}`, {
     params: {
       language: 'pt-BR',
+      append_to_response: 'credits',
     },
   });
   setCache(cacheKey, response.data, TTL.DETAILS);
