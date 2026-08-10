@@ -569,6 +569,7 @@ export default function LandingPage() {
               <Link href="/melhores" className="hover:text-foreground transition-colors">Melhores por Streaming</Link>
               <Link href="/streaming-prices" className="hover:text-foreground transition-colors">Preços</Link>
               <Link href="/about" className="hover:text-foreground transition-colors">Sobre</Link>
+              <Link href="/politica-de-privacidade" className="hover:text-foreground transition-colors">Privacidade</Link>
             </div>
             <p className="text-sm text-muted-foreground">
               © 2026 Stream Radar. Encontre onde assistir seus filmes e séries favoritos no Brasil.

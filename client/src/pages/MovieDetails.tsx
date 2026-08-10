@@ -262,7 +262,7 @@ export default function MovieDetails() {
   return (
     <div className="min-h-screen bg-background pt-16">
       <SEO
-        title={`${movie.title} - Onde Assistir`}
+        title={`${movie.title}${movieYear} - Onde Assistir Online | Stream Radar`}
         description={movieSeoDescription}
         image={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : undefined}
         url={`/movie/${movieId}`}
@@ -672,7 +672,7 @@ export default function MovieDetails() {
 
       {/* Similar Movies */}
       {similarMovies && similarMovies.results && similarMovies.results.length > 0 && (
-        <div className="container py-12">
+        <div className="container py-12 border-t border-border">
           <h2 className="text-2xl font-bold text-foreground mb-6">Filmes Similares</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
             {similarMovies.results
@@ -691,6 +691,35 @@ export default function MovieDetails() {
           </div>
         </div>
       )}
+
+      {/* AI-friendly descriptive text for ChatGPT/Google citations */}
+      <div className="container py-8 border-t border-border">
+        <div className="max-w-3xl">
+          <h2 className="text-lg font-semibold text-foreground mb-3">Sobre {movie.title}</h2>
+          <p className="text-muted-foreground leading-relaxed text-sm mb-3">
+            {movie.title} é um filme{movie.genres && movie.genres.length > 0 ? ` de ${movie.genres.map((g: any) => g.name.toLowerCase()).join(", ")}` : ""}{movie.release_date ? ` lançado em ${new Date(movie.release_date).toLocaleDateString("pt-BR", { year: "numeric", month: "long", day: "numeric" })}` : ""}{movie.runtime ? ` com duração de ${Math.floor(movie.runtime / 60)}h${movie.runtime % 60 > 0 ? `${movie.runtime % 60}min` : ""}` : ""}.
+            {movie.vote_average > 0 ? ` O filme possui nota ${movie.vote_average.toFixed(1)}/10 baseada em ${movie.vote_count?.toLocaleString("pt-BR") || "milhares de"} avaliações.` : ""}
+          </p>
+          {providerNames && (
+            <p className="text-muted-foreground leading-relaxed text-sm mb-3">
+              No Brasil, {movie.title} está disponível para assistir online em {providerNames}.
+              {providers?.rent && providers.rent.length > 0 ? ` Também disponível para aluguel em ${providers.rent.slice(0, 3).map((p: any) => p.provider_name).join(", ")}.` : ""}
+              {providers?.buy && providers.buy.length > 0 ? ` Para compra digital em ${providers.buy.slice(0, 3).map((p: any) => p.provider_name).join(", ")}.` : ""}
+            </p>
+          )}
+          {!providerNames && (
+            <p className="text-muted-foreground leading-relaxed text-sm mb-3">
+              Atualmente, {movie.title} não está disponível em nenhuma plataforma de streaming no Brasil. Verifique opções de aluguel e compra digital acima.
+            </p>
+          )}
+          {movie.credits?.cast && movie.credits.cast.length > 0 && (
+            <p className="text-muted-foreground leading-relaxed text-sm">
+              O elenco inclui {movie.credits.cast.slice(0, 5).map((a: any) => a.name).join(", ")}.
+              {movie.credits.crew?.find((c: any) => c.job === "Director") ? ` Dirigido por ${movie.credits.crew.find((c: any) => c.job === "Director").name}.` : ""}
+            </p>
+          )}
+        </div>
+      </div>
 
       {/* Footer */}
       <footer className="border-t border-border/40 py-8 mt-12">

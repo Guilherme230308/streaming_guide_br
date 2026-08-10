@@ -28,6 +28,8 @@ import ProviderContent from "./pages/ProviderContent";
 import UsageMetrics from "./pages/UsageMetrics";
 import SEOGenrePage from "./pages/SEOGenrePage";
 import SEOProviderPage from "./pages/SEOProviderPage";
+import Novidades from "./pages/Novidades";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -61,6 +63,8 @@ function Router() {
       <Route path={"/melhores"} component={ProviderIndex} />
       <Route path={"/melhores/:slug"} component={ProviderContent} />
       <Route path={"/admin/metricas"} component={UsageMetrics} />
+      <Route path={"/novidades"} component={Novidades} />
+      <Route path={"/politica-de-privacidade"} component={PrivacyPolicy} />
       <Route path={"/onde-assistir/:genre"} component={SEOGenrePage} />
       <Route path={"/melhores-filmes/:provider"} component={SEOProviderPage} />
       <Route path={"/melhores-series/:provider"} component={SEOProviderPage} />

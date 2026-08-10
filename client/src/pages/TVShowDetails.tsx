@@ -244,7 +244,7 @@ export default function TVShowDetails() {
   return (
     <div className="min-h-screen bg-background pt-16">
       <SEO
-        title={`${show.name} - Onde Assistir`}
+        title={`${show.name}${showYear} - Onde Assistir Online | Stream Radar`}
         description={showSeoDescription}
         image={show.poster_path ? `https://image.tmdb.org/t/p/w500${show.poster_path}` : undefined}
         url={`/tv/${tvId}`}
@@ -678,6 +678,35 @@ export default function TVShowDetails() {
           </div>
         </div>
       )}
+
+      {/* AI-friendly descriptive text for ChatGPT/Google citations */}
+      <div className="container py-8 border-t border-border">
+        <div className="max-w-3xl">
+          <h2 className="text-lg font-semibold text-foreground mb-3">Sobre {show.name}</h2>
+          <p className="text-muted-foreground leading-relaxed text-sm mb-3">
+            {show.name} é uma série{show.genres && show.genres.length > 0 ? ` de ${show.genres.map((g: any) => g.name.toLowerCase()).join(", ")}` : ""}{show.first_air_date ? ` que estreou em ${new Date(show.first_air_date).toLocaleDateString("pt-BR", { year: "numeric", month: "long", day: "numeric" })}` : ""}.
+            {show.number_of_seasons ? ` A série possui ${show.number_of_seasons} temporada${show.number_of_seasons > 1 ? "s" : ""}${show.number_of_episodes ? ` e ${show.number_of_episodes} episódios` : ""}.` : ""}
+            {show.vote_average > 0 ? ` Nota ${show.vote_average.toFixed(1)}/10 baseada em ${show.vote_count?.toLocaleString("pt-BR") || "milhares de"} avaliações.` : ""}
+          </p>
+          {providerNames && (
+            <p className="text-muted-foreground leading-relaxed text-sm mb-3">
+              No Brasil, {show.name} está disponível para assistir online em {providerNames}.
+              {providers?.rent && providers.rent.length > 0 ? ` Também disponível para aluguel em ${providers.rent.slice(0, 3).map((p: any) => p.provider_name).join(", ")}.` : ""}
+            </p>
+          )}
+          {!providerNames && (
+            <p className="text-muted-foreground leading-relaxed text-sm mb-3">
+              Atualmente, {show.name} não está disponível em nenhuma plataforma de streaming no Brasil. Verifique opções de aluguel e compra digital acima.
+            </p>
+          )}
+          {show.credits?.cast && show.credits.cast.length > 0 && (
+            <p className="text-muted-foreground leading-relaxed text-sm">
+              O elenco inclui {show.credits.cast.slice(0, 5).map((a: any) => a.name).join(", ")}.
+              {show.credits.crew?.find((c: any) => c.job === "Director" || c.job === "Creator") ? ` Criada por ${show.credits.crew.find((c: any) => c.job === "Director" || c.job === "Creator").name}.` : ""}
+            </p>
+          )}
+        </div>
+      </div>
 
       {/* Footer */}
       <footer className="border-t border-border/40 py-8 mt-12">

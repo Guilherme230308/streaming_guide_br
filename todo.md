@@ -877,3 +877,12 @@
 ## Phase 15: Google AdSense Integration
 - [x] Add AdSense script tag to index.html
 - [x] Analyze Google Analytics data and provide insights
+
+## Phase 16: Retention, AI Content & Google Search Presence
+- [x] Create /novidades page showing new releases this week on each platform
+- [x] Add AI-friendly descriptive paragraphs to movie/TV detail pages for ChatGPT citations
+- [x] Implement web push notifications for content availability alerts (already existed, configured VAPID keys)
+- [x] Enhance server-side bot rendering for movie detail pages with full descriptive text
+- [x] Add "onde assistir [title]" optimized title tags for all movie/TV pages
+- [x] Create /politica-de-privacidade page (AdSense requirement)
+- [x] Add privacy policy links to footers (Home, LandingPage)
