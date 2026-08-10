@@ -868,3 +868,8 @@
 - [x] Add new routes to KNOWN_ROUTES (dev and production)
 - [x] Verify bot rendering with curl tests (all pages return correct titles and JSON-LD)
 - [x] All 56 tests passing
+
+## Phase 14: Card Design Improvements
+- [x] Improve ContentCard hover animations (scale, shadow, overlay)
+- [x] Add rating badge overlay on cards
+- [x] Add gradient overlay with title on hover
