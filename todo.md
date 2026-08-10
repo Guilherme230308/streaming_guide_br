@@ -891,3 +891,5 @@
 - [x] Fix 'Crawled - currently not indexed' (6545 pages): enhanced bot HTML with full article content (title, overview, genres, cast, director, providers, rating, duration)
 - [x] Fix 'Duplicate without user-selected canonical' (912 pages): added trailing slash 301 redirect middleware, canonical URL in all bot HTML
 - [x] Fix 'Soft 404' (287 pages): return HTTP 404 with noindex for invalid TMDB IDs (both movie and TV routes)
+- [x] Improve 404 page design with prominent search bar, back button, home button, and navigation links
+- [x] Enhance sitemap.xml with lastmod dates, novidades/privacy pages, expanded coverage (10 pages popular content)

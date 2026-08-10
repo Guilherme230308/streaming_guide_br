@@ -55,12 +55,15 @@ const STATIC_PAGES = [
   { url: "/melhores", changefreq: "weekly", priority: 0.8 },
   ...PROVIDER_SLUGS.map(slug => ({ url: `/melhores/${slug}`, changefreq: "weekly" as const, priority: 0.7 })),
   { url: "/about", changefreq: "monthly", priority: 0.3 },
+  { url: "/novidades", changefreq: "daily", priority: 0.9 },
+  { url: "/politica-de-privacidade", changefreq: "monthly", priority: 0.2 },
 ];
 
 // Generate XML sitemap with comprehensive content coverage
 async function generateSitemap(): Promise<string> {
   const urls: string[] = [];
   const addedIds = { movies: new Set<number>(), tv: new Set<number>() };
+  const today = new Date().toISOString().split("T")[0];
 
   function addMovieUrl(id: number, priority: number, changefreq: string) {
     if (addedIds.movies.has(id)) return;
@@ -70,6 +73,7 @@ async function generateSitemap(): Promise<string> {
       <loc>${SITE_URL}/movie/${id}</loc>
       <changefreq>${changefreq}</changefreq>
       <priority>${priority}</priority>
+      <lastmod>${today}</lastmod>
     </url>`);
   }
 
@@ -81,6 +85,7 @@ async function generateSitemap(): Promise<string> {
       <loc>${SITE_URL}/tv/${id}</loc>
       <changefreq>${changefreq}</changefreq>
       <priority>${priority}</priority>
+      <lastmod>${today}</lastmod>
     </url>`);
   }
 
@@ -91,6 +96,7 @@ async function generateSitemap(): Promise<string> {
       <loc>${SITE_URL}${page.url}</loc>
       <changefreq>${page.changefreq}</changefreq>
       <priority>${page.priority}</priority>
+      <lastmod>${today}</lastmod>
     </url>`);
   }
 
@@ -102,6 +108,7 @@ async function generateSitemap(): Promise<string> {
       <loc>${SITE_URL}/onde-assistir/${slug}</loc>
       <changefreq>weekly</changefreq>
       <priority>0.8</priority>
+      <lastmod>${today}</lastmod>
     </url>`);
   }
   for (const slug of PROVIDER_SLUGS) {
@@ -110,12 +117,14 @@ async function generateSitemap(): Promise<string> {
       <loc>${SITE_URL}/melhores-filmes/${slug}</loc>
       <changefreq>weekly</changefreq>
       <priority>0.8</priority>
+      <lastmod>${today}</lastmod>
     </url>`);
     urls.push(`
     <url>
       <loc>${SITE_URL}/melhores-series/${slug}</loc>
       <changefreq>weekly</changefreq>
       <priority>0.8</priority>
+      <lastmod>${today}</lastmod>
     </url>`);
   }
 
@@ -140,7 +149,7 @@ async function generateSitemap(): Promise<string> {
   }
 
   // Add popular movies (multiple pages for broader coverage)
-  for (let page = 1; page <= 5; page++) {
+  for (let page = 1; page <= 10; page++) {
     try {
       const popularMovies = await tmdb.getPopularMovies(page);
       for (const movie of popularMovies.results) {
@@ -153,7 +162,7 @@ async function generateSitemap(): Promise<string> {
   }
 
   // Add popular TV shows (multiple pages)
-  for (let page = 1; page <= 5; page++) {
+  for (let page = 1; page <= 10; page++) {
     try {
       const popularTV = await tmdb.getPopularTVShows(page);
       for (const show of popularTV.results) {
