@@ -886,3 +886,8 @@
 - [x] Add "onde assistir [title]" optimized title tags for all movie/TV pages
 - [x] Create /politica-de-privacidade page (AdSense requirement)
 - [x] Add privacy policy links to footers (Home, LandingPage)
+
+## Phase 17: Fix Google Search Console Critical Issues
+- [x] Fix 'Crawled - currently not indexed' (6545 pages): enhanced bot HTML with full article content (title, overview, genres, cast, director, providers, rating, duration)
+- [x] Fix 'Duplicate without user-selected canonical' (912 pages): added trailing slash 301 redirect middleware, canonical URL in all bot HTML
+- [x] Fix 'Soft 404' (287 pages): return HTTP 404 with noindex for invalid TMDB IDs (both movie and TV routes)

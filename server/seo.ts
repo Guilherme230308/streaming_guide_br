@@ -401,7 +401,33 @@ ${metaTags}
   <meta name="theme-color" content="#0d1117" />${jsonLdScript}
 </head>
 <body>
-  <p>Redirecionando...</p>
+  <header><h1><a href="${escapeHtml(canonicalUrl)}">Stream Radar</a></h1><nav><a href="https://streamradar.com.br/">Início</a> | <a href="https://streamradar.com.br/search">Buscar</a> | <a href="https://streamradar.com.br/genres">Gêneros</a> | <a href="https://streamradar.com.br/melhores">Plataformas</a> | <a href="https://streamradar.com.br/streaming-prices">Preços</a> | <a href="https://streamradar.com.br/novidades">Novidades</a></nav></header>
+  <main id="content"></main>
+  <footer><p>© 2026 Stream Radar. Encontre onde assistir filmes e séries no Brasil.</p><a href="https://streamradar.com.br/politica-de-privacidade">Política de Privacidade</a></footer>
+  <script>window.location.replace(window.location.href);</script>
+  <noscript><meta http-equiv="refresh" content="0;url=${escapeHtml(canonicalUrl)}" /></noscript>
+</body>
+</html>`;
+}
+
+// Enhanced version that includes actual content body for better indexing (fixes "Crawled - not indexed")
+function buildBotHtmlWithContent(metaTags: string, canonicalUrl: string, bodyContent: string, jsonLd?: Record<string, unknown> | Record<string, unknown>[]): string {
+  const jsonLdScript = jsonLd
+    ? `\n  <script type="application/ld+json">${JSON.stringify(Array.isArray(jsonLd) ? jsonLd : [jsonLd])}</script>`
+    : "";
+  return `<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+${metaTags}
+  <link rel="canonical" href="${escapeHtml(canonicalUrl)}" />
+  <meta name="theme-color" content="#0d1117" />${jsonLdScript}
+</head>
+<body>
+  <header><h1><a href="https://streamradar.com.br">Stream Radar</a></h1><nav><a href="https://streamradar.com.br/">Início</a> | <a href="https://streamradar.com.br/search">Buscar</a> | <a href="https://streamradar.com.br/genres">Gêneros</a> | <a href="https://streamradar.com.br/melhores">Plataformas</a> | <a href="https://streamradar.com.br/streaming-prices">Preços</a></nav></header>
+  <main>${bodyContent}</main>
+  <footer><p>© 2026 Stream Radar. Encontre onde assistir filmes e séries no Brasil.</p><a href="https://streamradar.com.br/politica-de-privacidade">Política de Privacidade</a></footer>
   <script>window.location.replace(window.location.href);</script>
   <noscript><meta http-equiv="refresh" content="0;url=${escapeHtml(canonicalUrl)}" /></noscript>
 </body>
@@ -590,7 +616,12 @@ export function registerSEORoutes(app: Express) {
       const movieId = parseInt(req.params.id);
       if (isNaN(movieId)) return next();
       const metaTags = await getMovieMetaTags(movieId, req);
-      if (!metaTags) return next();
+      if (!metaTags) {
+        // Return proper 404 for invalid movie IDs (fixes Soft 404)
+        res.status(404).set("Content-Type", "text/html; charset=utf-8");
+        res.send(`<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"/><title>Filme não encontrado | Stream Radar</title><meta name="robots" content="noindex"/></head><body><h1>Filme não encontrado</h1><p>Este filme não está disponível.</p><a href="https://streamradar.com.br/">Voltar ao início</a></body></html>`);
+        return;
+      }
       const siteUrl = getSiteUrl(req);
       // Build JSON-LD for the movie
       const movie = await tmdb.getMovieDetails(movieId);
@@ -604,13 +635,38 @@ export function registerSEORoutes(app: Express) {
           { "@type": "ListItem", position: 3, name: movie.title, item: `${siteUrl}/movie/${movieId}` },
         ],
       };
-      const html = buildBotHtml(metaTags, `${siteUrl}/movie/${movieId}`, [jsonLd, breadcrumbs]);
+      // Build rich body content for better indexing
+      const year = movie.release_date ? ` (${movie.release_date.substring(0, 4)})` : "";
+      const genres = movie.genres?.map((g: any) => g.name).join(", ") || "";
+      const cast = movie.credits?.cast?.slice(0, 5).map((a: any) => a.name).join(", ") || "";
+      const director = movie.credits?.crew?.find((c: any) => c.job === "Director")?.name || "";
+      const providers = movie.watchProviders?.flatrate?.map((p: any) => p.provider_name).join(", ") || "";
+      const bodyContent = `
+    <article>
+      <h1>${escapeHtml(movie.title)}${year} - Onde Assistir Online</h1>
+      ${movie.overview ? `<p>${escapeHtml(movie.overview)}</p>` : ""}
+      ${genres ? `<p><strong>Gêneros:</strong> ${escapeHtml(genres)}</p>` : ""}
+      ${cast ? `<p><strong>Elenco:</strong> ${escapeHtml(cast)}</p>` : ""}
+      ${director ? `<p><strong>Diretor:</strong> ${escapeHtml(director)}</p>` : ""}
+      ${providers ? `<p><strong>Disponível em:</strong> ${escapeHtml(providers)}</p>` : `<p>Verifique a disponibilidade nas plataformas de streaming do Brasil.</p>`}
+      ${movie.vote_average > 0 ? `<p><strong>Nota:</strong> ${movie.vote_average.toFixed(1)}/10</p>` : ""}
+      ${movie.runtime ? `<p><strong>Duração:</strong> ${movie.runtime} min</p>` : ""}
+      <p>Descubra onde assistir ${escapeHtml(movie.title)} no Brasil. Compare opções de streaming, aluguel e compra digital.</p>
+    </article>`;
+      const html = buildBotHtmlWithContent(metaTags, `${siteUrl}/movie/${movieId}`, bodyContent, [jsonLd, breadcrumbs]);
       res.set("Content-Type", "text/html; charset=utf-8");
       res.set("Cache-Control", "public, max-age=3600");
       res.send(html);
     } catch (e) {
-      console.error("[SEO] Bot movie route failed:", e);
-      next();
+      // If TMDB returns 404, return proper 404 status (fixes Soft 404)
+      const err = e as any;
+      if (err?.response?.status === 404 || err?.message?.includes("404")) {
+        res.status(404).set("Content-Type", "text/html; charset=utf-8");
+        res.send(`<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"/><title>Filme não encontrado | Stream Radar</title><meta name="robots" content="noindex"/></head><body><h1>Filme não encontrado</h1><p>Este filme não está disponível.</p><a href="https://streamradar.com.br/">Voltar ao início</a></body></html>`);
+      } else {
+        console.error("[SEO] Bot movie route failed:", e);
+        next();
+      }
     }
   });
 
@@ -621,7 +677,11 @@ export function registerSEORoutes(app: Express) {
       const tvId = parseInt(req.params.id);
       if (isNaN(tvId)) return next();
       const metaTags = await getTVShowMetaTags(tvId, req);
-      if (!metaTags) return next();
+      if (!metaTags) {
+        res.status(404).set("Content-Type", "text/html; charset=utf-8");
+        res.send(`<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"/><title>Série não encontrada | Stream Radar</title><meta name="robots" content="noindex"/></head><body><h1>Série não encontrada</h1><p>Esta série não está disponível.</p><a href="https://streamradar.com.br/">Voltar ao início</a></body></html>`);
+        return;
+      }
       const siteUrl = getSiteUrl(req);
       // Build JSON-LD for the TV show
       const show = await tmdb.getTVShowDetails(tvId);
@@ -635,13 +695,36 @@ export function registerSEORoutes(app: Express) {
           { "@type": "ListItem", position: 3, name: show.name, item: `${siteUrl}/tv/${tvId}` },
         ],
       };
-      const html = buildBotHtml(metaTags, `${siteUrl}/tv/${tvId}`, [jsonLd, breadcrumbs]);
+      // Build rich body content for better indexing
+      const year = show.first_air_date ? ` (${show.first_air_date.substring(0, 4)})` : "";
+      const genres = show.genres?.map((g: any) => g.name).join(", ") || "";
+      const cast = show.credits?.cast?.slice(0, 5).map((a: any) => a.name).join(", ") || "";
+      const providers = show.watchProviders?.flatrate?.map((p: any) => p.provider_name).join(", ") || "";
+      const seasons = show.number_of_seasons ? `${show.number_of_seasons} temporada${show.number_of_seasons > 1 ? "s" : ""}` : "";
+      const bodyContent = `
+    <article>
+      <h1>${escapeHtml(show.name)}${year} - Onde Assistir Online</h1>
+      ${show.overview ? `<p>${escapeHtml(show.overview)}</p>` : ""}
+      ${genres ? `<p><strong>Gêneros:</strong> ${escapeHtml(genres)}</p>` : ""}
+      ${seasons ? `<p><strong>Temporadas:</strong> ${escapeHtml(seasons)}</p>` : ""}
+      ${cast ? `<p><strong>Elenco:</strong> ${escapeHtml(cast)}</p>` : ""}
+      ${providers ? `<p><strong>Disponível em:</strong> ${escapeHtml(providers)}</p>` : `<p>Verifique a disponibilidade nas plataformas de streaming do Brasil.</p>`}
+      ${show.vote_average > 0 ? `<p><strong>Nota:</strong> ${show.vote_average.toFixed(1)}/10</p>` : ""}
+      <p>Descubra onde assistir ${escapeHtml(show.name)} no Brasil. Compare opções de streaming, aluguel e compra digital.</p>
+    </article>`;
+      const html = buildBotHtmlWithContent(metaTags, `${siteUrl}/tv/${tvId}`, bodyContent, [jsonLd, breadcrumbs]);
       res.set("Content-Type", "text/html; charset=utf-8");
       res.set("Cache-Control", "public, max-age=3600");
       res.send(html);
     } catch (e) {
-      console.error("[SEO] Bot TV route failed:", e);
-      next();
+      const err = e as any;
+      if (err?.response?.status === 404 || err?.message?.includes("404")) {
+        res.status(404).set("Content-Type", "text/html; charset=utf-8");
+        res.send(`<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"/><title>Série não encontrada | Stream Radar</title><meta name="robots" content="noindex"/></head><body><h1>Série não encontrada</h1><p>Esta série não está disponível.</p><a href="https://streamradar.com.br/">Voltar ao início</a></body></html>`);
+      } else {
+        console.error("[SEO] Bot TV route failed:", e);
+        next();
+      }
     }
   });
 

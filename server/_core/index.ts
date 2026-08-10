@@ -59,6 +59,17 @@ async function startServer() {
     next();
   });
 
+  // Strip trailing slashes (fixes "Duplicate without user-selected canonical")
+  // Redirect /movie/123/ to /movie/123, /genres/ to /genres, etc.
+  app.use((req, res, next) => {
+    if (req.path !== "/" && req.path.endsWith("/") && !req.path.startsWith("/api/")) {
+      const cleanPath = req.path.slice(0, -1);
+      const query = req.url.includes("?") ? req.url.slice(req.url.indexOf("?")) : "";
+      return res.redirect(301, cleanPath + query);
+    }
+    next();
+  });
+
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
