@@ -855,3 +855,16 @@
 - [x] Enhance Movie JSON-LD with director, actors, contentRating fields
 - [x] Enhance TVSeries JSON-LD with creator, actor, numberOfSeasons
 - [x] Add SiteNavigationElement schema for sitelinks
+
+## Phase 13: SEO - SSR for Bots & Thematic Content Pages
+- [x] Enhance bot SSR for genre listing pages (/genres with CollectionPage JSON-LD)
+- [x] Enhance bot SSR for search results pages (/search?q= with SearchResultsPage JSON-LD)
+- [x] Enhance bot SSR for streaming-prices page (FAQPage JSON-LD)
+- [x] Create SEO landing pages: "Melhores Filmes [Plataforma] 2026" (/melhores-filmes/:provider)
+- [x] Create SEO landing pages: "Melhores Séries [Plataforma] 2026" (/melhores-series/:provider)
+- [x] Create SEO landing pages: "Filmes de [Gênero] para Assistir no Streaming" (/onde-assistir/:genre)
+- [x] Add internal linking between SEO pages (genre cross-links, provider cross-links)
+- [x] Update sitemap.xml to include all 34 new SEO pages
+- [x] Add new routes to KNOWN_ROUTES (dev and production)
+- [x] Verify bot rendering with curl tests (all pages return correct titles and JSON-LD)
+- [x] All 56 tests passing

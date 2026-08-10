@@ -14,6 +14,40 @@ const PROVIDER_SLUGS = [
   "paramount-plus", "crunchyroll", "globoplay", "apple-tv-plus",
 ];
 
+// Genre data for SEO landing pages
+const GENRE_SEO_DATA: Record<string, { id: number; tvId?: number; name: string }> = {
+  "acao": { id: 28, tvId: 10759, name: "Ação" },
+  "aventura": { id: 12, tvId: 10759, name: "Aventura" },
+  "animacao": { id: 16, name: "Animação" },
+  "comedia": { id: 35, name: "Comédia" },
+  "crime": { id: 80, name: "Crime" },
+  "documentario": { id: 99, name: "Documentário" },
+  "drama": { id: 18, name: "Drama" },
+  "familia": { id: 10751, name: "Família" },
+  "fantasia": { id: 14, tvId: 10765, name: "Fantasia" },
+  "terror": { id: 27, name: "Terror" },
+  "romance": { id: 10749, name: "Romance" },
+  "ficcao-cientifica": { id: 878, tvId: 10765, name: "Ficção Científica" },
+  "suspense": { id: 53, name: "Suspense" },
+  "guerra": { id: 10752, tvId: 10768, name: "Guerra" },
+  "faroeste": { id: 37, name: "Faroeste" },
+  "musical": { id: 10402, name: "Musical" },
+  "misterio": { id: 9648, name: "Mistério" },
+  "historia": { id: 36, name: "História" },
+};
+
+// Provider data for SEO landing pages
+const PROVIDER_SEO_DATA: Record<string, { id: number; name: string }> = {
+  "netflix": { id: 8, name: "Netflix" },
+  "amazon-prime-video": { id: 119, name: "Amazon Prime Video" },
+  "disney-plus": { id: 337, name: "Disney+" },
+  "hbo-max": { id: 1899, name: "Max (HBO)" },
+  "paramount-plus": { id: 531, name: "Paramount+" },
+  "crunchyroll": { id: 283, name: "Crunchyroll" },
+  "globoplay": { id: 307, name: "Globoplay" },
+  "apple-tv-plus": { id: 350, name: "Apple TV+" },
+};
+
 const STATIC_PAGES = [
   { url: "/", changefreq: "daily", priority: 1.0 },
   { url: "/streaming-prices", changefreq: "weekly", priority: 0.8 },
@@ -57,6 +91,31 @@ async function generateSitemap(): Promise<string> {
       <loc>${SITE_URL}${page.url}</loc>
       <changefreq>${page.changefreq}</changefreq>
       <priority>${page.priority}</priority>
+    </url>`);
+  }
+
+  // Add SEO landing pages (genre-based and provider-based)
+  const genreSlugs = Object.keys(GENRE_SEO_DATA);
+  for (const slug of genreSlugs) {
+    urls.push(`
+    <url>
+      <loc>${SITE_URL}/onde-assistir/${slug}</loc>
+      <changefreq>weekly</changefreq>
+      <priority>0.8</priority>
+    </url>`);
+  }
+  for (const slug of PROVIDER_SLUGS) {
+    urls.push(`
+    <url>
+      <loc>${SITE_URL}/melhores-filmes/${slug}</loc>
+      <changefreq>weekly</changefreq>
+      <priority>0.8</priority>
+    </url>`);
+    urls.push(`
+    <url>
+      <loc>${SITE_URL}/melhores-series/${slug}</loc>
+      <changefreq>weekly</changefreq>
+      <priority>0.8</priority>
     </url>`);
   }
 
@@ -447,7 +506,7 @@ function buildTVShowJsonLdServer(show: any, siteUrl: string): Record<string, unk
   return jsonLd;
 }
 
-// Register SEO routes on the Express app
+
 export function registerSEORoutes(app: Express) {
   // Sitemap endpoint
   app.get("/sitemap.xml", async (_req: Request, res: Response) => {
@@ -617,6 +676,375 @@ export function registerSEORoutes(app: Express) {
       res.send(html);
     } catch (e) {
       console.error("[SEO] Bot melhores provider route failed:", e);
+      next();
+    }
+  });
+
+  // Genres page bot route
+  app.get("/genres", async (req: Request, res: Response, next: Function) => {
+    const userAgent = req.headers["user-agent"] || "";
+    if (!isBot(userAgent)) return next();
+    try {
+      const siteUrl = getSiteUrl(req);
+      const metaTags = buildMetaTags({
+        title: "Gêneros de Filmes e Séries - Explore por Categoria | Stream Radar",
+        description: "Explore filmes e séries por gênero: Ação, Comédia, Drama, Terror, Ficção Científica, Romance e mais. Encontre o que assistir no streaming por categoria.",
+        image: `${siteUrl}/og-default.png`,
+        url: `${siteUrl}/genres`,
+        type: "website",
+      });
+      const genres = await tmdb.getMovieGenres();
+      const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        name: "Gêneros de Filmes e Séries",
+        description: "Explore filmes e séries por gênero nas plataformas de streaming do Brasil.",
+        url: `${siteUrl}/genres`,
+        mainEntity: {
+          "@type": "ItemList",
+          itemListElement: genres.genres.slice(0, 15).map((g: any, i: number) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            name: g.name,
+            url: `${siteUrl}/genres`,
+          })),
+        },
+      };
+      const html = buildBotHtml(metaTags, `${siteUrl}/genres`, jsonLd);
+      res.set("Content-Type", "text/html; charset=utf-8");
+      res.set("Cache-Control", "public, max-age=86400");
+      res.send(html);
+    } catch (e) {
+      console.error("[SEO] Bot genres route failed:", e);
+      next();
+    }
+  });
+
+  // Search page bot route - renders actual search results for bots
+  app.get("/search", async (req: Request, res: Response, next: Function) => {
+    const userAgent = req.headers["user-agent"] || "";
+    if (!isBot(userAgent)) return next();
+    try {
+      const siteUrl = getSiteUrl(req);
+      const query = (req.query.q as string) || "";
+      if (!query) {
+        const metaTags = buildMetaTags({
+          title: "Buscar Filmes e Séries - Onde Assistir | Stream Radar",
+          description: "Busque qualquer filme ou série e descubra em qual streaming está disponível no Brasil. Netflix, Prime Video, Disney+, HBO Max e mais.",
+          image: `${siteUrl}/og-default.png`,
+          url: `${siteUrl}/search`,
+          type: "website",
+        });
+        const html = buildBotHtml(metaTags, `${siteUrl}/search`);
+        res.set("Content-Type", "text/html; charset=utf-8");
+        res.send(html);
+        return;
+      }
+      // Fetch actual search results for the query
+      const results = await tmdb.searchMulti(query, 1);
+      const topResults = results.results.slice(0, 10);
+      const resultNames = topResults.map((r: any) => r.title || r.name).filter(Boolean).join(", ");
+      const metaTags = buildMetaTags({
+        title: `"${query}" - Onde Assistir no Streaming | Stream Radar`,
+        description: `Resultados para "${query}": ${resultNames.substring(0, 120)}. Descubra onde assistir no Brasil.`,
+        image: topResults[0]?.poster_path ? `https://image.tmdb.org/t/p/w780${topResults[0].poster_path}` : `${siteUrl}/og-default.png`,
+        url: `${siteUrl}/search?q=${encodeURIComponent(query)}`,
+        type: "website",
+      });
+      const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "SearchResultsPage",
+        name: `Resultados para "${query}" - Stream Radar`,
+        url: `${siteUrl}/search?q=${encodeURIComponent(query)}`,
+        mainEntity: {
+          "@type": "ItemList",
+          numberOfItems: results.total_results,
+          itemListElement: topResults.map((r: any, i: number) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            name: r.title || r.name,
+            url: `${siteUrl}/${r.media_type === "tv" ? "tv" : "movie"}/${r.id}`,
+            ...(r.poster_path ? { image: `https://image.tmdb.org/t/p/w342${r.poster_path}` } : {}),
+          })),
+        },
+      };
+      const html = buildBotHtml(metaTags, `${siteUrl}/search?q=${encodeURIComponent(query)}`, jsonLd);
+      res.set("Content-Type", "text/html; charset=utf-8");
+      res.set("Cache-Control", "public, max-age=3600");
+      res.send(html);
+    } catch (e) {
+      console.error("[SEO] Bot search route failed:", e);
+      next();
+    }
+  });
+
+  // Streaming Prices page bot route
+  app.get("/streaming-prices", async (req: Request, res: Response, next: Function) => {
+    const userAgent = req.headers["user-agent"] || "";
+    if (!isBot(userAgent)) return next();
+    try {
+      const siteUrl = getSiteUrl(req);
+      const metaTags = buildMetaTags({
+        title: "Preços dos Streamings no Brasil 2026 - Compare Planos | Stream Radar",
+        description: "Compare preços de todos os streamings no Brasil: Netflix a partir de R$20,90, Prime Video R$19,90, Disney+ R$33,90, HBO Max R$34,90. Veja todos os planos.",
+        image: `${siteUrl}/og-default.png`,
+        url: `${siteUrl}/streaming-prices`,
+        type: "website",
+      });
+      const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: "Qual o streaming mais barato no Brasil em 2026?",
+            acceptedAnswer: { "@type": "Answer", text: "O Amazon Prime Video é o streaming mais acessível, custando R$19,90/mês com acesso a filmes, séries e frete grátis na Amazon." },
+          },
+          {
+            "@type": "Question",
+            name: "Quanto custa a Netflix no Brasil?",
+            acceptedAnswer: { "@type": "Answer", text: "A Netflix oferece planos a partir de R$20,90/mês (Padrão com anúncios), R$44,90/mês (Padrão) e R$59,90/mês (Premium com 4K)." },
+          },
+          {
+            "@type": "Question",
+            name: "Qual streaming tem o melhor catálogo de filmes?",
+            acceptedAnswer: { "@type": "Answer", text: "Depende do gênero. Netflix e Prime Video têm os maiores catálogos. Disney+ é forte em família e super-heróis. HBO Max tem os melhores filmes recentes de cinema." },
+          },
+          {
+            "@type": "Question",
+            name: "Vale a pena assinar Disney+ no Brasil?",
+            acceptedAnswer: { "@type": "Answer", text: "Disney+ custa R$33,90/mês e inclui conteúdo Disney, Pixar, Marvel, Star Wars e National Geographic. É ideal para famílias e fãs de super-heróis." },
+          },
+        ],
+      };
+      const html = buildBotHtml(metaTags, `${siteUrl}/streaming-prices`, jsonLd);
+      res.set("Content-Type", "text/html; charset=utf-8");
+      res.set("Cache-Control", "public, max-age=86400");
+      res.send(html);
+    } catch (e) {
+      console.error("[SEO] Bot streaming-prices route failed:", e);
+      next();
+    }
+  });
+
+  // ============================================================
+  // SEO LANDING PAGES - Thematic content pages for organic search
+  // These pages target high-volume search queries in Brazil
+  // ============================================================
+
+  // Genre-based SEO pages: /onde-assistir/:genre
+  app.get("/onde-assistir/:genre", async (req: Request, res: Response, next: Function) => {
+    const userAgent = req.headers["user-agent"] || "";
+    const siteUrl = getSiteUrl(req);
+    const genreSlug = req.params.genre;
+    const genreInfo = GENRE_SEO_DATA[genreSlug];
+    if (!genreInfo) return next();
+
+    try {
+      const movies = await tmdb.discoverMoviesByGenre(genreInfo.id, 1);
+      const tvShows = await tmdb.discoverTVShowsByGenre(genreInfo.tvId || genreInfo.id, 1);
+      const topMovies = movies.results.slice(0, 10);
+      const topShows = tvShows.results.slice(0, 5);
+      const movieNames = topMovies.slice(0, 5).map((m: any) => m.title).join(", ");
+
+      const metaTags = buildMetaTags({
+        title: `Filmes de ${genreInfo.name} para Assistir no Streaming - ${new Date().getFullYear()} | Stream Radar`,
+        description: `Os melhores filmes e séries de ${genreInfo.name.toLowerCase()} disponíveis no streaming no Brasil: ${movieNames}. Veja onde assistir agora.`,
+        image: topMovies[0]?.poster_path ? `https://image.tmdb.org/t/p/w780${topMovies[0].poster_path}` : `${siteUrl}/og-default.png`,
+        url: `${siteUrl}/onde-assistir/${genreSlug}`,
+        type: "website",
+      });
+
+      if (isBot(userAgent)) {
+        const jsonLd = [
+          {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            name: `Filmes de ${genreInfo.name} para Assistir no Streaming`,
+            description: `Lista atualizada dos melhores filmes e séries de ${genreInfo.name.toLowerCase()} disponíveis nas plataformas de streaming no Brasil.`,
+            url: `${siteUrl}/onde-assistir/${genreSlug}`,
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            name: `Melhores Filmes de ${genreInfo.name}`,
+            numberOfItems: topMovies.length + topShows.length,
+            itemListElement: [
+              ...topMovies.map((m: any, i: number) => ({
+                "@type": "ListItem",
+                position: i + 1,
+                item: {
+                  "@type": "Movie",
+                  name: m.title,
+                  url: `${siteUrl}/movie/${m.id}`,
+                  datePublished: m.release_date,
+                  ...(m.poster_path ? { image: `https://image.tmdb.org/t/p/w342${m.poster_path}` } : {}),
+                },
+              })),
+              ...topShows.map((s: any, i: number) => ({
+                "@type": "ListItem",
+                position: topMovies.length + i + 1,
+                item: {
+                  "@type": "TVSeries",
+                  name: s.name,
+                  url: `${siteUrl}/tv/${s.id}`,
+                  datePublished: s.first_air_date,
+                  ...(s.poster_path ? { image: `https://image.tmdb.org/t/p/w342${s.poster_path}` } : {}),
+                },
+              })),
+            ],
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Início", item: siteUrl },
+              { "@type": "ListItem", position: 2, name: "Gêneros", item: `${siteUrl}/genres` },
+              { "@type": "ListItem", position: 3, name: genreInfo.name, item: `${siteUrl}/onde-assistir/${genreSlug}` },
+            ],
+          },
+        ];
+        const html = buildBotHtml(metaTags, `${siteUrl}/onde-assistir/${genreSlug}`, jsonLd);
+        res.set("Content-Type", "text/html; charset=utf-8");
+        res.set("Cache-Control", "public, max-age=86400");
+        res.send(html);
+      } else {
+        // For real users, serve the SPA which will render the SEO page component
+        next();
+      }
+    } catch (e) {
+      console.error("[SEO] Bot genre landing page failed:", e);
+      next();
+    }
+  });
+
+  // Provider-based SEO pages: /melhores-filmes/:provider and /melhores-series/:provider
+  app.get("/melhores-filmes/:provider", async (req: Request, res: Response, next: Function) => {
+    const userAgent = req.headers["user-agent"] || "";
+    const siteUrl = getSiteUrl(req);
+    const providerSlug = req.params.provider;
+    const providerInfo = PROVIDER_SEO_DATA[providerSlug];
+    if (!providerInfo) return next();
+
+    try {
+      const movies = await tmdb.discoverMoviesByProvider(providerInfo.id, 1);
+      const topMovies = movies.results.slice(0, 15);
+      const movieNames = topMovies.slice(0, 5).map((m: any) => m.title).join(", ");
+      const year = new Date().getFullYear();
+
+      const metaTags = buildMetaTags({
+        title: `Melhores Filmes ${providerInfo.name} ${year} - Top Filmes para Assistir | Stream Radar`,
+        description: `Os melhores filmes da ${providerInfo.name} em ${year}: ${movieNames}. Lista atualizada com os títulos mais populares e bem avaliados.`,
+        image: topMovies[0]?.poster_path ? `https://image.tmdb.org/t/p/w780${topMovies[0].poster_path}` : `${siteUrl}/og-default.png`,
+        url: `${siteUrl}/melhores-filmes/${providerSlug}`,
+        type: "website",
+      });
+
+      if (isBot(userAgent)) {
+        const jsonLd = [
+          {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            name: `Melhores Filmes ${providerInfo.name} ${year}`,
+            description: `Lista dos melhores filmes disponíveis na ${providerInfo.name} no Brasil em ${year}.`,
+            numberOfItems: topMovies.length,
+            itemListElement: topMovies.map((m: any, i: number) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              item: {
+                "@type": "Movie",
+                name: m.title,
+                url: `${siteUrl}/movie/${m.id}`,
+                datePublished: m.release_date,
+                ...(m.vote_average ? { aggregateRating: { "@type": "AggregateRating", ratingValue: m.vote_average.toFixed(1), bestRating: "10" } } : {}),
+                ...(m.poster_path ? { image: `https://image.tmdb.org/t/p/w342${m.poster_path}` } : {}),
+              },
+            })),
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Início", item: siteUrl },
+              { "@type": "ListItem", position: 2, name: providerInfo.name, item: `${siteUrl}/melhores/${providerSlug}` },
+              { "@type": "ListItem", position: 3, name: `Melhores Filmes`, item: `${siteUrl}/melhores-filmes/${providerSlug}` },
+            ],
+          },
+        ];
+        const html = buildBotHtml(metaTags, `${siteUrl}/melhores-filmes/${providerSlug}`, jsonLd);
+        res.set("Content-Type", "text/html; charset=utf-8");
+        res.set("Cache-Control", "public, max-age=86400");
+        res.send(html);
+      } else {
+        next();
+      }
+    } catch (e) {
+      console.error("[SEO] Bot melhores-filmes route failed:", e);
+      next();
+    }
+  });
+
+  app.get("/melhores-series/:provider", async (req: Request, res: Response, next: Function) => {
+    const userAgent = req.headers["user-agent"] || "";
+    const siteUrl = getSiteUrl(req);
+    const providerSlug = req.params.provider;
+    const providerInfo = PROVIDER_SEO_DATA[providerSlug];
+    if (!providerInfo) return next();
+
+    try {
+      const shows = await tmdb.discoverTVShowsByProvider(providerInfo.id, 1);
+      const topShows = shows.results.slice(0, 15);
+      const showNames = topShows.slice(0, 5).map((s: any) => s.name).join(", ");
+      const year = new Date().getFullYear();
+
+      const metaTags = buildMetaTags({
+        title: `Melhores Séries ${providerInfo.name} ${year} - Top Séries para Assistir | Stream Radar`,
+        description: `As melhores séries da ${providerInfo.name} em ${year}: ${showNames}. Lista atualizada com os títulos mais populares e bem avaliados.`,
+        image: topShows[0]?.poster_path ? `https://image.tmdb.org/t/p/w780${topShows[0].poster_path}` : `${siteUrl}/og-default.png`,
+        url: `${siteUrl}/melhores-series/${providerSlug}`,
+        type: "website",
+      });
+
+      if (isBot(userAgent)) {
+        const jsonLd = [
+          {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            name: `Melhores Séries ${providerInfo.name} ${year}`,
+            description: `Lista das melhores séries disponíveis na ${providerInfo.name} no Brasil em ${year}.`,
+            numberOfItems: topShows.length,
+            itemListElement: topShows.map((s: any, i: number) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              item: {
+                "@type": "TVSeries",
+                name: s.name,
+                url: `${siteUrl}/tv/${s.id}`,
+                datePublished: s.first_air_date,
+                ...(s.vote_average ? { aggregateRating: { "@type": "AggregateRating", ratingValue: s.vote_average.toFixed(1), bestRating: "10" } } : {}),
+                ...(s.poster_path ? { image: `https://image.tmdb.org/t/p/w342${s.poster_path}` } : {}),
+              },
+            })),
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Início", item: siteUrl },
+              { "@type": "ListItem", position: 2, name: providerInfo.name, item: `${siteUrl}/melhores/${providerSlug}` },
+              { "@type": "ListItem", position: 3, name: `Melhores Séries`, item: `${siteUrl}/melhores-series/${providerSlug}` },
+            ],
+          },
+        ];
+        const html = buildBotHtml(metaTags, `${siteUrl}/melhores-series/${providerSlug}`, jsonLd);
+        res.set("Content-Type", "text/html; charset=utf-8");
+        res.set("Cache-Control", "public, max-age=86400");
+        res.send(html);
+      } else {
+        next();
+      }
+    } catch (e) {
+      console.error("[SEO] Bot melhores-series route failed:", e);
       next();
     }
   });

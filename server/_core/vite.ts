@@ -64,6 +64,9 @@ export async function setupVite(app: Express, server: Server) {
     /^\/melhores$/,
     /^\/melhores\/[a-z0-9-]+$/,
     /^\/admin\/metricas$/,
+    /^\/onde-assistir\/[a-z-]+$/,
+    /^\/melhores-filmes\/[a-z0-9-]+$/,
+    /^\/melhores-series\/[a-z0-9-]+$/,
     /^\/404$/,
   ];
 
@@ -140,13 +143,15 @@ export function serveStatic(app: Express) {
     /^\/melhores$/,
     /^\/melhores\/[a-z0-9-]+$/,
     /^\/admin\/metricas$/,
+    /^\/onde-assistir\/[a-z-]+$/,
+    /^\/melhores-filmes\/[a-z0-9-]+$/,
+    /^\/melhores-series\/[a-z0-9-]+$/,
     /^\/404$/,
   ];
 
   function isKnownRoute(pathname: string): boolean {
     return KNOWN_ROUTES.some(pattern => pattern.test(pathname));
   }
-
   // fall through to index.html if the file doesn't exist (but not for API routes)
   // Returns 404 status for unknown routes to prevent soft 404 issues with Google
   app.get(/^(?!\/api\/).*/, (req, res) => {
