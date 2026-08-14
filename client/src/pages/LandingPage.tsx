@@ -302,8 +302,11 @@ export default function LandingPage() {
 
           {/* Feature Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card className="border-border/50 hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5 group">
-              <CardContent className="p-6">
+            <Card className="border-border/50 hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5 group overflow-hidden">
+              <div className="h-40 overflow-hidden bg-gradient-to-b from-primary/5 to-transparent">
+                <img src="/manus-storage/feature-alerts_90d5d00d.png" alt="Alertas Automáticos" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300" />
+              </div>
+              <CardContent className="p-6 pt-4">
                 <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
                   <Bell className="h-6 w-6 text-primary" />
                 </div>
@@ -316,8 +319,11 @@ export default function LandingPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-border/50 hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5 group">
-              <CardContent className="p-6">
+            <Card className="border-border/50 hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5 group overflow-hidden">
+              <div className="h-40 overflow-hidden bg-gradient-to-b from-primary/5 to-transparent">
+                <img src="/manus-storage/feature-lists_bf77cf0e.png" alt="Listas Personalizadas" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300" />
+              </div>
+              <CardContent className="p-6 pt-4">
                 <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
                   <List className="h-6 w-6 text-primary" />
                 </div>
@@ -330,8 +336,11 @@ export default function LandingPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-border/50 hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5 group">
-              <CardContent className="p-6">
+            <Card className="border-border/50 hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5 group overflow-hidden">
+              <div className="h-40 overflow-hidden bg-gradient-to-b from-primary/5 to-transparent">
+                <img src="/manus-storage/feature-ai-recommendations_86c7b214.png" alt="Recomendações IA" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300" />
+              </div>
+              <CardContent className="p-6 pt-4">
                 <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
                   <TrendingUp className="h-6 w-6 text-primary" />
                 </div>
@@ -344,8 +353,11 @@ export default function LandingPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-border/50 hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5 group">
-              <CardContent className="p-6">
+            <Card className="border-border/50 hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5 group overflow-hidden">
+              <div className="h-40 overflow-hidden bg-gradient-to-b from-primary/5 to-transparent">
+                <img src="/manus-storage/feature-streaming-analysis_dc45661f.png" alt="Análise de Streamings" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300" />
+              </div>
+              <CardContent className="p-6 pt-4">
                 <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
                   <BarChart3 className="h-6 w-6 text-primary" />
                 </div>
@@ -358,8 +370,11 @@ export default function LandingPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-border/50 hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5 group">
-              <CardContent className="p-6">
+            <Card className="border-border/50 hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5 group overflow-hidden">
+              <div className="h-40 overflow-hidden bg-gradient-to-b from-primary/5 to-transparent">
+                <img src="/manus-storage/feature-history_412f61b6.png" alt="Histórico Completo" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300" />
+              </div>
+              <CardContent className="p-6 pt-4">
                 <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
                   <CheckCircle className="h-6 w-6 text-primary" />
                 </div>
@@ -372,8 +387,11 @@ export default function LandingPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-border/50 hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5 group">
-              <CardContent className="p-6">
+            <Card className="border-border/50 hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5 group overflow-hidden">
+              <div className="h-40 overflow-hidden bg-gradient-to-b from-primary/5 to-transparent">
+                <img src="/manus-storage/feature-pwa_dcf45eb8.png" alt="App Instalável" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300" />
+              </div>
+              <CardContent className="p-6 pt-4">
                 <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
                   <Smartphone className="h-6 w-6 text-primary" />
                 </div>

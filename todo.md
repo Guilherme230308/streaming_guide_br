@@ -893,3 +893,5 @@
 - [x] Fix 'Soft 404' (287 pages): return HTTP 404 with noindex for invalid TMDB IDs (both movie and TV routes)
 - [x] Improve 404 page design with prominent search bar, back button, home button, and navigation links
 - [x] Enhance sitemap.xml with lastmod dates, novidades/privacy pages, expanded coverage (10 pages popular content)
+- [x] Add feature illustration images to Landing Page cards (Alertas, Listas, Recomendações IA, Análise, Histórico, App Instalável)
+- [x] Setup storage proxy for serving uploaded images via /manus-storage/ paths
