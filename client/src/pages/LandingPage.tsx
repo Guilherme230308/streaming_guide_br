@@ -240,65 +240,67 @@ export default function LandingPage() {
                 <Sparkles className="h-5 w-5 text-primary" />
                 <h2 className="text-lg font-bold text-foreground">Lançamentos no Streaming</h2>
               </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8 rounded-full"
-                  onClick={() => scrollCarousel('left')}
-                  disabled={!canScrollLeft || isLoadingCarousel}
-                >
-                  <ChevronLeft className="h-4 w-4" />
+              <Link href="/novidades">
+                <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80 gap-1">
+                  Ver todos <ChevronRight className="h-4 w-4" />
                 </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8 rounded-full"
-                  onClick={() => scrollCarousel('right')}
-                  disabled={!canScrollRight || isLoadingCarousel}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-                <Link href="/novidades">
-                  <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80 gap-1">
-                    Ver todos <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </Link>
-              </div>
+              </Link>
             </div>
-            {isLoadingCarousel ? (
-              <div className="flex gap-3 overflow-hidden pb-4">
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i} className="flex-shrink-0 w-[130px] sm:w-[150px]">
-                    <div className="animate-pulse">
-                      <div className="bg-muted/30 rounded-xl aspect-[2/3] mb-2" />
-                      <div className="bg-muted/30 rounded h-4 w-3/4 mb-1" />
-                      <div className="bg-muted/30 rounded h-3 w-1/2" />
+            <div className="relative group/carousel">
+              {/* Left scroll button */}
+              {!isLoadingCarousel && canScrollLeft && (
+                <button
+                  onClick={() => scrollCarousel('left')}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full bg-background/90 border border-border shadow-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all -translate-x-1/2 opacity-0 group-hover/carousel:opacity-100"
+                >
+                  <ChevronLeft className="h-6 w-6" />
+                </button>
+              )}
+
+              {/* Right scroll button */}
+              {!isLoadingCarousel && canScrollRight && (
+                <button
+                  onClick={() => scrollCarousel('right')}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full bg-background/90 border border-border shadow-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all translate-x-1/2 opacity-0 group-hover/carousel:opacity-100"
+                >
+                  <ChevronRight className="h-6 w-6" />
+                </button>
+              )}
+
+              {isLoadingCarousel ? (
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i}>
+                      <div className="animate-pulse">
+                        <div className="bg-muted/30 rounded-xl aspect-[2/3] mb-2" />
+                        <div className="bg-muted/30 rounded h-4 w-3/4 mb-1" />
+                        <div className="bg-muted/30 rounded h-3 w-1/2" />
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div
-                ref={carouselRef}
-                onScroll={updateScrollButtons}
-                className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-              >
-                {newOnStreaming!.results.slice(0, 15).map((movie: any) => (
-                  <div key={movie.id} className="flex-shrink-0 w-[130px] sm:w-[150px] snap-start">
-                    <ContentCard
-                      id={movie.id}
-                      title={movie.title}
-                      posterPath={movie.poster_path}
-                      voteAverage={movie.vote_average}
-                      releaseDate={movie.release_date}
-                      mediaType="movie"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
+                  ))}
+                </div>
+              ) : (
+                <div
+                  ref={carouselRef}
+                  onScroll={updateScrollButtons}
+                  className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory"
+                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
+                  {newOnStreaming!.results.slice(0, 15).map((movie: any) => (
+                    <div key={movie.id} className="flex-shrink-0 w-[calc((100%-5*1rem)/6)] min-w-[150px] snap-start">
+                      <ContentCard
+                        id={movie.id}
+                        title={movie.title}
+                        posterPath={movie.poster_path}
+                        voteAverage={movie.vote_average}
+                        releaseDate={movie.release_date}
+                        mediaType="movie"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </section>
       )}
