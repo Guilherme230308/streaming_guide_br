@@ -122,7 +122,7 @@ export default function LandingPage() {
           <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/50" />
         </div>
 
-        <div className="container relative z-10 py-20 md:py-32">
+        <div className="container relative z-10 pt-20 pb-10 md:pt-32 md:pb-12">
           <div className="max-w-2xl">
 
             <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
