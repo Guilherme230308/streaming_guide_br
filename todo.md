@@ -895,3 +895,4 @@
 - [x] Enhance sitemap.xml with lastmod dates, novidades/privacy pages, expanded coverage (10 pages popular content)
 - [x] Add feature illustration images to Landing Page cards (Alertas, Listas, Recomendações IA, Análise, Histórico, App Instalável)
 - [x] Setup storage proxy for serving uploaded images via /manus-storage/ paths
+- [x] Add horizontal carousel of new releases on streaming below search bar on Home page

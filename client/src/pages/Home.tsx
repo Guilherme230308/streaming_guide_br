@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ContentCard } from "@/components/ContentCard";
 import { Badge } from "@/components/ui/badge";
 import { Search, Film, Tv, Bookmark, Bell, Calendar, Grid3x3, Clock, Check, List, DollarSign, X, Sparkles, BarChart3 } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
@@ -122,6 +122,12 @@ export default function Home() {
     mediaType: "tv",
     timeWindow: "week",
   });
+
+  // New releases on streaming
+  const { data: newOnStreaming } = trpc.content.getNewOnStreaming.useQuery(
+    { page: 1 },
+    { staleTime: 1000 * 60 * 60 } // 1 hour
+  );
 
   // Pull-to-refresh handler
   const handleRefresh = async () => {
@@ -441,6 +447,41 @@ export default function Home() {
 
       {/* Personalized Recommendations (only for logged-in users) */}
       {user && <PersonalizedRecommendations filters={searchFilters} />}
+
+      {/* New Releases on Streaming Carousel */}
+      {newOnStreaming?.results && newOnStreaming.results.length > 0 && (
+        <section className="py-8">
+          <div className="container px-4">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary" />
+                <h2 className="text-xl font-bold text-foreground">Lançamentos no Streaming</h2>
+              </div>
+              <Link href="/novidades">
+                <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80">
+                  Ver todos
+                </Button>
+              </Link>
+            </div>
+            <div className="relative">
+              <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                {newOnStreaming.results.slice(0, 15).map((movie: any) => (
+                  <div key={movie.id} className="flex-shrink-0 w-[140px] sm:w-[160px] snap-start">
+                    <ContentCard
+                      id={movie.id}
+                      title={movie.title}
+                      posterPath={movie.poster_path}
+                      voteAverage={movie.vote_average}
+                      releaseDate={movie.release_date}
+                      mediaType="movie"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Trending Movies */}
       <section className="py-12" data-tour="trending-movies">

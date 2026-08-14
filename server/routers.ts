@@ -473,6 +473,12 @@ export const appRouter = router({
         }
       }),
 
+    getNewOnStreaming: publicProcedure
+      .input(z.object({ page: z.number().default(1) }))
+      .query(async ({ input }) => {
+        return await tmdb.getNewOnStreaming(input.page);
+      }),
+
     getRecommendations: publicProcedure
       .input(z.object({
         mediaType: z.enum(['movie', 'tv']),

@@ -589,3 +589,26 @@ export async function discoverTVShowsByProvider(providerId: number, page: number
   setCache(cacheKey, response.data, TTL.DISCOVER);
   return response.data;
 }
+
+// Get recently released movies available on streaming in Brazil (last 60 days)
+export async function getNewOnStreaming(page: number = 1): Promise<{ results: TMDBMovie[]; page: number; total_pages: number; total_results: number }> {
+  const cacheKey = `discover:new-on-streaming:${page}`;
+  const cached = getCached<{ results: TMDBMovie[]; page: number; total_pages: number; total_results: number }>(cacheKey);
+  if (cached) return cached;
+  const today = new Date();
+  const sixtyDaysAgo = new Date(today.getTime() - 60 * 24 * 60 * 60 * 1000);
+  const response = await tmdbApi.get('/discover/movie', {
+    params: {
+      with_watch_providers: '8|119|337|1899|531|350|307', // Netflix, Prime, Disney+, Max, Paramount+, Apple TV+, Globoplay
+      watch_region: 'BR',
+      'release_date.gte': sixtyDaysAgo.toISOString().split('T')[0],
+      'release_date.lte': today.toISOString().split('T')[0],
+      page,
+      language: 'pt-BR',
+      sort_by: 'popularity.desc',
+      'vote_count.gte': 50,
+    },
+  });
+  setCache(cacheKey, response.data, TTL.DISCOVER);
+  return response.data;
+}
