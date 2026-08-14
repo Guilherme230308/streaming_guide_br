@@ -129,13 +129,14 @@ const DEEP_LINK_CONFIG: Record<number, DeepLinkConfig> = {
     providerId: 2,
     providerName: "Apple TV",
     searchUrlTemplate: "https://tv.apple.com/br/search?term={title}",
-    usesLocalTitle: false, // Apple TV search works better with original (English) titles
+    usesLocalTitle: true, // Apple TV Store (buy/rent) indexes Portuguese titles
   },
   350: { // Apple TV Plus
     providerId: 350,
     providerName: "Apple TV Plus",
     searchUrlTemplate: "https://tv.apple.com/br/search?term={title}",
-    usesLocalTitle: false, // Apple TV search works better with original (English) titles
+    streamingSearchUrl: "https://tv.apple.com/br/search?term={title}",
+    usesLocalTitle: false, // Apple TV+ streaming content uses original titles
   },
   3: { // Google Play Movies
     providerId: 3,
