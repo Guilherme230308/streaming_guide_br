@@ -384,6 +384,43 @@ export default function MovieDetails() {
                 <p className="text-muted-foreground leading-relaxed">{movie.overview}</p>
               </div>
 
+              {/* Additional Info: Cast, Director, Studio */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                {movie.credits?.crew?.find((c: any) => c.job === "Director") && (
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Diretor</h4>
+                    <p className="text-foreground">
+                      {movie.credits.crew.filter((c: any) => c.job === "Director").map((d: any) => d.name).join(", ")}
+                    </p>
+                  </div>
+                )}
+
+                {movie.release_date && (
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Ano de Lançamento</h4>
+                    <p className="text-foreground">{new Date(movie.release_date).toLocaleDateString("pt-BR", { year: "numeric", month: "long", day: "numeric" })}</p>
+                  </div>
+                )}
+
+                {movie.production_companies && movie.production_companies.length > 0 && (
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Estúdio</h4>
+                    <p className="text-foreground">
+                      {movie.production_companies.slice(0, 3).map((c: any) => c.name).join(", ")}
+                    </p>
+                  </div>
+                )}
+
+                {movie.credits?.cast && movie.credits.cast.length > 0 && (
+                  <div className="sm:col-span-2">
+                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Elenco Principal</h4>
+                    <p className="text-foreground">
+                      {movie.credits.cast.slice(0, 8).map((a: any) => a.name).join(", ")}
+                    </p>
+                  </div>
+                )}
+              </div>
+
               <ShareButtons
                 title={movie.title}
                 url={`/movie/${movieId}`}
