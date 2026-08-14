@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Film, Search, Bell, List, TrendingUp, CheckCircle, Clock, ChevronRight, BarChart3, Smartphone, Sparkles } from "lucide-react";
+import { Film, Search, Bell, List, TrendingUp, CheckCircle, Clock, ChevronRight, ChevronLeft, BarChart3, Smartphone, Sparkles } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { trpc } from "@/lib/trpc";
 import { SEO, buildWebSiteJsonLd, buildOrganizationJsonLd, buildSiteNavigationJsonLd } from "@/components/SEO";
 import { ContentCard } from "@/components/ContentCard";
@@ -31,6 +31,28 @@ export default function LandingPage() {
     { page: 1 },
     { staleTime: 1000 * 60 * 60 }
   );
+
+  // Carousel scroll controls
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const updateScrollButtons = useCallback(() => {
+    if (!carouselRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+    setCanScrollLeft(scrollLeft > 0);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 10);
+  }, []);
+
+  const scrollCarousel = (direction: 'left' | 'right') => {
+    if (!carouselRef.current) return;
+    const scrollAmount = carouselRef.current.clientWidth * 0.7;
+    carouselRef.current.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth',
+    });
+    setTimeout(updateScrollButtons, 350);
+  };
 
   // Close suggestions on outside click
   useEffect(() => {
@@ -211,20 +233,45 @@ export default function LandingPage() {
 
       {/* New Releases on Streaming Carousel */}
       {newOnStreaming?.results && newOnStreaming.results.length > 0 && (
-        <section className="py-10 border-b border-border/20">
+        <section className="py-6 border-b border-border/20">
           <div className="container">
-            <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-primary" />
                 <h2 className="text-lg font-bold text-foreground">Lançamentos no Streaming</h2>
               </div>
-              <Link href="/novidades">
-                <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80 gap-1">
-                  Ver todos <ChevronRight className="h-4 w-4" />
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 rounded-full"
+                  onClick={() => scrollCarousel('left')}
+                  disabled={!canScrollLeft}
+                >
+                  <ChevronLeft className="h-4 w-4" />
                 </Button>
-              </Link>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 rounded-full"
+                  onClick={() => scrollCarousel('right')}
+                  disabled={!canScrollRight}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                <Link href="/novidades">
+                  <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80 gap-1">
+                    Ver todos <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
             </div>
-            <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            <div
+              ref={carouselRef}
+              onScroll={updateScrollButtons}
+              className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
               {newOnStreaming.results.slice(0, 15).map((movie: any) => (
                 <div key={movie.id} className="flex-shrink-0 w-[130px] sm:w-[150px] snap-start">
                   <ContentCard

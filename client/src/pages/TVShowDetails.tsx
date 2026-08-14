@@ -441,7 +441,7 @@ export default function TVShowDetails() {
               <Card>
                 <CardContent className="p-6">
                   <h3 className="text-lg font-semibold text-foreground mb-4">Streaming</h3>
-                  <div className="flex flex-wrap gap-4">
+                  <div className="flex flex-wrap gap-6">
                     {deduplicateProviders(providers.flatrate).map((provider: any) => (
                       <a
                         key={provider.provider_id}
@@ -449,7 +449,7 @@ export default function TVShowDetails() {
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => handleProviderClick(provider, 'stream', e)}
-                        className="group"
+                        className="group w-20 flex flex-col items-center"
                       >
                         <div className="relative overflow-hidden rounded-lg hover:ring-2 hover:ring-primary transition-all w-16 h-16">
                           <img
@@ -461,7 +461,7 @@ export default function TVShowDetails() {
                             <ExternalLink className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                           </div>
                         </div>
-                        <p className="text-xs text-center mt-2 text-muted-foreground">
+                        <p className="text-xs text-center mt-2 text-muted-foreground w-full line-clamp-2 leading-tight">
                           {provider.provider_name}
                         </p>
                       </a>
@@ -476,7 +476,7 @@ export default function TVShowDetails() {
               <Card>
                 <CardContent className="p-6">
                   <h3 className="text-lg font-semibold text-foreground mb-4">Alugar</h3>
-                  <div className="flex flex-wrap gap-4">
+                  <div className="flex flex-wrap gap-6">
                     {deduplicateProviders(providers.rent).map((provider: any) => (
                       <a
                         key={provider.provider_id}
@@ -484,7 +484,7 @@ export default function TVShowDetails() {
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => handleProviderClick(provider, 'rent', e)}
-                        className="group"
+                        className="group w-20 flex flex-col items-center"
                       >
                         <div className="relative overflow-hidden rounded-lg hover:ring-2 hover:ring-primary transition-all w-16 h-16">
                           <img
@@ -496,7 +496,7 @@ export default function TVShowDetails() {
                             <ExternalLink className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                           </div>
                         </div>
-                        <p className="text-xs text-center mt-2 text-muted-foreground">
+                        <p className="text-xs text-center mt-2 text-muted-foreground w-full line-clamp-2 leading-tight">
                           {provider.provider_name}
                         </p>
                       </a>
@@ -511,7 +511,7 @@ export default function TVShowDetails() {
               <Card>
                 <CardContent className="p-6">
                   <h3 className="text-lg font-semibold text-foreground mb-4">Comprar</h3>
-                  <div className="flex flex-wrap gap-4">
+                  <div className="flex flex-wrap gap-6">
                     {deduplicateProviders(providers.buy).map((provider: any) => (
                       <a
                         key={provider.provider_id}
@@ -519,7 +519,7 @@ export default function TVShowDetails() {
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => handleProviderClick(provider, 'buy', e)}
-                        className="group"
+                        className="group w-20 flex flex-col items-center"
                       >
                         <div className="relative overflow-hidden rounded-lg hover:ring-2 hover:ring-primary transition-all w-16 h-16">
                           <img
@@ -531,7 +531,7 @@ export default function TVShowDetails() {
                             <ExternalLink className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                           </div>
                         </div>
-                        <p className="text-xs text-center mt-2 text-muted-foreground">
+                        <p className="text-xs text-center mt-2 text-muted-foreground w-full line-clamp-2 leading-tight">
                           {provider.provider_name}
                         </p>
                       </a>
