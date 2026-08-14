@@ -27,7 +27,7 @@ export default function LandingPage() {
   );
 
   // New releases on streaming for carousel
-  const { data: newOnStreaming } = trpc.content.getNewOnStreaming.useQuery(
+  const { data: newOnStreaming, isLoading: isLoadingCarousel } = trpc.content.getNewOnStreaming.useQuery(
     { page: 1 },
     { staleTime: 1000 * 60 * 60 }
   );
@@ -232,7 +232,7 @@ export default function LandingPage() {
       </section>
 
       {/* New Releases on Streaming Carousel */}
-      {newOnStreaming?.results && newOnStreaming.results.length > 0 && (
+      {(isLoadingCarousel || (newOnStreaming?.results && newOnStreaming.results.length > 0)) && (
         <section className="py-6 border-b border-border/20">
           <div className="container">
             <div className="flex items-center justify-between mb-4">
@@ -246,7 +246,7 @@ export default function LandingPage() {
                   size="icon"
                   className="h-8 w-8 rounded-full"
                   onClick={() => scrollCarousel('left')}
-                  disabled={!canScrollLeft}
+                  disabled={!canScrollLeft || isLoadingCarousel}
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
@@ -255,7 +255,7 @@ export default function LandingPage() {
                   size="icon"
                   className="h-8 w-8 rounded-full"
                   onClick={() => scrollCarousel('right')}
-                  disabled={!canScrollRight}
+                  disabled={!canScrollRight || isLoadingCarousel}
                 >
                   <ChevronRight className="h-4 w-4" />
                 </Button>
@@ -266,25 +266,39 @@ export default function LandingPage() {
                 </Link>
               </div>
             </div>
-            <div
-              ref={carouselRef}
-              onScroll={updateScrollButtons}
-              className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            >
-              {newOnStreaming.results.slice(0, 15).map((movie: any) => (
-                <div key={movie.id} className="flex-shrink-0 w-[130px] sm:w-[150px] snap-start">
-                  <ContentCard
-                    id={movie.id}
-                    title={movie.title}
-                    posterPath={movie.poster_path}
-                    voteAverage={movie.vote_average}
-                    releaseDate={movie.release_date}
-                    mediaType="movie"
-                  />
-                </div>
-              ))}
-            </div>
+            {isLoadingCarousel ? (
+              <div className="flex gap-3 overflow-hidden pb-4">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="flex-shrink-0 w-[130px] sm:w-[150px]">
+                    <div className="animate-pulse">
+                      <div className="bg-muted/30 rounded-xl aspect-[2/3] mb-2" />
+                      <div className="bg-muted/30 rounded h-4 w-3/4 mb-1" />
+                      <div className="bg-muted/30 rounded h-3 w-1/2" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div
+                ref={carouselRef}
+                onScroll={updateScrollButtons}
+                className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
+                {newOnStreaming!.results.slice(0, 15).map((movie: any) => (
+                  <div key={movie.id} className="flex-shrink-0 w-[130px] sm:w-[150px] snap-start">
+                    <ContentCard
+                      id={movie.id}
+                      title={movie.title}
+                      posterPath={movie.poster_path}
+                      voteAverage={movie.vote_average}
+                      releaseDate={movie.release_date}
+                      mediaType="movie"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       )}
