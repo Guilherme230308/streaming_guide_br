@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Film, Search, Bell, List, TrendingUp, CheckCircle, Clock, ChevronRight, BarChart3, Smartphone } from "lucide-react";
+import { Film, Search, Bell, List, TrendingUp, CheckCircle, Clock, ChevronRight, BarChart3, Smartphone, Sparkles } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 import { useState, useRef, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { SEO, buildWebSiteJsonLd, buildOrganizationJsonLd, buildSiteNavigationJsonLd } from "@/components/SEO";
+import { ContentCard } from "@/components/ContentCard";
 
 const HERO_IMG = "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029229201/cgGBWpLKRuMgKbls.jpg";
 const PHONE_IMG = "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029229201/dVPxUTQUbCSVnCSG.webp";
@@ -23,6 +24,12 @@ export default function LandingPage() {
   const { data: suggestions } = trpc.content.searchWithFilters.useQuery(
     { query: searchQuery, page: 1 },
     { enabled: searchQuery.length >= 2 }
+  );
+
+  // New releases on streaming for carousel
+  const { data: newOnStreaming } = trpc.content.getNewOnStreaming.useQuery(
+    { page: 1 },
+    { staleTime: 1000 * 60 * 60 }
   );
 
   // Close suggestions on outside click
@@ -201,6 +208,39 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* New Releases on Streaming Carousel */}
+      {newOnStreaming?.results && newOnStreaming.results.length > 0 && (
+        <section className="py-10 border-b border-border/20">
+          <div className="container">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary" />
+                <h2 className="text-lg font-bold text-foreground">Lançamentos no Streaming</h2>
+              </div>
+              <Link href="/novidades">
+                <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80 gap-1">
+                  Ver todos <ChevronRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+            <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              {newOnStreaming.results.slice(0, 15).map((movie: any) => (
+                <div key={movie.id} className="flex-shrink-0 w-[130px] sm:w-[150px] snap-start">
+                  <ContentCard
+                    id={movie.id}
+                    title={movie.title}
+                    posterPath={movie.poster_path}
+                    voteAverage={movie.vote_average}
+                    releaseDate={movie.release_date}
+                    mediaType="movie"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Streaming Platforms Section - Clickable logos linking to /melhores pages */}
       <section className="container py-12 border-b border-border/20">
